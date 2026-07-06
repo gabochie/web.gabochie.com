@@ -551,12 +551,14 @@
             p.qualScore = result.total || (result.scores || {}).total || 0;
             p.issues = result.issues || [];
             p.segment = p.qualScore >= 70 ? 'hot' : p.qualScore >= 50 ? 'warm' : 'cold';
+            if (window.Automation) Automation.trigger('lead-scored', p);
             analyzed++;
             updateFinderProgress(analyzed, prospects.length);
             if (analyzed >= prospects.length) showFinderResults(prospects);
           }).catch(function () {
             p.qualScore = 30 + Math.floor(Math.random() * 40);
             p.segment = p.qualScore >= 60 ? 'warm' : 'cold';
+            if (window.Automation) Automation.trigger('lead-scored', p);
             analyzed++;
             updateFinderProgress(analyzed, prospects.length);
             if (analyzed >= prospects.length) showFinderResults(prospects);
@@ -564,6 +566,7 @@
         } else {
           p.qualScore = 30 + Math.floor(Math.random() * 40);
           p.segment = p.qualScore >= 60 ? 'warm' : 'cold';
+          if (window.Automation) Automation.trigger('lead-scored', p);
           analyzed++;
           updateFinderProgress(analyzed, prospects.length);
           if (analyzed >= prospects.length) showFinderResults(prospects);

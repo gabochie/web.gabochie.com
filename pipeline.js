@@ -1,12 +1,13 @@
 /* ========================================
    AUTOMATED LEAD PIPELINE
-   Scout → Audit → Prioritize → Segment → Outreach
+   Scout -> Audit -> Prioritize -> Segment -> Outreach
    ======================================== */
 window.Pipeline = (function () {
-  'use strict';
+  try {
+    'use strict';
 
-  /* ----------------------------------------
-     INDUSTRY PAY-LIKELIHOOD SCORES
+    /* ----------------------------------------
+       INDUSTRY PAY-LIKELIHOOD SCORES
      Based on avg deal size + willingness to invest
      ---------------------------------------- */
   var INDUSTRY_SCORES = {
@@ -345,4 +346,8 @@ window.Pipeline = (function () {
     runPipeline: runPipeline,
     INDUSTRY_SCORES: INDUSTRY_SCORES
   };
+  } catch (e) {
+    console.error('[Pipeline] Initialization error:', e);
+    return { error: e.message, scoreLead: function(){return{total:0,segment:'cold',priority:'low',breakdown:{}}}, segmentColdLeads: function(){return[]}, getPriorityQueue: function(){return{all:[],hot:[],warm:[],cold:[],coldSegments:[]}}, getOutreachTemplate: function(){return{subject:'',body:''}}, runPipeline: function(){return Promise.resolve({error:e.message})}, INDUSTRY_SCORES: {} };
+  }
 })();

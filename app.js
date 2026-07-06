@@ -2788,6 +2788,35 @@
 
     SMOKE_RESULTS = { checks: checks, pass: pass, warn: warn, fail: fail, score: score, total: total };
     showSmokeResults(SMOKE_RESULTS);
+
+    // Retry failed JS module checks after 2s (catches late-loading scripts)
+    var failedModules = jsModules.filter(function (m) { return !m.loaded; });
+    if (failedModules.length > 0) {
+      setTimeout(function () {
+        var anyChanged = false;
+        failedModules.forEach(function (m) {
+          var nowLoaded = !!window[m.name];
+          if (m.name === 'clarity') nowLoaded = typeof window.clarity === 'function';
+          if (nowLoaded) {
+            checks.forEach(function (c) {
+              if (c.category === 'JS Modules' && c.name === m.name && c.status !== 'pass') {
+                if (c.status === 'fail') fail--;
+                else if (c.status === 'warn') warn--;
+                c.status = 'pass';
+                c.detail = 'Loaded (retry)';
+                pass++;
+                anyChanged = true;
+              }
+            });
+          }
+        });
+        if (anyChanged) {
+          score = total > 0 ? Math.round((pass / total) * 100) : 0;
+          SMOKE_RESULTS = { checks: checks, pass: pass, warn: warn, fail: fail, score: score, total: total };
+          showSmokeResults(SMOKE_RESULTS);
+        }
+      }, 2000);
+    }
   }
 
   function showSmokeResults(results) {

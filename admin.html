@@ -71,9 +71,9 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <span>Auto Pipeline</span>
     </button>
-    <button class="sidebar-link" data-tab="canada-jobs">
+    <button class="sidebar-link" data-tab="remote-jobs">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-      <span>Canada Jobs</span>
+      <span>Remote Jobs</span>
     </button>
     <button class="sidebar-link" data-tab="smoke-test">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
@@ -604,54 +604,46 @@
 </section>
 
 <!-- CANADA JOBS TAB -->
-<section id="canada-jobs" class="section" style="display:none">
+<section id="remote-jobs" class="section" style="display:none">
   <div class="section-header">
-    <h2 class="section-title">🇨🇦 Canada Tech Jobs</h2>
-    <p class="section-sub">Search tech jobs across Canada. Save, track applications, and manage your job search.</p>
+    <h2 class="section-title">🌍 Remote Tech Jobs</h2>
+    <p class="section-sub">Search tech jobs across Canada, US, UK, Germany & Australia. Save, track applications, and manage your job search.</p>
   </div>
 
   <!-- Stats -->
-  <div id="cj-stats" class="stats" style="margin-bottom:16px"></div>
+  <div id="rj-stats" class="stats" style="margin-bottom:16px"></div>
 
   <!-- Search -->
   <div class="card" style="margin-bottom:16px">
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <input type="text" id="cj-search" placeholder="Search tech roles, skills..." value="software developer" style="flex:1;min-width:160px;height:42px;padding:10px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:.88rem;outline:none" onkeydown="if(event.key==='Enter')searchCanadaJobs()">
-      <select id="cj-province" style="width:auto;min-width:120px;height:42px;padding:10px 32px 10px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:.85rem;outline:none;appearance:none">
-        <option value="">All Provinces</option>
-        <option value="ON">Ontario</option>
-        <option value="BC">British Columbia</option>
-        <option value="QC">Quebec</option>
-        <option value="AB">Alberta</option>
-        <option value="SK">Saskatchewan</option>
-        <option value="MB">Manitoba</option>
-        <option value="NS">Nova Scotia</option>
-        <option value="NB">New Brunswick</option>
-        <option value="NL">Newfoundland</option>
-        <option value="PE">PEI</option>
-        <option value="YT">Yukon</option>
-        <option value="NT">NWT</option>
-        <option value="NU">Nunavut</option>
+      <input type="text" id="rj-search" placeholder="Search tech roles, skills..." value="software developer" style="flex:1;min-width:160px;height:42px;padding:10px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:.88rem;outline:none" onkeydown="if(event.key==='Enter')searchRemoteJobs()">
+      <select id="rj-country" style="width:auto;min-width:120px;height:42px;padding:10px 32px 10px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;color:var(--text);font-size:.85rem;outline:none;appearance:none">
+        <option value="">All Countries</option>
+        <option value="CA">🇨🇦 Canada</option>
+        <option value="US">🇺🇸 United States</option>
+        <option value="UK">🇬🇧 United Kingdom</option>
+        <option value="DE">🇩🇪 Germany</option>
+        <option value="AU">🇦🇺 Australia</option>
       </select>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem;height:42px;padding:0 12px;border:1.5px solid var(--border);border-radius:6px;user-select:none;color:var(--text2)" id="cj-remote-label">
-        <input type="checkbox" id="cj-remote" checked onchange="searchCanadaJobs()" style="width:auto;height:auto;accent-color:var(--green)"> Remote Only
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem;height:42px;padding:0 12px;border:1.5px solid var(--border);border-radius:6px;user-select:none;color:var(--text2)" id="rj-remote-label">
+        <input type="checkbox" id="rj-remote" checked onchange="searchRemoteJobs()" style="width:auto;height:auto;accent-color:var(--green)"> Remote Only
       </label>
-      <button class="btn btn-sm btn-accent" onclick="searchCanadaJobs()">Search →</button>
+      <button class="btn btn-sm btn-accent" onclick="searchRemoteJobs()">Search →</button>
       <button class="btn btn-sm btn-secondary" onclick="exportSavedJobs()">📥 Export Saved</button>
     </div>
   </div>
 
   <!-- Results -->
-  <div id="cj-results">
+  <div id="rj-results">
     <div class="card" style="text-align:center;padding:60px 20px;color:var(--text2)">
-      <p>Enter keywords and search to find Canadian tech jobs</p>
+      <p>Enter keywords and search to find remote tech jobs worldwide</p>
     </div>
   </div>
 
   <!-- Saved Jobs -->
   <div class="card" style="margin-top:24px">
-    <div class="card-title">📌 Saved Jobs (<span id="cj-saved-count">0</span>)</div>
-    <div id="cj-saved-list" style="margin-top:12px">
+    <div class="card-title">📌 Saved Jobs (<span id="rj-saved-count">0</span>)</div>
+    <div id="rj-saved-list" style="margin-top:12px">
       <p style="color:var(--text2);font-size:.85rem">Save jobs from search results to track them here</p>
     </div>
   </div>

@@ -158,3 +158,47 @@ var FirebaseService = (function () {
     timeline: { get: getTimeline, add: addTimelineEvent }
   };
 })();
+
+/* ========================================
+   FIREBASE AUTH SERVICE
+   Login, logout, session management
+   ======================================== */
+var AuthService = (function () {
+  var auth = null;
+
+  function init() {
+    if (typeof firebase === 'undefined') return;
+    try {
+      auth = firebase.auth();
+    } catch (e) {
+      console.warn('[Auth] Init failed:', e.message);
+    }
+  }
+
+  function login(email, password) {
+    if (!auth) return Promise.reject(new Error('Auth not initialized'));
+    return auth.signInWithEmailAndPassword(email, password);
+  }
+
+  function logout() {
+    if (!auth) return Promise.resolve();
+    return auth.signOut();
+  }
+
+  function onAuthStateChanged(callback) {
+    if (!auth) { callback(null); return function () {}; }
+    return auth.onAuthStateChanged(callback);
+  }
+
+  function getCurrentUser() {
+    return auth ? auth.currentUser : null;
+  }
+
+  return {
+    init: init,
+    login: login,
+    logout: logout,
+    onAuthStateChanged: onAuthStateChanged,
+    getCurrentUser: getCurrentUser
+  };
+})();

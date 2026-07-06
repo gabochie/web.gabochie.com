@@ -22,16 +22,31 @@
      ---------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
     FirebaseService.init();
-    populateDropdowns();
-    wireNav();
-    wireModeToggle();
-    wireDiscover();
-    wirePipeline();
-    wireFinder();
-    wireProposalModal();
-    wireNotesModal();
-    wireAutomation();
-    loadLeads();
+    AuthService.init();
+
+    // Auth check — redirect to login if not authenticated
+    AuthService.onAuthStateChanged(function (user) {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      // User is logged in — show admin
+      document.getElementById('settings-email').textContent = user.email || '—';
+      document.getElementById('settings-uid').textContent = user.uid || '—';
+      populateDropdowns();
+      wireNav();
+      wireModeToggle();
+      wireDiscover();
+      wirePipeline();
+      wireFinder();
+      wireProposalModal();
+      wireNotesModal();
+      wireAutomation();
+      wireLogout();
+      wirePortfolio();
+      wireSettings();
+      loadLeads();
+    });
   });
 
   function initApp() {
@@ -1555,6 +1570,50 @@
     saveRoadmap(tasks);
     renderRoadmap();
     showToast('Task added: ' + name, 'success');
+  }
+
+  /* ----------------------------------------
+     LOGOUT
+     ---------------------------------------- */
+  function wireLogout() {
+    var logoutBtn = document.getElementById('logoutBtn');
+    var settingsLogout = document.getElementById('settings-logout-btn');
+    function doLogout() {
+      AuthService.logout().then(function () {
+        window.location.href = 'login.html';
+      });
+    }
+    if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+    if (settingsLogout) settingsLogout.addEventListener('click', doLogout);
+  }
+
+  /* ----------------------------------------
+     PORTFOLIO MANAGER
+     ---------------------------------------- */
+  function wirePortfolio() {
+    if (window.PortfolioManager) window.PortfolioManager.init();
+    var runAllBtn = document.getElementById('pm-run-all-btn');
+    if (runAllBtn) {
+      runAllBtn.addEventListener('click', function () {
+        if (window.PortfolioManager) window.PortfolioManager.runAllAudits();
+      });
+    }
+  }
+
+  /* ----------------------------------------
+     SETTINGS
+     ---------------------------------------- */
+  function wireSettings() {
+    var sitesContainer = document.getElementById('settings-sites');
+    if (!sitesContainer || !window.PortfolioManager) return;
+    var sites = window.PortfolioManager.SITES;
+    var html = '<table style="width:100%;border-collapse:collapse;margin-top:12px">';
+    html += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">SITE</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">URL</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">TAG</th></tr></thead><tbody>';
+    sites.forEach(function (s) {
+      html += '<tr><td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem">' + s.name + '</td><td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem"><a href="' + s.url + '" target="_blank" style="color:var(--accent)">' + s.url.replace('https://', '') + '</a></td><td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text2)">' + s.tag + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    sitesContainer.innerHTML = html;
   }
 
   /* ----------------------------------------

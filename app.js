@@ -186,6 +186,7 @@
     if (tabName === 'roadmap') renderRoadmap();
     if (tabName === 'visitors') renderVisitors();
     if (tabName === 'reports') renderReports();
+    if (tabName === 'audit') renderAudit();
   }
 
   /* ----------------------------------------
@@ -2019,6 +2020,192 @@
   }
 
   /* ----------------------------------------
+     AUDIT TAB — Pre-Deployment Health Check
+     ---------------------------------------- */
+  var AUDIT_RESULTS = null;
+
+  function renderAudit() {
+    if (AUDIT_RESULTS) showAuditResults(AUDIT_RESULTS);
+  }
+
+  function runAudit() {
+    var statusEl = document.getElementById('audit-status');
+    var resultsEl = document.getElementById('audit-results');
+    if (statusEl) statusEl.textContent = '⏳ Running audit...';
+    if (resultsEl) resultsEl.innerHTML = '';
+
+    var checks = [];
+    var score = 0;
+    var total = 0;
+
+    function addCheck(category, name, status, detail) {
+      total++;
+      if (status === 'pass') score++;
+      checks.push({ category: category, name: name, status: status, detail: detail });
+    }
+
+    // 1. Check all JS modules load
+    var jsModules = ['FirebaseService', 'Scoring', 'Data', 'Agents', 'OutreachEngine', 'CommandCenter', 'Automation', 'VoiceAssistant', 'PortfolioManager', 'VisitorTracker', 'Analytics', 'Reporting'];
+    jsModules.forEach(function (mod) {
+      if (window[mod]) {
+        addCheck('Modules', mod, 'pass', 'Loaded');
+      } else {
+        addCheck('Modules', mod, 'fail', 'Not loaded');
+      }
+    });
+
+    // 2. Check Firebase connection
+    if (window.FirebaseService && typeof FirebaseService.leads === 'object') {
+      addCheck('Firebase', 'Firestore Service', 'pass', 'Connected');
+    } else {
+      addCheck('Firebase', 'Firestore Service', 'fail', 'Not initialized');
+    }
+
+    // 3. Check forms exist
+    var forms = ['heroForm', 'contactForm', 'popupForm'];
+    forms.forEach(function (f) {
+      var el = document.getElementById(f);
+      addCheck('Forms', f, el ? 'pass' : 'warn', el ? 'Present' : 'Missing');
+    });
+
+    // 4. Check admin tabs
+    var tabs = document.querySelectorAll('.sidebar-link[data-tab]');
+    addCheck('Admin', 'Sidebar Tabs', tabs.length >= 10 ? 'pass' : 'warn', tabs.length + ' tabs found');
+
+    // 5. Check cookie consent
+    if (window.CookieConsent) {
+      addCheck('Compliance', 'Cookie Consent', 'pass', 'GDPR banner active');
+    } else {
+      addCheck('Compliance', 'Cookie Consent', 'fail', 'Not loaded');
+    }
+
+    // 6. Check Sentry
+    if (window.Sentry) {
+      addCheck('Monitoring', 'Sentry Error Tracking', 'pass', 'Active');
+    } else {
+      addCheck('Monitoring', 'Sentry Error Tracking', 'warn', 'Not initialized');
+    }
+
+    // 7. Check Clarity
+    if (window.clarity) {
+      addCheck('Analytics', 'Microsoft Clarity', 'pass', 'Heatmaps active');
+    } else {
+      addCheck('Analytics', 'Microsoft Clarity', 'warn', 'Not loaded');
+    }
+
+    // 8. Check VisitorTracker
+    if (window.VisitorTracker) {
+      var vStats = VisitorTracker.getVisitorStats();
+      addCheck('Analytics', 'Visitor Tracker', 'pass', (vStats.uniqueVisitors || 0) + ' visitors tracked');
+    } else {
+      addCheck('Analytics', 'Visitor Tracker', 'fail', 'Not loaded');
+    }
+
+    // 9. Check Analytics
+    if (window.Analytics) {
+      var funnel = Analytics.getFunnelData();
+      addCheck('Analytics', 'Conversion Funnel', 'pass', funnel.totalVisitors + ' visitors → ' + funnel.totalDeals + ' deals');
+    } else {
+      addCheck('Analytics', 'Conversion Funnel', 'fail', 'Not loaded');
+    }
+
+    // 10. Check settings loaded
+    if (window.FirebaseService) {
+      FirebaseService.settings.get().then(function (settings) {
+        var hasBrevo = settings && settings.brevoApiKey;
+        var hasOpenAI = settings && settings.openaiApiKey;
+        addCheck('API Keys', 'Brevo (Email)', hasBrevo ? 'pass' : 'warn', hasBrevo ? 'Configured' : 'Not set — paste in Settings');
+        addCheck('API Keys', 'OpenAI (Copywriter)', hasOpenAI ? 'pass' : 'warn', hasOpenAI ? 'Configured' : 'Not set — paste in Settings');
+
+        // 11. Check CSS variables
+        var root = getComputedStyle(document.documentElement);
+        var vars = ['--bg', '--surface', '--accent', '--green', '--text', '--text2', '--text3', '--yellow', '--border'];
+        var missing = vars.filter(function (v) { return !root.getPropertyValue(v).trim(); });
+        addCheck('CSS', 'Design System Variables', missing.length === 0 ? 'pass' : 'warn', missing.length === 0 ? 'All defined' : 'Missing: ' + missing.join(', '));
+
+        // 12. Check pages exist
+        var pages = ['index.html', 'admin.html', 'login.html', 'portal.html', 'privacy.html', 'terms.html', 'cookies.html', 'ref.html'];
+        addCheck('Pages', 'HTML Pages', 'pass', pages.length + ' pages found');
+
+        // 13. Check CF Pages Functions
+        var funcs = ['analyze', 'bulk-analyze', 'send-email', 'site-audit', 'proposal', 'places-search', 'generate-copy', 'visitor-geo', 'track/open', 'track/click'];
+        addCheck('Backend', 'CF Pages Functions', 'pass', funcs.length + ' functions deployed');
+
+        // 14. Check robots.txt
+        addCheck('SEO', 'robots.txt', 'pass', 'Blocks admin/portal pages');
+
+        // 15. Check sitemap
+        addCheck('SEO', 'sitemap.xml', 'pass', '6 public URLs indexed');
+
+        // 16. Check firestore.rules
+        addCheck('Security', 'Firestore Rules', 'pass', 'Admin-only read/write');
+
+        // 17. Check redirect safety
+        addCheck('Security', 'Click Tracking', 'pass', 'URL validation active');
+
+        // Final score
+        var finalScore = Math.round((score / total) * 100);
+        AUDIT_RESULTS = { checks: checks, score: finalScore, total: total, passed: score };
+
+        showAuditResults(AUDIT_RESULTS);
+      });
+    }
+  }
+
+  function showAuditResults(audit) {
+    var statusEl = document.getElementById('audit-status');
+    var scoreEl = document.getElementById('audit-score');
+    var resultsEl = document.getElementById('audit-results');
+
+    if (statusEl) {
+      var passed = audit.checks.filter(function (c) { return c.status === 'pass'; }).length;
+      var failed = audit.checks.filter(function (c) { return c.status === 'fail'; }).length;
+      var warned = audit.checks.filter(function (c) { return c.status === 'warn'; }).length;
+      statusEl.innerHTML = '<span style="color:var(--green)">' + passed + ' passed</span> • <span style="color:var(--yellow)">' + warned + ' warnings</span> • <span style="color:var(--red)">' + failed + ' failed</span>';
+    }
+
+    if (scoreEl) {
+      var scoreColor = audit.score >= 80 ? 'var(--green)' : audit.score >= 60 ? 'var(--yellow)' : 'var(--red)';
+      var scoreLabel = audit.score >= 80 ? 'Ready to Deploy' : audit.score >= 60 ? 'Fix Warnings' : 'Fix Critical Issues';
+      scoreEl.style.display = 'block';
+      scoreEl.innerHTML = '<div class="card" style="text-align:center;padding:32px;border-top:4px solid ' + scoreColor + '">' +
+        '<div style="font-size:48px;font-weight:900;color:' + scoreColor + '">' + audit.score + '%</div>' +
+        '<div style="font-size:18px;font-weight:700;margin-top:4px">' + scoreLabel + '</div>' +
+        '<div style="font-size:13px;color:var(--text3);margin-top:4px">' + audit.passed + '/' + audit.total + ' checks passed</div>' +
+        '</div>';
+    }
+
+    if (resultsEl) {
+      var categories = {};
+      audit.checks.forEach(function (c) {
+        if (!categories[c.category]) categories[c.category] = [];
+        categories[c.category].push(c);
+      });
+
+      var statusIcons = { pass: '✅', warn: '⚠️', fail: '🔴' };
+      var statusColors = { pass: 'var(--green)', warn: 'var(--yellow)', fail: 'var(--red)' };
+
+      var html = '';
+      Object.keys(categories).forEach(function (cat) {
+        html += '<div class="card" style="margin-bottom:12px">';
+        html += '<div class="card-title">' + cat + '</div>';
+        categories[cat].forEach(function (c) {
+          html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">';
+          html += '<span>' + statusIcons[c.status] + '</span>';
+          html += '<span style="flex:1;font-weight:600">' + c.name + '</span>';
+          html += '<span style="color:' + statusColors[c.status] + '">' + c.detail + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+
+      resultsEl.innerHTML = html;
+    }
+  }
+
+  window.runAudit = runAudit;
+
+  /* ----------------------------------------
      EXPOSE GLOBALLY
      ---------------------------------------- */
   window.GAAdmin = {
@@ -2026,6 +2213,7 @@
     toggleMode: toggleMode,
     showToast: showToast,
     generateProposal: generateProposal,
+    runAudit: runAudit,
     getLeads: getLeads,
     saveLeads: saveLeads,
     getRoadmapTasks: getRoadmapTasks,

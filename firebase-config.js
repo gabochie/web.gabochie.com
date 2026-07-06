@@ -169,6 +169,10 @@ var AuthService = (function () {
   function init() {
     if (typeof firebase === 'undefined') return;
     try {
+      // Ensure Firebase app is initialized (login.html may not call FirebaseService.init first)
+      if (!firebase.apps.length) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      }
       auth = firebase.auth();
     } catch (e) {
       console.warn('[Auth] Init failed:', e.message);

@@ -267,9 +267,31 @@ footer .footer-logo span{color:var(--accent)}
             <option>Real Estate</option><option>Hospitality</option><option>Other</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary">🔍 Analyze My Website — Free</button>
+        <button type="submit" class="btn btn-primary" id="heroSubmitBtn">🔍 Analyze My Website — Free</button>
         <div class="trust">✓ No credit card required · Results in 60 seconds · 100% free</div>
       </form>
+      <div id="heroScoreResult" style="display:none;margin-top:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3 style="margin:0;font-size:1.1rem">Your Website Score</h3>
+          <span id="heroScoreTotal" style="font-size:2rem;font-weight:900;color:var(--accent)">—</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px">
+            <div id="heroDesignScore" style="font-size:1.4rem;font-weight:800">—</div>
+            <div style="font-size:.75rem;color:var(--text3)">Design</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px">
+            <div id="heroMobileScore" style="font-size:1.4rem;font-weight:800">—</div>
+            <div style="font-size:.75rem;color:var(--text3)">Mobile</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px">
+            <div id="heroPerfScore" style="font-size:1.4rem;font-weight:800">—</div>
+            <div style="font-size:.75rem;color:var(--text3)">Performance</div>
+          </div>
+        </div>
+        <div id="heroIssuesList" style="margin-bottom:12px"></div>
+        <div id="heroWinsList"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -576,7 +598,8 @@ footer .footer-logo span{color:var(--accent)}
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="firebase-config.js"></script>
+  <script src="scoring.js"></script>
+  <script src="firebase-config.js"></script>
 <script>
 FirebaseService.init();
 // PORTFOLIO DATA
@@ -606,12 +629,60 @@ function openEmail(subject,body){
   window.location='mailto:'+EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 }
 function submitForm(name,email,company,url,source){
+  // Send lead via WhatsApp/email
   var msg='New website audit request from '+source+':\n\nName: '+name+'\nEmail: '+email+'\nCompany: '+(company||'N/A')+'\nWebsite: '+(url||'N/A');
   openWhatsApp(msg);
   setTimeout(function(){openEmail('Website Audit Request — '+name,msg);},800);
-  showToast('✓ Submitted! Opening WhatsApp & email...');
-  // Submit to Netlify Forms in background
-  fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({'form-name':source,'name':name,'email':email,'company':company||'','url':url||''}).toString()}).catch(function(){});
+
+  // Run live analysis
+    if (url && window.Scoring) {
+    var btn = document.getElementById('heroSubmitBtn');
+    var resultDiv = document.getElementById('heroScoreResult');
+    if (btn) { btn.textContent = '⏳ Analyzing...'; btn.disabled = true; }
+    if (resultDiv) resultDiv.style.display = 'block';
+
+    window.Scoring.analyzeWebsite(url).then(function (result) {
+      if (btn) { btn.textContent = '🔍 Analyze My Website — Free'; btn.disabled = false; }
+      if (!result) return;
+
+      var total = result.total || result.scores?.total || 0;
+      var design = result.design || result.scores?.design || 0;
+      var mobile = result.mobile || result.scores?.mobile || 0;
+      var perf = result.performance || result.scores?.performance || 0;
+
+      document.getElementById('heroScoreTotal').textContent = total + '/100';
+      document.getElementById('heroScoreTotal').style.color = total >= 70 ? 'var(--green)' : total >= 50 ? 'var(--yellow)' : 'var(--red)';
+      document.getElementById('heroDesignScore').textContent = design;
+      document.getElementById('heroMobileScore').textContent = mobile;
+      document.getElementById('heroPerfScore').textContent = perf;
+
+      var issues = result.issues || [];
+      var wins = result.wins || [];
+
+      var issuesHtml = '';
+      if (issues.length) {
+        issuesHtml = '<div style="font-size:.8rem;font-weight:600;color:var(--red);margin-bottom:6px">Issues Found (' + issues.length + ')</div>';
+        issues.slice(0, 5).forEach(function (i) {
+          issuesHtml += '<div style="font-size:.82rem;color:var(--text2);padding:3px 0">✗ ' + i + '</div>';
+        });
+      }
+      document.getElementById('heroIssuesList').innerHTML = issuesHtml;
+
+      var winsHtml = '';
+      if (wins.length) {
+        winsHtml = '<div style="font-size:.8rem;font-weight:600;color:var(--green);margin-bottom:6px">What\'s Working (' + wins.length + ')</div>';
+        wins.slice(0, 5).forEach(function (w) {
+          winsHtml += '<div style="font-size:.82rem;color:var(--text2);padding:3px 0">✓ ' + w + '</div>';
+        });
+      }
+      document.getElementById('heroWinsList').innerHTML = winsHtml;
+
+      showToast('Score: ' + total + '/100 — ' + issues.length + ' issues found');
+    }).catch(function () {
+      if (btn) { btn.textContent = '🔍 Analyze My Website — Free'; btn.disabled = false; }
+      showToast('Analysis complete — check results above');
+    });
+  }
 }
 
 // RENDER PORTFOLIO

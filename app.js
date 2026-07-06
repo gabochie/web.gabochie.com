@@ -2613,6 +2613,8 @@
      SMOKE TEST — Full App Health Check
      ---------------------------------------- */
   var SMOKE_RESULTS = null;
+  var SMOKE_PREV = null;
+  var SMOKE_HISTORY = [];
   var SMOKE_INTERVAL = null;
   var SMOKE_LIVE_DOT = null;
 
@@ -2634,6 +2636,15 @@
       dot.title = 'Auto-refreshing every 15s';
       statusEl.parentNode.appendChild(dot);
       SMOKE_LIVE_DOT = dot;
+    }
+
+    // Create changelog container
+    if (!document.getElementById('smoke-changelog')) {
+      var cl = document.createElement('div');
+      cl.id = 'smoke-changelog';
+      cl.style.cssText = 'margin-top:16px';
+      resultsEl = document.getElementById('smoke-results');
+      if (resultsEl && resultsEl.parentNode) resultsEl.parentNode.appendChild(cl);
     }
 
     // Run immediately when switching to tab
@@ -2722,7 +2733,7 @@
 
     // 4. Forms (main site only)
     var forms = ['heroForm', 'contactForm', 'popupForm'];
-    var isAdmin = document.querySelector('.sidebar') !== null;
+    var isAdmin = window.location.pathname.indexOf('admin') !== -1;
     forms.forEach(function (f) {
       var el = document.getElementById(f);
       if (isAdmin) {
@@ -2787,7 +2798,8 @@
     var score = total > 0 ? Math.round((pass / total) * 100) : 0;
 
     SMOKE_RESULTS = { checks: checks, pass: pass, warn: warn, fail: fail, score: score, total: total };
-    showSmokeResults(SMOKE_RESULTS);
+    SMOKE_HISTORY.push({ score: score, pass: pass, warn: warn, fail: fail, time: Date.now() });
+    showSmokeResults(SMOKE_RESULTS, true);
 
     // Retry failed JS module checks after 2s (catches late-loading scripts)
     var failedModules = jsModules.filter(function (m) { return !m.loaded; });
@@ -2813,31 +2825,71 @@
         if (anyChanged) {
           score = total > 0 ? Math.round((pass / total) * 100) : 0;
           SMOKE_RESULTS = { checks: checks, pass: pass, warn: warn, fail: fail, score: score, total: total };
-          showSmokeResults(SMOKE_RESULTS);
+          showSmokeResults(SMOKE_RESULTS, true);
         }
       }, 2000);
     }
   }
 
-  function showSmokeResults(results) {
+  function showSmokeResults(results, recordHistory) {
     var statusEl = document.getElementById('smoke-status');
     var scoreEl = document.getElementById('smoke-score');
     var resultsEl = document.getElementById('smoke-results');
+    var clEl = document.getElementById('smoke-changelog');
+
+    // Compare with previous run
+    var changes = [];
+    if (SMOKE_PREV) {
+      results.checks.forEach(function (c) {
+        var prev = SMOKE_PREV.checks.find(function (p) { return p.category === c.category && p.name === c.name; });
+        if (prev && prev.status !== c.status) {
+          changes.push({ name: c.name, category: c.category, from: prev.status, to: c.status });
+        }
+      });
+    }
+    SMOKE_PREV = JSON.parse(JSON.stringify(results));
+
+    // Trend calculation
+    var trend = '';
+    var trendColor = '';
+    if (SMOKE_HISTORY.length >= 2) {
+      var prevScore = SMOKE_HISTORY[SMOKE_HISTORY.length - 2].score;
+      var diff = results.score - prevScore;
+      if (diff > 0) { trend = '↑' + diff + '%'; trendColor = 'var(--green)'; }
+      else if (diff < 0) { trend = '↓' + Math.abs(diff) + '%'; trendColor = 'var(--red)'; }
+      else { trend = '—'; trendColor = 'var(--text3)'; }
+    }
 
     if (statusEl) {
       var now = new Date();
       var time = now.toLocaleTimeString();
-      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> • <span style="color:var(--yellow)">' + results.warn + ' warnings</span> • <span style="color:var(--red)">' + results.fail + ' failed</span> • <span style="color:var(--text3);font-size:11px">🔄 Live • ' + time + '</span>';
+      var changeCount = changes.length;
+      var changeBadge = changeCount > 0 ? ' • <span style="color:var(--yellow);font-size:11px">' + changeCount + ' change' + (changeCount > 1 ? 's' : '') + '</span>' : '';
+      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> • <span style="color:var(--yellow)">' + results.warn + ' warnings</span> • <span style="color:var(--red)">' + results.fail + ' failed</span> • <span style="color:var(--text3);font-size:11px">🔄 Live • ' + time + '</span>' + changeBadge;
     }
 
     if (scoreEl) {
       var color = results.score >= 90 ? 'var(--green)' : results.score >= 70 ? 'var(--yellow)' : 'var(--red)';
       var label = results.score >= 90 ? '✅ Ready to Deploy' : results.score >= 70 ? '⚠️ Fix Warnings' : '🔴 Fix Failures';
+      var historyHtml = '';
+      if (SMOKE_HISTORY.length > 1) {
+        historyHtml = '<div style="display:flex;gap:6px;justify-content:center;margin-top:8px">';
+        SMOKE_HISTORY.slice(-10).forEach(function (h, i) {
+          var hColor = h.score >= 90 ? 'var(--green)' : h.score >= 70 ? 'var(--yellow)' : 'var(--red)';
+          var barH = Math.max(8, (h.score / 100) * 40);
+          historyHtml += '<div style="width:12px;height:' + barH + 'px;background:' + hColor + ';border-radius:2px;opacity:' + (i === SMOKE_HISTORY.slice(-10).length - 1 ? '1' : '0.4') + ';transition:height .3s" title="' + h.score + '% at ' + new Date(h.time).toLocaleTimeString() + '"></div>';
+        });
+        historyHtml += '</div>';
+      }
       scoreEl.style.display = 'block';
-      scoreEl.innerHTML = '<div class="card" style="text-align:center;padding:32px;border-top:4px solid ' + color + '">' +
+      scoreEl.innerHTML = '<div class="card" style="text-align:center;padding:24px;border-top:4px solid ' + color + '">' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:12px">' +
         '<div style="font-size:48px;font-weight:900;color:' + color + '">' + results.score + '%</div>' +
-        '<div style="font-size:18px;font-weight:700;margin-top:4px">' + label + '</div>' +
-        '<div style="font-size:13px;color:var(--text3);margin-top:4px">' + results.pass + '/' + results.total + ' checks passed</div>' +
+        (trend ? '<div style="font-size:18px;font-weight:700;color:' + trendColor + '">' + trend + '</div>' : '') +
+        '</div>' +
+        '<div style="font-size:16px;font-weight:700;margin-top:2px">' + label + '</div>' +
+        '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + results.pass + '/' + results.total + ' checks passed</div>' +
+        historyHtml +
         '</div>';
     }
 
@@ -2858,16 +2910,55 @@
         html += '<div class="card" style="margin-bottom:12px">';
         html += '<div class="card-title">' + cat + ' <span style="font-size:11px;color:var(--text3);font-weight:400">' + catPass + '/' + catTotal + '</span></div>';
         categories[cat].forEach(function (c) {
-          html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">';
+          // Check if this item changed
+          var prev = SMOKE_PREV ? null : null;
+          var isNew = false, isFixed = false;
+          if (changes.length) {
+            changes.forEach(function (ch) {
+              if (ch.name === c.name && ch.category === c.category) {
+                if (ch.from === 'fail' && ch.to === 'pass') isFixed = true;
+                else if (ch.from !== c.status) isNew = true;
+              }
+            });
+          }
+          var flashClass = isFixed ? 'smoke-flash-green' : (isNew && c.status === 'fail') ? 'smoke-flash-red' : '';
+          html += '<div class="' + flashClass + '" style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">';
           html += '<span>' + icons[c.status] + '</span>';
           html += '<span style="flex:1;font-weight:600">' + c.name + '</span>';
-          html += '<span style="color:' + colors[c.status] + '">' + c.detail + '</span>';
+          html += '<span style="color:' + colors[c.status] + ';display:flex;align-items:center;gap:4px">';
+          if (isFixed) html += '<span style="font-size:10px;color:var(--green)">↑ fixed</span>';
+          else if (isNew && c.status === 'fail') html += '<span style="font-size:10px;color:var(--red)">↓ new</span>';
+          else if (isNew && c.status === 'warn') html += '<span style="font-size:10px;color:var(--yellow)">⚠ changed</span>';
+          html += c.detail;
+          html += '</span>';
           html += '</div>';
         });
         html += '</div>';
       });
 
       resultsEl.innerHTML = html;
+    }
+
+    // Changelog
+    if (clEl && changes.length > 0) {
+      var clHtml = '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--yellow)">';
+      clHtml += '<div class="card-title" style="font-size:13px">📋 Recent Changes</div>';
+      changes.slice(-5).forEach(function (ch) {
+        var chIcon = ch.to === 'pass' ? '✅' : ch.to === 'warn' ? '⚠️' : '🔴';
+        clHtml += '<div style="font-size:12px;padding:3px 0;color:var(--text2)">' + chIcon + ' <strong>' + ch.name + '</strong>: ' + ch.from + ' → ' + ch.to + '</div>';
+      });
+      clHtml += '</div>';
+      clEl.innerHTML = clHtml;
+    } else if (clEl) {
+      clEl.innerHTML = '';
+    }
+
+    // Add CSS animation keyframes on first run
+    if (!document.getElementById('smoke-flash-style')) {
+      var style = document.createElement('style');
+      style.id = 'smoke-flash-style';
+      style.textContent = '@keyframes smokeFlashGreen{0%{background:rgba(34,197,94,.2)}100%{background:transparent}}@keyframes smokeFlashRed{0%{background:rgba(239,68,68,.2)}100%{background:transparent}}.smoke-flash-green{animation:smokeFlashGreen 1.5s ease}.smoke-flash-red{animation:smokeFlashRed 1.5s ease}';
+      document.head.appendChild(style);
     }
   }
 

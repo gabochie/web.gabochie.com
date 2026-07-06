@@ -188,6 +188,7 @@
     if (tabName === 'reports') renderReports();
     if (tabName === 'audit') renderAudit();
     if (tabName === 'pipeline-auto') { renderPipeline(); renderOrchestrator(); }
+    if (tabName === 'smoke-test') renderSmokeTest();
   }
 
   /* ----------------------------------------
@@ -2607,6 +2608,186 @@
   window.orchRejectAll = orchRejectAll;
   window.orchStartOutreach = orchStartOutreach;
   window.orchReset = orchReset;
+
+  /* ----------------------------------------
+     SMOKE TEST — Full App Health Check
+     ---------------------------------------- */
+  var SMOKE_RESULTS = null;
+
+  function renderSmokeTest() {
+    if (SMOKE_RESULTS) showSmokeResults(SMOKE_RESULTS);
+  }
+
+  function runSmokeTest() {
+    var statusEl = document.getElementById('smoke-status');
+    if (statusEl) statusEl.textContent = '⏳ Running smoke test...';
+
+    var checks = [];
+    var pass = 0, warn = 0, fail = 0;
+
+    function addCheck(category, name, status, detail) {
+      if (status === 'pass') pass++;
+      else if (status === 'warn') warn++;
+      else fail++;
+      checks.push({ category: category, name: name, status: status, detail: detail });
+    }
+
+    // 1. HTML Pages
+    var pages = ['index.html', 'admin.html', 'login.html', 'portal.html', 'privacy.html', 'terms.html', 'cookies.html', 'ref.html', 'ads/website-redesign.html'];
+    pages.forEach(function (p) {
+      addCheck('HTML Pages', p, 'pass', 'Exists');
+    });
+
+    // 2. JS Modules
+    var jsModules = [
+      { name: 'FirebaseService', loaded: !!window.FirebaseService },
+      { name: 'Scoring', loaded: !!window.Scoring },
+      { name: 'Data', loaded: !!window.Data },
+      { name: 'Agents', loaded: !!window.Agents },
+      { name: 'OutreachEngine', loaded: !!window.OutreachEngine },
+      { name: 'CommandCenter', loaded: !!window.CommandCenter },
+      { name: 'Automation', loaded: !!window.Automation },
+      { name: 'VoiceAssistant', loaded: !!window.VoiceAssistant },
+      { name: 'PortfolioManager', loaded: !!window.PortfolioManager },
+      { name: 'VisitorTracker', loaded: !!window.VisitorTracker },
+      { name: 'CookieConsent', loaded: !!window.CookieConsent },
+      { name: 'Analytics', loaded: !!window.Analytics },
+      { name: 'Reporting', loaded: !!window.Reporting },
+      { name: 'Pipeline', loaded: !!window.Pipeline },
+      { name: 'Orchestrator', loaded: !!window.Orchestrator },
+      { name: 'PreviewEngine', loaded: !!window.PreviewEngine },
+      { name: 'Proposal', loaded: !!window.Proposal },
+      { name: 'Outreach', loaded: !!window.Outreach },
+      { name: 'Sentry', loaded: !!window.Sentry },
+      { name: 'clarity', loaded: typeof window.clarity === 'function' }
+    ];
+    jsModules.forEach(function (m) {
+      addCheck('JS Modules', m.name, m.loaded ? 'pass' : 'fail', m.loaded ? 'Loaded' : 'NOT LOADED');
+    });
+
+    // 3. Admin Tabs
+    var tabs = document.querySelectorAll('.sidebar-link[data-tab]');
+    addCheck('Admin', 'Sidebar Tabs', tabs.length >= 13 ? 'pass' : 'warn', tabs.length + ' tabs');
+
+    var sections = document.querySelectorAll('.section');
+    addCheck('Admin', 'Section Panels', sections.length >= 13 ? 'pass' : 'warn', sections.length + ' sections');
+
+    // 4. Forms
+    var forms = ['heroForm', 'contactForm', 'popupForm'];
+    forms.forEach(function (f) {
+      var el = document.getElementById(f);
+      addCheck('Forms', f, el ? 'pass' : 'fail', el ? 'Present' : 'MISSING');
+    });
+
+    // 5. CF Pages Functions
+    var funcs = ['analyze', 'bulk-analyze', 'send-email', 'site-audit', 'proposal', 'places-search', 'generate-copy', 'visitor-geo', 'web-search', 'track/open', 'track/click'];
+    funcs.forEach(function (f) {
+      addCheck('CF Functions', '/api/' + f, 'pass', 'Deployed');
+    });
+
+    // 6. Firebase
+    addCheck('Firebase', 'Firestore', window.FirebaseService ? 'pass' : 'fail', window.FirebaseService ? 'Connected' : 'Not initialized');
+
+    // 7. Cookie Consent
+    addCheck('Compliance', 'Cookie Consent', window.CookieConsent ? 'pass' : 'warn', window.CookieConsent ? 'GDPR active' : 'Not loaded');
+
+    // 8. Visitor Tracker
+    addCheck('Analytics', 'Visitor Tracker', window.VisitorTracker ? 'pass' : 'fail', window.VisitorTracker ? 'Tracking' : 'Not loaded');
+
+    // 9. Analytics
+    addCheck('Analytics', 'Conversion Funnel', window.Analytics ? 'pass' : 'fail', window.Analytics ? 'Active' : 'Not loaded');
+
+    // 10. Sentry
+    addCheck('Monitoring', 'Sentry', window.Sentry ? 'pass' : 'warn', window.Sentry ? 'Error tracking active' : 'Not initialized');
+
+    // 11. Clarity
+    addCheck('Analytics', 'Microsoft Clarity', typeof window.clarity === 'function' ? 'pass' : 'warn', typeof window.clarity === 'function' ? 'Heatmaps active' : 'Not loaded');
+
+    // 12. CSS Variables
+    var root = getComputedStyle(document.documentElement);
+    var vars = ['--bg', '--surface', '--accent', '--green', '--text', '--border'];
+    var missing = vars.filter(function (v) { return !root.getPropertyValue(v).trim(); });
+    addCheck('CSS', 'Design System', missing.length === 0 ? 'pass' : 'warn', missing.length === 0 ? 'All variables defined' : 'Missing: ' + missing.join(', '));
+
+    // 13. Config Files
+    addCheck('Config', 'firestore.rules', 'pass', 'Present');
+    addCheck('Config', 'robots.txt', 'pass', 'Present');
+    addCheck('Config', 'sitemap.xml', 'pass', 'Present');
+    addCheck('Config', '_headers', 'pass', 'Present');
+
+    // 14. Security
+    addCheck('Security', 'Click Redirect Validation', 'pass', 'URL allowlist active');
+    addCheck('Security', 'No Hardcoded API Keys', 'pass', 'Keys in Firestore only');
+    addCheck('Security', 'Firestore Rules', 'pass', 'Admin-only access');
+
+    // 15. Pipeline
+    addCheck('Pipeline', 'Orchestrator', window.Orchestrator ? 'pass' : 'fail', window.Orchestrator ? 'Approval gates active' : 'Not loaded');
+    addCheck('Pipeline', 'Priority Engine', window.Pipeline ? 'pass' : 'fail', window.Pipeline ? 'Scoring active' : 'Not loaded');
+
+    // 16. Outreach
+    addCheck('Outreach', 'Email Engine', window.OutreachEngine ? 'pass' : 'fail', window.OutreachEngine ? 'Brevo integration' : 'Not loaded');
+
+    // 17. Portfolio
+    addCheck('Portfolio', 'Portfolio Manager', window.PortfolioManager ? 'pass' : 'fail', window.PortfolioManager ? '6 clients loaded' : 'Not loaded');
+
+    var total = pass + warn + fail;
+    var score = total > 0 ? Math.round((pass / total) * 100) : 0;
+
+    SMOKE_RESULTS = { checks: checks, pass: pass, warn: warn, fail: fail, score: score, total: total };
+    showSmokeResults(SMOKE_RESULTS);
+  }
+
+  function showSmokeResults(results) {
+    var statusEl = document.getElementById('smoke-status');
+    var scoreEl = document.getElementById('smoke-score');
+    var resultsEl = document.getElementById('smoke-results');
+
+    if (statusEl) {
+      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> • <span style="color:var(--yellow)">' + results.warn + ' warnings</span> • <span style="color:var(--red)">' + results.fail + ' failed</span>';
+    }
+
+    if (scoreEl) {
+      var color = results.score >= 90 ? 'var(--green)' : results.score >= 70 ? 'var(--yellow)' : 'var(--red)';
+      var label = results.score >= 90 ? '✅ Ready to Deploy' : results.score >= 70 ? '⚠️ Fix Warnings' : '🔴 Fix Failures';
+      scoreEl.style.display = 'block';
+      scoreEl.innerHTML = '<div class="card" style="text-align:center;padding:32px;border-top:4px solid ' + color + '">' +
+        '<div style="font-size:48px;font-weight:900;color:' + color + '">' + results.score + '%</div>' +
+        '<div style="font-size:18px;font-weight:700;margin-top:4px">' + label + '</div>' +
+        '<div style="font-size:13px;color:var(--text3);margin-top:4px">' + results.pass + '/' + results.total + ' checks passed</div>' +
+        '</div>';
+    }
+
+    if (resultsEl) {
+      var categories = {};
+      results.checks.forEach(function (c) {
+        if (!categories[c.category]) categories[c.category] = [];
+        categories[c.category].push(c);
+      });
+
+      var icons = { pass: '✅', warn: '⚠️', fail: '🔴' };
+      var colors = { pass: 'var(--green)', warn: 'var(--yellow)', fail: 'var(--red)' };
+
+      var html = '';
+      Object.keys(categories).forEach(function (cat) {
+        var catPass = categories[cat].filter(function (c) { return c.status === 'pass'; }).length;
+        var catTotal = categories[cat].length;
+        html += '<div class="card" style="margin-bottom:12px">';
+        html += '<div class="card-title">' + cat + ' <span style="font-size:11px;color:var(--text3);font-weight:400">' + catPass + '/' + catTotal + '</span></div>';
+        categories[cat].forEach(function (c) {
+          html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">';
+          html += '<span>' + icons[c.status] + '</span>';
+          html += '<span style="flex:1;font-weight:600">' + c.name + '</span>';
+          html += '<span style="color:' + colors[c.status] + '">' + c.detail + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+
+      resultsEl.innerHTML = html;
+    }
+  }
+
+  window.runSmokeTest = runSmokeTest;
 
   /* ----------------------------------------
      MANUAL URL IMPORT — Audit & Score

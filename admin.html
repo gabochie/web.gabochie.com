@@ -460,13 +460,23 @@
   </div>
 
   <!-- Controls -->
-  <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    <button class="btn btn-sm btn-accent" onclick="runFullPipeline(false)">▶ Run Full Pipeline (Live)</button>
-    <button class="btn btn-sm btn-outline" onclick="runFullPipeline(true)">🔍 Dry Run (Preview Only)</button>
-    <button class="btn btn-sm btn-outline" onclick="refreshPipeline()">🔄 Refresh</button>
-    <label style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px">
-      <input type="checkbox" id="pipeline-dry-run" checked> Dry run (don't send emails)
-    </label>
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn btn-sm btn-accent" onclick="runFullPipeline(false)">▶ Run Full Pipeline (Live)</button>
+      <button class="btn btn-sm btn-outline" onclick="runFullPipeline(true)">🔍 Dry Run (Preview Only)</button>
+      <button class="btn btn-sm btn-outline" onclick="refreshPipeline()">🔄 Refresh</button>
+    </div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6">
+      <strong style="color:var(--text)">How it works:</strong><br>
+      <strong>1.</strong> Scout searches Google Places for businesses with outdated websites (8 industries × 4 keywords = 32 searches)<br>
+      <strong>2.</strong> Each found business gets its website audited (mobile, performance, SEO scores)<br>
+      <strong>3.</strong> Leads scored 0-100 by likelihood to pay (industry, site quality, business signals, size)<br>
+      <strong>4.</strong> Sorted into 🔥 Hot (70+), 🟡 Warm (45-69), ❄️ Cold (0-44) segments<br>
+      <strong>5.</strong> Cold leads grouped by industry × region × size for targeted campaigns<br>
+      <strong>6.</strong> Hot leads auto-contacted via Brevo email (if enabled)<br>
+      <br>
+      <strong style="color:var(--yellow)">⚠️ Requires Google Places API key</strong> — set in Cloudflare Pages env vars or paste in Settings.
+    </div>
   </div>
 
   <!-- Pipeline Status -->

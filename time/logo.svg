@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#6366f1" stroke-width="2"/>
+  <!-- Clock face -->
+  <circle cx="100" cy="100" r="72" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <!-- Hour marks -->
+  <line x1="100" y1="32" x2="100" y2="42" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+  <line x1="148" y1="52" x2="142" y2="60" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <line x1="168" y1="100" x2="158" y2="100" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+  <line x1="148" y1="148" x2="142" y2="140" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <line x1="100" y1="168" x2="100" y2="158" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+  <line x1="52" y1="148" x2="58" y2="140" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <line x1="32" y1="100" x2="42" y2="100" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+  <line x1="52" y1="52" x2="58" y2="60" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <!-- Forecast line (lightning bolt shape) -->
+  <polyline points="60,120 80,80 95,105 115,55 130,90 145,70" fill="none" stroke="#22d3ee" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Pulse dot -->
+  <circle cx="145" cy="70" r="4" fill="#22d3ee"/>
+  <circle cx="145" cy="70" r="8" fill="#22d3ee" opacity="0.2"/>
+  <!-- Center dot -->
+  <circle cx="100" cy="100" r="4" fill="#6366f1"/>
+  <!-- Hour hand -->
+  <line x1="100" y1="100" x2="100" y2="60" stroke="#f1f5f9" stroke-width="3" stroke-linecap="round"/>
+  <!-- Minute hand -->
+  <line x1="100" y1="100" x2="130" y2="85" stroke="#f1f5f9" stroke-width="2" stroke-linecap="round"/>
+  <!-- Lightning bolt accent -->
+  <path d="M92,125 L100,110 L96,110 L104,92 L98,92 L106,72" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+</svg>

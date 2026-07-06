@@ -452,6 +452,9 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
               <div style="font-size:.7rem;color:var(--text2)">Full Stack</div>
             </a>
           </div>
+          <div id="postScoreOffer" style="display:none;margin-top:16px;padding:16px;background:rgba(34,197,94,0.05);border:1px solid var(--green);border-radius:12px">
+            <div id="postScoreOfferContent"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -954,6 +957,26 @@ function submitForm(name,email,company,url,source){
       // Show post-score package CTA
       document.getElementById('postScoreCTA').style.display = 'block';
 
+      // Show personalized offer if Offers module loaded
+      if (window.Offers) {
+        var lead = { industry: document.getElementById('heroIndustry').value, segment: total >= 70 ? 'hot' : total >= 45 ? 'warm' : 'cold' };
+        var offers = window.Offers.getOffersForLead(lead);
+        if (offers && offers.length) {
+          var best = offers[0];
+          var offEl = document.getElementById('postScoreOffer');
+          var offContent = document.getElementById('postScoreOfferContent');
+          if (offEl && offContent) {
+            offEl.style.display = 'block';
+            offContent.innerHTML =
+              '<div style="font-size:.85rem;font-weight:700;margin-bottom:6px">🎁 ' + best.icon + ' Your Personalized Offer:</div>' +
+              '<div style="font-size:1rem;font-weight:800;color:var(--green);margin-bottom:4px">' + best.headline + '</div>' +
+              '<div style="font-size:.82rem;color:var(--text2);margin-bottom:6px">' + best.description + '</div>' +
+              '<div style="font-size:.75rem;color:var(--yellow)">⏰ ' + best.scarcity.text + '</div>' +
+              '<a href="services.html#pricing" style="display:inline-block;margin-top:8px;padding:8px 20px;background:var(--green);color:#fff;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none">' + best.cta + '</a>';
+          }
+        }
+      }
+
       showToast('Score: ' + total + '/100 — ' + issues.length + ' issues found');
     }).catch(function () {
       if (btn) { btn.textContent = '🔍 Analyze My Website — Free'; btn.disabled = false; }
@@ -1070,5 +1093,6 @@ document.getElementById('exitPopup').addEventListener('click',function(e){
   if(e.target===this)this.classList.remove('active');
 });
 </script>
+<script src="offers.js"></script>
 </body>
 </html>

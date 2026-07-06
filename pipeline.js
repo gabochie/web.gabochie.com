@@ -211,8 +211,23 @@ window.Pipeline = (function () {
       },
       cold: {
         subject: 'Re: ' + (lead.company || 'your website'),
-        body: 'Hi ' + (lead.name || 'there') + ',\n\nI came across ' + (lead.company || 'your business') and wanted to reach out. I work with ' + (scoring.industryLabel || 'businesses') + ' on improving their online presence.\n\nWould you be open to a quick chat about how your website could be working harder for you?\n\nBest,\nGideon'
+        body: 'Hi ' + (lead.name || 'there') + ',\n\nI came across ' + (lead.company || 'your business') + ' and wanted to reach out. I work with ' + (scoring.industryLabel || 'businesses') + ' on improving their online presence.\n\nWould you be open to a quick chat about how your website could be working harder for you?\n\nBest,\nGideon'
       }
+    };
+
+    var tpl = templates[scoring.segment] || templates.cold;
+    // Inject irresistible offer if Offers module is loaded
+    if (window.Offers) {
+      var offer = window.Offers.generateLeadOffer(lead);
+      if (offer) {
+        tpl = {
+          subject: tpl.subject + ' [Includes ' + offer.headline + ']',
+          body: window.Offers.injectOfferIntoMessage(tpl.body, offer)
+        };
+      }
+    }
+    return tpl;
+  }
     };
 
     return templates[scoring.segment] || templates.cold;

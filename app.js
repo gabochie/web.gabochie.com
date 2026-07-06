@@ -3527,6 +3527,193 @@
   };
 
   /* ----------------------------------------
+     OFFERS TAB — Irresistible Offer Creator
+     ---------------------------------------- */
+  function renderOffers() {
+    if (!window.Offers) return;
+
+    // Populate lead selector
+    var select = document.getElementById('offers-lead-select');
+    if (select && select.options.length <= 1) {
+      var leads = getLeads();
+      leads.forEach(function (l) {
+        var opt = document.createElement('option');
+        opt.value = l.id;
+        opt.textContent = (l.company || l.name || 'Unknown') + ' — ' + (l.industry || 'N/A') + ' [' + (l.segment || 'unknown') + ']';
+        select.appendChild(opt);
+      });
+    }
+
+    // Wire generate button
+    var genBtn = document.getElementById('offers-generate-btn');
+    if (genBtn && !genBtn._offersBound) {
+      genBtn._offersBound = true;
+      genBtn.addEventListener('click', function () {
+        var leadId = select ? select.value : '';
+        var leads = getLeads();
+        var lead = leads.find(function (l) { return l.id === leadId; });
+        if (!lead) { showToast('Select a lead first'); return; }
+        showOfferForLead(lead);
+      });
+    }
+
+    // Show all industry offers
+    renderAllIndustryOffers();
+
+    // Check if a lead was auto-selected via URL param
+    var params = new URLSearchParams(window.location.search);
+    var autoLeadId = params.get('lead');
+    if (autoLeadId) {
+      var leads = getLeads();
+      var autoLead = leads.find(function (l) { return l.id === autoLeadId; });
+      if (autoLead && select) {
+        select.value = autoLead.id;
+        showOfferForLead(autoLead);
+      }
+    }
+
+    // Show status
+    renderOffersStatus();
+  }
+
+  function showOfferForLead(lead) {
+    var container = document.getElementById('offers-result');
+    if (!container) return;
+    container.style.display = '';
+
+    var offers = window.Offers.getOffersForLead(lead);
+    if (!offers || !offers.length) {
+      container.innerHTML = '<div class="card"><div class="card-title">No Offers Found</div><div style="padding:16px;color:var(--text3)">No industry-specific offers for "' + (lead.industry || 'unknown') + '". Try a different lead or use generic offers.</div></div>';
+      return;
+    }
+
+    var html = '<div class="card" style="border-top:3px solid var(--accent)">';
+    html += '<div class="card-title">🎁 ' + offers[0].icon + ' ' + lead.company || lead.name || 'Lead' + ' — Best Offer</div>';
+    html += '<div style="padding:16px 0">';
+    html += '<div style="display:grid;gap:12px">';
+    offers.forEach(function (o, i) {
+      var isBest = i === 0;
+      var borderColor = isBest ? 'var(--green)' : 'var(--border)';
+      html += '<div style="padding:16px;border:2px solid ' + borderColor + ';border-radius:12px;background:' + (isBest ? 'rgba(34,197,94,0.05)' : 'var(--bg)') + '">';
+      if (isBest) html += '<div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:4px">✅ Recommended Offer</div>';
+      html += '<div style="display:flex;align-items:start;gap:16px;flex-wrap:wrap">';
+      html += '<div style="flex:1">';
+      html += '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + o.headline + '</div>';
+      html += '<div style="font-size:13px;color:var(--text2);margin-bottom:8px">' + o.description + '</div>';
+      html += '<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px">';
+      html += '<span style="color:var(--green);font-weight:700">💰 Value: ' + o.displayValue + '</span>';
+      html += '<span style="color:var(--yellow)">⏰ ' + o.scarcity.text + '</span>';
+      html += '<span style="color:var(--text3)">Priority: ' + o.priority + '/100</span>';
+      html += '</div>';
+      // Action buttons
+      html += '<div style="margin-top:10px;display:flex;gap:8px">';
+      html += '<button class="btn btn-xs btn-accent" onclick="window.useOfferForLead(\'' + o.offer.id + '\',\'' + (lead.id || '') + '\')">' + o.cta + '</button>';
+      html += '<button class="btn btn-xs btn-outline" onclick="navigator.clipboard.writeText(\'' + o.fullText.replace(/'/g, "\\'") + '\').then(function(){showToast(\'Offer copied to clipboard\',\'success\')})">📋 Copy</button>';
+      html += '</div>';
+      html += '</div>';
+      html += '</div></div>';
+    });
+    html += '</div></div></div>';
+    html += renderOfferEmailPreview(lead, offers[0]);
+    container.innerHTML = html;
+  }
+
+  function renderOfferEmailPreview(lead, offer) {
+    var msg = window.Agents ? window.Agents.generateMessage(lead) : { subject: 'Quick question', body: 'Hi there,\n\nWould you like a free website audit?\n\nBest,\nGideon' };
+    var withOffer = window.Offers.injectOfferIntoMessage(msg.body, offer);
+    var subject = msg.subject + ' [Includes ' + offer.headline + ']';
+    return '<div class="card" style="margin-top:12px">' +
+      '<div class="card-title">📧 Email Preview with Offer</div>' +
+      '<div style="font-size:12px;color:var(--text3);margin-bottom:4px"><strong>Subject:</strong> ' + subject + '</div>' +
+      '<pre style="background:var(--surface2);padding:16px;border-radius:8px;font-size:13px;line-height:1.6;white-space:pre-wrap;max-height:400px;overflow-y:auto">' + esc(withOffer) + '</pre>' +
+      '<div style="margin-top:8px;display:flex;gap:8px">' +
+      '<button class="btn btn-xs btn-accent" onclick="window.copyOfferEmail(\'' + subject.replace(/'/g, "\\'") + '\',\'' + withOffer.replace(/'/g, "\\'") + '\')">📋 Copy Full Email</button>' +
+      '<button class="btn btn-xs btn-outline" onclick="window.sendOfferEmail(\'' + (lead.id || '') + '\',\'' + offer.offer.id + '\')">📤 Send to Lead</button>' +
+      '</div></div>';
+  }
+
+  function renderAllIndustryOffers() {
+    var container = document.getElementById('offers-all-industries');
+    if (!container || !window.Offers) return;
+    var industries = window.Offers.getAllIndustries();
+    var html = '<div class="card"><div class="card-title">📋 All Industry Offers</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:8px 0">';
+    industries.forEach(function (ind) {
+      var indOffers = window.Offers.OFFERS[ind.id];
+      html += '<div style="padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px">';
+      html += '<div style="font-size:14px;font-weight:700;margin-bottom:8px">' + ind.icon + ' ' + ind.label + ' <span style="font-weight:400;font-size:11px;color:var(--text3)">' + ind.count + ' offers</span></div>';
+      if (indOffers) {
+        indOffers.offers.forEach(function (o) {
+          html += '<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between">';
+          html += '<span>' + o.name + '</span>';
+          html += '<span style="color:var(--green)">$' + o.value.toLocaleString() + '</span>';
+          html += '</div>';
+        });
+      }
+      html += '</div>';
+    });
+    html += '</div></div>';
+    container.innerHTML = html;
+  }
+
+  function renderOffersStatus() {
+    var el = document.getElementById('offers-status');
+    if (!el || !window.Offers) return;
+    var analytics = window.Offers.getOfferAnalytics();
+    var totalSent = 0, totalConverted = 0;
+    for (var key in analytics) {
+      totalSent += analytics[key].sent || 0;
+      totalConverted += analytics[key].converted || 0;
+    }
+    el.innerHTML =
+      '<div class="stat-card accent"><div class="stat-label">📤 Offers Sent</div><div class="stat-value">' + totalSent + '</div></div>' +
+      '<div class="stat-card green"><div class="stat-label">✅ Converted</div><div class="stat-value">' + totalConverted + '</div></div>' +
+      '<div class="stat-card blue"><div class="stat-label">🎁 Industry Offers</div><div class="stat-value">' + Object.keys(window.Offers.OFFERS).length + '</div></div>' +
+      '<div class="stat-card yellow"><div class="stat-label">🔀 Scarcity Hooks</div><div class="stat-value">' + Object.keys(window.Offers.SCARCITY).reduce(function (s, k) { return s + window.Offers.SCARCITY[k].length; }, 0) + '</div></div>';
+  }
+
+  window.useOfferForLead = function (offerId, leadId) {
+    var lead = getLeads().find(function (l) { return l.id === leadId; });
+    if (!lead) { showToast('Lead not found', 'error'); return; }
+    if (window.Offers) window.Offers.trackOfferAction(offerId, leadId, 'sent');
+    showToast('✅ Offer applied to ' + (lead.company || lead.name || 'lead'), 'success');
+    // Generate outreach message with offer
+    if (window.Agents && window.Agents.generateMessage) {
+      var msg = window.Agents.generateMessage(lead);
+      var offer = window.Offers.generateLeadOffer(lead);
+      if (offer) {
+        var finalMsg = window.Offers.injectOfferIntoMessage(msg.body, offer);
+        navigator.clipboard.writeText(finalMsg).then(function () {
+          showToast('📋 Message with offer copied to clipboard', 'success');
+        });
+      }
+    }
+  };
+
+  window.copyOfferEmail = function (subject, body) {
+    var full = 'Subject: ' + subject + '\n\n' + body;
+    navigator.clipboard.writeText(full).then(function () {
+      showToast('📋 Full email copied to clipboard', 'success');
+    });
+  };
+
+  window.sendOfferEmail = function (leadId, offerId) {
+    if (!window.OutreachEngine) { showToast('Outreach engine not loaded', 'error'); return; }
+    var lead = getLeads().find(function (l) { return l.id === leadId; });
+    if (!lead) { showToast('Lead not found', 'error'); return; }
+    var msg = window.Agents ? window.Agents.generateMessage(lead) : { subject: 'Quick question', body: 'Hi there' };
+    var offer = window.Offers.generateLeadOffer(lead);
+    var body = offer ? window.Offers.injectOfferIntoMessage(msg.body, offer) : msg.body;
+    var subject = msg.subject + (offer ? ' [Includes ' + offer.headline + ']' : '');
+    var email = lead.contactEmail || '';
+    if (!email) { showToast('No email for this lead', 'error'); return; }
+    OutreachEngine.queueEmail([{ email: email, name: lead.contactName || lead.name }], subject, body.replace(/\n/g, '<br>'), body, 'offer-' + offerId);
+    if (window.Offers) window.Offers.trackOfferAction(offerId, leadId, 'sent');
+    showToast('📤 Offer email queued for ' + (lead.company || lead.name), 'success');
+    renderOffersStatus();
+  };
+
+  /* ----------------------------------------
      EXPOSE GLOBALLY
      ---------------------------------------- */
   window.GAAdmin = {

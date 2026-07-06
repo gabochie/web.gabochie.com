@@ -993,6 +993,23 @@ window.Agents = (function () {
     subscribe: subscribe, save: save,
     getFollowUpState: function (leadId) { return followUpState[leadId] || null; },
     getPipelineStage: function (id) { return PIPELINE_STAGES.find(function (s) { return s.id === id; }); },
-    fillTemplate: fillTemplate
+    fillTemplate: fillTemplate,
+    generateMessage: function (lead) {
+      var seq = DRIP_SEQUENCES[lead.segment] || DRIP_SEQUENCES.cold;
+      var firstStep = seq[0];
+      var tpl = OUTREACH_TEMPLATES[firstStep.template];
+      var segmentTpl = tpl[lead.segment] || tpl.cold || tpl;
+      var subject = fillTemplate(segmentTpl.subject, lead);
+      var body = fillTemplate(segmentTpl.body, lead);
+      // Inject irresistible offer if Offers module is loaded
+      if (window.Offers) {
+        var offer = window.Offers.generateLeadOffer(lead);
+        if (offer) {
+          body = window.Offers.injectOfferIntoMessage(body, offer);
+          subject = subject + ' [Includes ' + offer.headline + ']';
+        }
+      }
+      return { subject: subject, body: body, channel: firstStep.channel, generatedAt: Date.now(), model: 'template' };
+    }
   };
 })();

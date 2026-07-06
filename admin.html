@@ -456,10 +456,46 @@
 <section id="pipeline-auto" class="section">
   <div class="section-header">
     <h2 class="section-title">Automated Pipeline</h2>
-    <p class="section-sub">Scout → Audit → Prioritize → Segment → Outreach</p>
+    <p class="section-sub">Stage-by-stage approval — you approve each step before it continues</p>
   </div>
 
-  <!-- Manual Lead Entry -->
+  <!-- Orchestrator -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🎯 Pipeline Orchestrator</div>
+
+    <!-- Stage Progress -->
+    <div id="orchestrator-stages" style="display:flex;gap:4px;margin-bottom:16px"></div>
+
+    <!-- Status -->
+    <div id="orchestrator-status" style="font-size:13px;color:var(--text2);margin-bottom:12px">Ready to start</div>
+
+    <!-- Actions -->
+    <div id="orchestrator-actions" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-accent" onclick="orchStartScout()">▶ Start Scout</button>
+      <button class="btn btn-sm btn-outline" onclick="orchReset()">🔄 Reset</button>
+    </div>
+  </div>
+
+  <!-- Approval Queue -->
+  <div id="orchestrator-approval" class="card" style="margin-bottom:16px;display:none">
+    <div class="card-title">⏳ Pending Approval — <span id="approval-count">0</span> leads</div>
+    <div id="approval-list" style="max-height:400px;overflow-y:auto"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-sm btn-accent" onclick="orchApproveSelected()">✅ Approve Selected</button>
+      <button class="btn btn-sm btn-outline" style="color:var(--red)" onclick="orchRejectSelected()">❌ Reject Selected</button>
+      <button class="btn btn-sm btn-outline" onclick="orchApproveAll()">✅ Approve All</button>
+      <button class="btn btn-sm btn-outline" onclick="orchRejectAll()">❌ Reject All</button>
+    </div>
+  </div>
+
+  <!-- History Log -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📋 Pipeline History</div>
+    <div id="orchestrator-history" style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text2)"></div>
+  </div>
+
+  <!-- Manual Lead Entry (below orchestrator) -->
+  <div class="card" style="margin-bottom:16px">
   <div class="card" style="margin-bottom:16px">
     <div class="card-title">📝 Add Leads Manually</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -661,6 +697,7 @@
 <script src="analytics.js"></script>
 <script src="reporting.js"></script>
 <script src="pipeline.js"></script>
+<script src="orchestrator.js"></script>
 <script src="data.js"></script>
 <script src="scoring.js"></script>
 <script src="preview-engine.js"></script>

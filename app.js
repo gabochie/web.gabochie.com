@@ -187,7 +187,7 @@
     if (tabName === 'visitors') renderVisitors();
     if (tabName === 'reports') renderReports();
     if (tabName === 'audit') renderAudit();
-    if (tabName === 'pipeline-auto') renderPipeline();
+    if (tabName === 'pipeline-auto') { renderPipeline(); renderOrchestrator(); }
   }
 
   /* ----------------------------------------
@@ -2362,6 +2362,251 @@
 
   window.runFullPipeline = runFullPipeline;
   window.refreshPipeline = refreshPipeline;
+
+  /* ----------------------------------------
+     ORCHESTRATOR — Approval Gates
+     ---------------------------------------- */
+  function renderOrchestrator() {
+    if (!window.Orchestrator) return;
+    var orch = Orchestrator.getState();
+    var stagesEl = document.getElementById('orchestrator-stages');
+    var statusEl = document.getElementById('orchestrator-status');
+    var actionsEl = document.getElementById('orchestrator-actions');
+    var approvalEl = document.getElementById('orchestrator-approval');
+    var historyEl = document.getElementById('orchestrator-history');
+
+    // Stage progress bar
+    if (stagesEl) {
+      var html = '';
+      orch.stages.forEach(function (s, i) {
+        var status = 'pending';
+        if (orch.history.some(function (h) { return h.stage === s.id && h.action === 'completed'; })) status = 'done';
+        if (orch.currentStage === s.id || orch.currentStage === s.id + '-done') status = 'current';
+        if (orch.currentStage === s.id + '-done') status = 'waiting';
+
+        var colors = { pending: 'var(--surface2)', done: 'var(--green)', current: 'var(--accent)', waiting: 'var(--yellow)' };
+        var textColors = { pending: 'var(--text3)', done: '#fff', current: '#fff', waiting: '#fff' };
+
+        html += '<div style="flex:1;padding:10px 8px;background:' + colors[status] + ';border-radius:8px;text-align:center">';
+        html += '<div style="font-size:11px;font-weight:700;color:' + textColors[status] + '">' + s.label + '</div>';
+        if (status === 'waiting') html += '<div style="font-size:10px;color:#fff;margin-top:2px">⏳ Awaiting approval</div>';
+        html += '</div>';
+      });
+      stagesEl.innerHTML = html;
+    }
+
+    // Status text
+    if (statusEl) {
+      if (orch.isRunning) {
+        statusEl.innerHTML = '<span style="color:var(--accent)">⏳ Running...</span>';
+      } else if (orch.currentStage && orch.currentStage.endsWith('-done')) {
+        statusEl.innerHTML = '<span style="color:var(--yellow)">⏸ Paused — ' + orch.leadsCount + ' leads ready for review</span>';
+      } else if (orch.currentStage && orch.currentStage.endsWith('-approved')) {
+        statusEl.innerHTML = '<span style="color:var(--green)">✅ Stage approved — moving to next</span>';
+      } else {
+        statusEl.innerHTML = 'Ready to start';
+      }
+    }
+
+    // Action buttons
+    if (actionsEl) {
+      var btns = '';
+      if (!orch.currentStage) {
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchStartScout()">▶ Start Scout</button>';
+      } else if (orch.currentStage === 'scout-done') {
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'scout\')">📋 Review ' + orch.leadsCount + ' leads</button>';
+      } else if (orch.currentStage === 'audit-done') {
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'audit\')">📋 Review ' + orch.leadsCount + ' audited leads</button>';
+      } else if (orch.currentStage === 'score-done') {
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'score\')">📋 Review ' + orch.leadsCount + ' scored leads</button>';
+      } else if (orch.currentStage === 'score-approved') {
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchStartOutreach()">📧 Send Outreach (' + orch.approvedCount + ' leads)</button>';
+      } else if (orch.currentStage === 'outreach-done') {
+        btns = '<div style="color:var(--green);font-size:13px">✅ Pipeline complete — ' + (orch.results.sentCount || 0) + ' emails sent</div>';
+      }
+      btns += ' <button class="btn btn-sm btn-outline" onclick="orchReset()">🔄 Reset</button>';
+      actionsEl.innerHTML = btns;
+    }
+
+    // Approval list
+    if (approvalEl && orch.currentStage && orch.currentStage.endsWith('-done')) {
+      var stage = orch.currentStage.replace('-done', '');
+      var leads = Orchestrator.getState().leads || [];
+      // Actually we need to get leads from orchestrator state
+      // Let's render the approval list from orchestrator state
+      renderApprovalList(stage, leads);
+      approvalEl.style.display = 'block';
+    } else if (approvalEl) {
+      approvalEl.style.display = 'none';
+    }
+
+    // History
+    if (historyEl) {
+      if (orch.history.length === 0) {
+        historyEl.innerHTML = '<div style="padding:8px">No activity yet</div>';
+      } else {
+        var hHtml = '';
+        orch.history.slice().reverse().forEach(function (h) {
+          var time = new Date(h.ts).toLocaleTimeString();
+          var icons = { 'started': '▶', 'progress': '⏳', 'completed': '✅', 'error': '❌', 'sent': '📧', 'reset': '🔄' };
+          hHtml += '<div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)">';
+          hHtml += '<span style="color:var(--text3);min-width:60px">' + time + '</span>';
+          hHtml += '<span>' + (icons[h.action] || '•') + '</span>';
+          hHtml += '<span style="flex:1">' + h.detail + '</span>';
+          hHtml += '</div>';
+        });
+        historyEl.innerHTML = hHtml;
+      }
+    }
+  }
+
+  function renderApprovalList(stage, leads) {
+    var listEl = document.getElementById('approval-list');
+    var countEl = document.getElementById('approval-count');
+    if (!listEl) return;
+
+    // Get leads from orchestrator state
+    var orch = Orchestrator.getState();
+    var leadsToShow = leads && leads.length > 0 ? leads : orch.leads || [];
+
+    if (countEl) countEl.textContent = leadsToShow.length;
+
+    if (leadsToShow.length === 0) {
+      listEl.innerHTML = '<div style="padding:16px;color:var(--text3)">No leads to review</div>';
+      return;
+    }
+
+    var html = '';
+    leadsToShow.forEach(function (lead) {
+      var score = lead.payScore || lead.score || 0;
+      var segment = lead.segment || 'unclassified';
+      var segColor = segment === 'hot' ? '#ef4444' : segment === 'warm' ? '#f59e0b' : '#3b82f6';
+
+      html += '<div class="lead-card" style="display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px">';
+      html += '<input type="checkbox" class="approval-check" data-id="' + lead.id + '" checked style="width:16px;height:16px">';
+      html += '<div style="flex:1">';
+      html += '<div style="font-size:13px;font-weight:600">' + (lead.company || lead.name || 'Unknown') + '</div>';
+      html += '<div style="font-size:11px;color:var(--text3)">' + (lead.industry || 'Unknown') + ' • ' + (lead.url || 'No URL') + '</div>';
+      html += '</div>';
+      if (stage === 'audit' || stage === 'score') {
+        html += '<div style="text-align:center">';
+        html += '<div style="font-size:16px;font-weight:800;color:' + segColor + '">' + score + '</div>';
+        html += '<div style="font-size:10px;color:' + segColor + '">' + segment.toUpperCase() + '</div>';
+        html += '</div>';
+      }
+      if (stage === 'score') {
+        html += '<div style="font-size:11px;color:var(--green);text-align:right">$' + (lead.estimatedDeal || 0).toLocaleString() + '</div>';
+      }
+      html += '</div>';
+    });
+
+    listEl.innerHTML = html;
+  }
+
+  function orchStartScout() {
+    showToast('🔍 Starting Scout...');
+    Orchestrator.runScout();
+    // Poll for completion
+    var poll = setInterval(function () {
+      var orch = Orchestrator.getState();
+      renderOrchestrator();
+      if (orch.currentStage === 'scout-done') {
+        clearInterval(poll);
+        showToast('🔍 Scout found ' + orch.leadsCount + ' businesses — review and approve');
+      }
+    }, 1000);
+  }
+
+  function orchShowApproval(stage) {
+    renderApprovalList(stage);
+    document.getElementById('orchestrator-approval').style.display = 'block';
+  }
+
+  function orchApproveSelected() {
+    var checks = document.querySelectorAll('.approval-check:checked');
+    var approved = [];
+    var rejected = [];
+    var allIds = document.querySelectorAll('.approval-check');
+    allIds.forEach(function (c) {
+      if (c.checked) approved.push(c.dataset.id);
+      else rejected.push(c.dataset.id);
+    });
+
+    var orch = Orchestrator.getState();
+    if (orch.currentStage === 'scout-done') Orchestrator.approveScout(approved, rejected);
+    else if (orch.currentStage === 'audit-done') Orchestrator.approveAudit(approved, rejected);
+    else if (orch.currentStage === 'score-done') Orchestrator.approveScore(approved, rejected);
+
+    document.getElementById('orchestrator-approval').style.display = 'none';
+    showToast('✅ ' + approved.length + ' approved, ' + rejected.length + ' rejected');
+
+    // Poll for next stage completion
+    var poll = setInterval(function () {
+      var orch2 = Orchestrator.getState();
+      renderOrchestrator();
+      if (orch2.currentStage && orch2.currentStage.endsWith('-done')) {
+        clearInterval(poll);
+        showToast('⏸ ' + orch2.leadsCount + ' leads ready for next review');
+      }
+    }, 1000);
+  }
+
+  function orchRejectSelected() {
+    var approved = [];
+    var rejected = [];
+    document.querySelectorAll('.approval-check').forEach(function (c) {
+      if (c.checked) rejected.push(c.dataset.id);
+      else approved.push(c.dataset.id);
+    });
+
+    var orch = Orchestrator.getState();
+    if (orch.currentStage === 'scout-done') Orchestrator.approveScout(approved, rejected);
+    else if (orch.currentStage === 'audit-done') Orchestrator.approveAudit(approved, rejected);
+    else if (orch.currentStage === 'score-done') Orchestrator.approveScore(approved, rejected);
+
+    document.getElementById('orchestrator-approval').style.display = 'none';
+    showToast('❌ ' + rejected.length + ' rejected');
+    renderOrchestrator();
+  }
+
+  function orchApproveAll() {
+    document.querySelectorAll('.approval-check').forEach(function (c) { c.checked = true; });
+    orchApproveSelected();
+  }
+
+  function orchRejectAll() {
+    document.querySelectorAll('.approval-check').forEach(function (c) { c.checked = false; });
+    orchApproveSelected();
+  }
+
+  function orchStartOutreach() {
+    showToast('📧 Sending outreach emails...');
+    Orchestrator.runOutreach();
+    var poll = setInterval(function () {
+      var orch = Orchestrator.getState();
+      renderOrchestrator();
+      if (orch.currentStage === 'outreach-done') {
+        clearInterval(poll);
+        showToast('✅ Outreach complete — ' + (orch.results.sentCount || 0) + ' emails sent');
+      }
+    }, 1000);
+  }
+
+  function orchReset() {
+    Orchestrator.reset();
+    renderOrchestrator();
+    document.getElementById('orchestrator-approval').style.display = 'none';
+    showToast('🔄 Pipeline reset');
+  }
+
+  window.orchStartScout = orchStartScout;
+  window.orchShowApproval = orchShowApproval;
+  window.orchApproveSelected = orchApproveSelected;
+  window.orchRejectSelected = orchRejectSelected;
+  window.orchApproveAll = orchApproveAll;
+  window.orchRejectAll = orchRejectAll;
+  window.orchStartOutreach = orchStartOutreach;
+  window.orchReset = orchReset;
 
   /* ----------------------------------------
      MANUAL URL IMPORT — Audit & Score

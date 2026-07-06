@@ -55,6 +55,7 @@
     renderCommandCenter();
     renderPipeline();
     renderAutomation();
+    initRoadmapSync();
     // Auto-run agents on first load
     if (window.Agents) window.Agents.checkAutoRun();
   }
@@ -1434,12 +1435,24 @@
     { id: 'rm_30', phase: 'launch', name: 'Ship it 🚀', desc: 'Everything wired, tested, and live on Cloudflare Pages', status: 'Todo', priority: 'critical', due: '2026-07-12' }
   ];
 
+  var unsubRoadmap = null;
+
   function loadRoadmap() {
     var stored = localStorage.getItem(ROADMAP_KEY);
     if (stored) { try { return JSON.parse(stored); } catch (e) {} }
     localStorage.setItem(ROADMAP_KEY, JSON.stringify(DEFAULT_ROADMAP));
     FirebaseService.roadmap.save({ tasks: DEFAULT_ROADMAP }).catch(function () {});
     return DEFAULT_ROADMAP.slice();
+  }
+
+  function initRoadmapSync() {
+    if (unsubRoadmap) unsubRoadmap();
+    unsubRoadmap = FirebaseService.roadmap.onChanged(function (data) {
+      if (data && data.tasks) {
+        localStorage.setItem(ROADMAP_KEY, JSON.stringify(data.tasks));
+        if (currentTab === 'roadmap') renderRoadmap();
+      }
+    });
   }
 
   function saveRoadmap(tasks) {

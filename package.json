@@ -1,0 +1,29 @@
+{
+  "name": "gideonabochie.com",
+  "version": "1.0.0",
+  "description": "",
+  "main": "agents.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "lint": "eslint *.js netlify/functions/*.js --ignore-pattern node_modules",
+    "lint:fix": "eslint *.js netlify/functions/*.js --fix --ignore-pattern node_modules",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabochie/gideonabochie-com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gabochie/gideonabochie-com/issues"
+  },
+  "homepage": "https://github.com/gabochie/gideonabochie-com#readme",
+  "devDependencies": {
+    "eslint": "^8.57.1"
+  }
+}

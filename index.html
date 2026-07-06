@@ -629,6 +629,23 @@ function openEmail(subject,body){
   window.location='mailto:'+EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 }
 function submitForm(name,email,company,url,source){
+  // Save lead to Firestore
+  if (window.FirebaseService) {
+    var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    FirebaseService.leads.update(leadId, {
+      id: leadId,
+      name: name || 'Unknown',
+      email: email,
+      company: company || '',
+      url: url || '',
+      source: source || 'Website',
+      industry: document.getElementById('heroIndustry')?.value || '',
+      status: 'New',
+      score: 0,
+      createdAt: new Date().toISOString()
+    }).catch(function () {});
+  }
+
   // Send lead via WhatsApp/email
   var msg='New website audit request from '+source+':\n\nName: '+name+'\nEmail: '+email+'\nCompany: '+(company||'N/A')+'\nWebsite: '+(url||'N/A');
   openWhatsApp(msg);
@@ -717,11 +734,20 @@ document.getElementById('contactForm').addEventListener('submit',function(e){
   var em=document.getElementById('cEmail').value;
   var co=document.getElementById('cCompany').value;
   var m=document.getElementById('cMessage').value;
+
+  // Save lead to Firestore
+  if (window.FirebaseService) {
+    var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    FirebaseService.leads.update(leadId, {
+      id: leadId, name: n, email: em, company: co || '', message: m,
+      source: 'Contact Form', status: 'New', score: 0, createdAt: new Date().toISOString()
+    }).catch(function () {});
+  }
+
   var msg='New contact message:\n\nName: '+n+'\nEmail: '+em+'\nCompany: '+(co||'N/A')+'\nMessage: '+m;
   openWhatsApp(msg);
   setTimeout(function(){openEmail('Contact from '+n,msg);},800);
   showToast('✓ Message sent! Opening WhatsApp & email...');
-  fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({'form-name':'Contact','name':n,'email':em,'company':co||'','message':m}).toString()}).catch(function(){});
   this.reset();
 });
 
@@ -731,7 +757,21 @@ document.getElementById('popupForm').addEventListener('submit',function(e){
   var n=document.getElementById('popName').value;
   var em=document.getElementById('popEmail').value;
   var u=document.getElementById('popUrl').value;
-  submitForm(n,em,'',u,'Exit Popup');
+
+  // Save lead to Firestore
+  if (window.FirebaseService) {
+    var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    FirebaseService.leads.update(leadId, {
+      id: leadId, name: n, email: em, url: u || '',
+      source: 'Exit Popup', status: 'New', score: 0, createdAt: new Date().toISOString()
+    }).catch(function () {});
+  }
+
+  // Send via WhatsApp/email
+  var msg='New audit request (Exit Popup):\n\nName: '+n+'\nEmail: '+em+'\nWebsite: '+(u||'N/A');
+  openWhatsApp(msg);
+  setTimeout(function(){openEmail('Audit Request — '+n,msg);},800);
+  showToast('✓ Submitted! Opening WhatsApp & email...');
   document.getElementById('exitPopup').classList.remove('active');
   this.reset();
 });

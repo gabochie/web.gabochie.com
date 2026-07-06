@@ -231,6 +231,20 @@ window.Automation = (function () {
         { action: 'notification', message: '📄 AI proposal customized for {lead.name}', label: 'Log' }
       ],
       runs: 0, lastRun: null, lastTriggered: null
+    },
+    // === AUTOMATED PIPELINE ===
+    {
+      id: 'wf_auto_pipeline',
+      name: 'Automated Lead Pipeline',
+      description: 'Full pipeline: Scout → Audit → Score → Segment → Outreach (runs daily at 8am)',
+      category: 'pipeline',
+      enabled: false,
+      trigger: { type: 'schedule', cron: 'daily-8am' },
+      steps: [
+        { action: 'pipeline-run', label: 'Run full pipeline' },
+        { action: 'log', message: 'Pipeline completed', label: 'Log' }
+      ],
+      runs: 0, lastRun: null, lastTriggered: null
     }
   ];
 
@@ -432,6 +446,19 @@ window.Automation = (function () {
     switch (step.action) {
 
       // === AGENT ACTIONS ===
+      case 'pipeline-run':
+        if (window.Pipeline) {
+          logAction(workflowId, 'pipeline', 'Running automated pipeline...', 'info');
+          return Pipeline.runPipeline({ dryRun: true }).then(function (result) {
+            if (result.error) {
+              logAction(workflowId, 'pipeline', 'Pipeline error: ' + result.error, 'error');
+            } else {
+              logAction(workflowId, 'pipeline', 'Pipeline: ' + result.hot + ' hot, ' + result.warm + ' warm, ' + result.cold + ' cold (' + result.coldSegments + ' segments)', 'success');
+            }
+          });
+        }
+        return Promise.resolve();
+
       case 'agent-start':
         if (window.Agents && window.Agents.start) {
           window.Agents.start(step.agent);

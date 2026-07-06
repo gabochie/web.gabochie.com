@@ -187,6 +187,7 @@
     if (tabName === 'visitors') renderVisitors();
     if (tabName === 'reports') renderReports();
     if (tabName === 'audit') renderAudit();
+    if (tabName === 'pipeline-auto') renderPipeline();
   }
 
   /* ----------------------------------------
@@ -2204,6 +2205,163 @@
   }
 
   window.runAudit = runAudit;
+
+  /* ----------------------------------------
+     PIPELINE TAB — Automated Lead Pipeline
+     ---------------------------------------- */
+  function renderPipeline() {
+    if (!window.Pipeline) return;
+
+    // Get all leads
+    var leads = [];
+    try {
+      var raw = localStorage.getItem('ga_leads');
+      if (raw) leads = Object.values(JSON.parse(raw));
+    } catch (e) {}
+
+    // Also try to get from Firebase leads cache
+    if (leads.length === 0 && window.Agents && Agents.getAllLeads) {
+      leads = Agents.getAllLeads();
+    }
+
+    var queue = Pipeline.getPriorityQueue(leads);
+
+    // Status stats
+    var statusEl = document.getElementById('pipeline-status');
+    if (statusEl) {
+      statusEl.innerHTML =
+        '<div class="stat-card" style="border-top:3px solid #ef4444"><div class="stat-value" style="color:#ef4444">' + queue.hot.length + '</div><div class="stat-label">🔥 Hot — Ready to Contact</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid #f59e0b"><div class="stat-value" style="color:#f59e0b">' + queue.warm.length + '</div><div class="stat-label">🟡 Warm — Nurture</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid #3b82f6"><div class="stat-value" style="color:#3b82f6">' + queue.cold.length + '</div><div class="stat-label">❄️ Cold — Segment</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid #8b5cf6"><div class="stat-value" style="color:#8b5cf6">' + queue.coldSegments.length + '</div><div class="stat-label">📦 Campaign Segments</div></div>';
+    }
+
+    // Priority Queue (top 20)
+    var priorityEl = document.getElementById('pipeline-priority');
+    if (priorityEl) {
+      var top20 = queue.all.slice(0, 20);
+      if (top20.length === 0) {
+        priorityEl.innerHTML = '<div style="padding:16px;color:var(--text3);font-size:13px">No leads yet. Run the pipeline to find businesses.</div>';
+      } else {
+        var pHtml = '<table style="width:100%;border-collapse:collapse">';
+        pHtml += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">#</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">BUSINESS</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">INDUSTRY</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">SCORE</th><th style="text-align:center;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">SEGMENT</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">DEAL</th></tr></thead><tbody>';
+        top20.forEach(function (item, idx) {
+          var segColor = item.segment === 'hot' ? '#ef4444' : item.segment === 'warm' ? '#f59e0b' : '#3b82f6';
+          pHtml += '<tr>';
+          pHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3)">' + (idx + 1) + '</td>';
+          pHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600">' + (item.lead.company || item.lead.name || 'Unknown') + '</td>';
+          pHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)">' + item.industryLabel + '</td>';
+          pHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right"><div style="display:inline-flex;align-items:center;gap:4px"><div style="width:40px;height:6px;background:var(--surface2);border-radius:3px"><div style="height:100%;width:' + item.score + '%;background:' + segColor + ';border-radius:3px"></div></div><span style="font-size:12px;font-weight:700">' + item.score + '</span></div></td>';
+          pHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:center"><span style="font-size:11px;padding:2px 8px;border-radius:12px;background:' + segColor + '20;color:' + segColor + '">' + item.segment.toUpperCase() + '</span></td>';
+          pHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-size:12px;color:var(--green)">$' + (item.estimatedDeal || 0).toLocaleString() + '</td>';
+          pHtml += '</tr>';
+        });
+        pHtml += '</tbody></table>';
+        priorityEl.innerHTML = pHtml;
+      }
+    }
+
+    // Hot leads detail
+    var hotEl = document.getElementById('pipeline-hot');
+    if (hotEl) {
+      if (queue.hot.length === 0) {
+        hotEl.innerHTML = '<div style="padding:16px;color:var(--text3);font-size:13px">No hot leads. Run Scout to find businesses.</div>';
+      } else {
+        var hHtml = '';
+        queue.hot.forEach(function (item) {
+          hHtml += '<div style="display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-left:3px solid #ef4444;border-radius:0 8px 8px 0">';
+          hHtml += '<div style="flex:1">';
+          hHtml += '<div style="font-size:13px;font-weight:600">' + (item.lead.company || item.lead.name || 'Unknown') + '</div>';
+          hHtml += '<div style="font-size:11px;color:var(--text3)">' + item.industryLabel + ' • Score: ' + item.score + '/100</div>';
+          hHtml += '</div>';
+          hHtml += '<div style="text-align:right">';
+          hHtml += '<div style="font-size:12px;color:var(--green)">$' + (item.estimatedDeal || 0).toLocaleString() + '</div>';
+          hHtml += '<div style="font-size:10px;color:var(--text3)">' + (item.lead.url ? '🌐 Has site' : '❌ No site') + '</div>';
+          hHtml += '</div>';
+          hHtml += '</div>';
+        });
+        hotEl.innerHTML = hHtml;
+      }
+    }
+
+    // Warm leads
+    var warmEl = document.getElementById('pipeline-warm');
+    if (warmEl) {
+      if (queue.warm.length === 0) {
+        warmEl.innerHTML = '<div style="padding:16px;color:var(--text3);font-size:13px">No warm leads.</div>';
+      } else {
+        var wHtml = '';
+        queue.warm.slice(0, 10).forEach(function (item) {
+          wHtml += '<div style="display:flex;align-items:center;gap:12px;padding:8px;margin-bottom:4px;background:var(--bg);border:1px solid var(--border);border-left:3px solid #f59e0b;border-radius:0 8px 8px 0;font-size:13px">';
+          wHtml += '<span style="flex:1;font-weight:600">' + (item.lead.company || item.lead.name || 'Unknown') + '</span>';
+          wHtml += '<span style="color:var(--text3)">' + item.industryLabel + '</span>';
+          wHtml += '<span style="font-weight:700">' + item.score + '</span>';
+          wHtml += '</div>';
+        });
+        warmEl.innerHTML = wHtml;
+      }
+    }
+
+    // Cold segments
+    var coldEl = document.getElementById('pipeline-cold');
+    if (coldEl) {
+      if (queue.coldSegments.length === 0) {
+        coldEl.innerHTML = '<div style="padding:16px;color:var(--text3);font-size:13px">No cold lead segments.</div>';
+      } else {
+        var cHtml = '<table style="width:100%;border-collapse:collapse">';
+        cHtml += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">SEGMENT</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">REGION</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">SIZE</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">LEADS</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">AVG SCORE</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">EST. VALUE</th></tr></thead><tbody>';
+        queue.coldSegments.forEach(function (seg) {
+          cHtml += '<tr>';
+          cHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600">' + seg.industryLabel + '</td>';
+          cHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)">' + seg.region + '</td>';
+          cHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)">' + seg.size + '</td>';
+          cHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-size:13px;font-weight:700">' + seg.leads.length + '</td>';
+          cHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-size:12px">' + seg.avgScore + '</td>';
+          cHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-size:12px;color:var(--green)">$' + seg.totalValue.toLocaleString() + '</td>';
+          cHtml += '</tr>';
+        });
+        cHtml += '</tbody></table>';
+        coldEl.innerHTML = cHtml;
+      }
+    }
+
+    // Industry breakdown
+    var indEl = document.getElementById('pipeline-industries');
+    if (indEl) {
+      var indHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">';
+      Object.keys(Pipeline.INDUSTRY_SCORES).forEach(function (key) {
+        var ind = Pipeline.INDUSTRY_SCORES[key];
+        var barColor = ind.payScore >= 80 ? '#22c55e' : ind.payScore >= 60 ? '#f59e0b' : '#3b82f6';
+        indHtml += '<div style="padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px">';
+        indHtml += '<div style="font-size:12px;font-weight:600;margin-bottom:4px">' + ind.label + '</div>';
+        indHtml += '<div style="display:flex;align-items:center;gap:6px">';
+        indHtml += '<div style="flex:1;height:6px;background:var(--surface2);border-radius:3px"><div style="height:100%;width:' + ind.payScore + '%;background:' + barColor + ';border-radius:3px"></div></div>';
+        indHtml += '<span style="font-size:11px;font-weight:700;color:' + barColor + '">' + ind.payScore + '</span>';
+        indHtml += '</div>';
+        indHtml += '<div style="font-size:10px;color:var(--text3);margin-top:2px">Avg deal: $' + ind.avgDeal.toLocaleString() + '</div>';
+        indHtml += '</div>';
+      });
+      indHtml += '</div>';
+      indEl.innerHTML = indHtml;
+    }
+  }
+
+  function runFullPipeline(dryRun) {
+    showToast('▶ Running pipeline...');
+    Pipeline.runPipeline({ dryRun: dryRun }).then(function (result) {
+      if (result.error) {
+        showToast('❌ Pipeline error: ' + result.error);
+      } else {
+        showToast('✅ Pipeline: ' + result.hot + ' hot, ' + result.warm + ' warm, ' + result.cold + ' cold');
+        renderPipeline();
+      }
+    });
+  }
+
+  function refreshPipeline() { renderPipeline(); }
+
+  window.runFullPipeline = runFullPipeline;
+  window.refreshPipeline = refreshPipeline;
 
   /* ----------------------------------------
      EXPOSE GLOBALLY

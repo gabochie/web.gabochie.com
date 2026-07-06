@@ -65,6 +65,10 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <span>Audit</span>
     </button>
+    <button class="sidebar-link" data-tab="pipeline-auto">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Pipeline</span>
+    </button>
     <button class="sidebar-link" data-tab="settings">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       <span>Settings</span>
@@ -448,6 +452,57 @@
   <div id="audit-results"></div>
 </section>
 
+<!-- PIPELINE TAB -->
+<section id="pipeline-auto" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Automated Pipeline</h2>
+    <p class="section-sub">Scout → Audit → Prioritize → Segment → Outreach</p>
+  </div>
+
+  <!-- Controls -->
+  <div class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <button class="btn btn-sm btn-accent" onclick="runFullPipeline(false)">▶ Run Full Pipeline (Live)</button>
+    <button class="btn btn-sm btn-outline" onclick="runFullPipeline(true)">🔍 Dry Run (Preview Only)</button>
+    <button class="btn btn-sm btn-outline" onclick="refreshPipeline()">🔄 Refresh</button>
+    <label style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px">
+      <input type="checkbox" id="pipeline-dry-run" checked> Dry run (don't send emails)
+    </label>
+  </div>
+
+  <!-- Pipeline Status -->
+  <div id="pipeline-status" class="stats" style="margin-bottom:16px"></div>
+
+  <!-- Priority Queue -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🎯 Priority Queue — Ranked by Likelihood to Pay</div>
+    <div id="pipeline-priority"></div>
+  </div>
+
+  <!-- Hot Leads -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🔥 Hot Leads — Ready for Outreach</div>
+    <div id="pipeline-hot"></div>
+  </div>
+
+  <!-- Warm Leads -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🟡 Warm Leads — Nurture</div>
+    <div id="pipeline-warm"></div>
+  </div>
+
+  <!-- Cold Lead Segments -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">❄️ Cold Lead Segments — Grouped for Campaigns</div>
+    <div id="pipeline-cold"></div>
+  </div>
+
+  <!-- Industry Breakdown -->
+  <div class="card">
+    <div class="card-title">📊 Industry Pay-Likelihood Scores</div>
+    <div id="pipeline-industries"></div>
+  </div>
+</section>
+
 <!-- SETTINGS TAB -->
 <section id="settings" class="section">
   <div class="section-header">
@@ -555,6 +610,7 @@
 <script src="visitor-tracker.js"></script>
 <script src="analytics.js"></script>
 <script src="reporting.js"></script>
+<script src="pipeline.js"></script>
 <script src="data.js"></script>
 <script src="scoring.js"></script>
 <script src="preview-engine.js"></script>

@@ -1,5 +1,9 @@
 /* ========================================
    GA CLIENT PORTAL — PRODUCTION
+   ========================================
+   WARNING: These are DEMO credentials for portfolio demonstration only.
+   In production, auth would use Firebase Auth or a server-side session.
+   The companies and credentials below are fictional.
    ======================================== */
 (function () {
   'use strict';

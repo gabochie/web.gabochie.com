@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /login.html
+Disallow: /portal.html
+Disallow: /portal.js
+Disallow: /api/
+
+Sitemap: https://gideonabochie.com/sitemap.xml

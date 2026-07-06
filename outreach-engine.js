@@ -79,17 +79,27 @@ window.OutreachEngine = (function () {
 
       logAction('email-batch', 'Sending ' + toSend.length + ' emails via Brevo', 'info');
 
-      // Call CF Pages Function
-      fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          recipients: toSend.map(function (r) { return { email: r.email, name: r.name || r.contactName || '' }; }),
-          subject: subject,
-          htmlContent: trackedHtml,
-          textContent: textContent || '',
-          tags: ['outreach', campaignName || 'bulk']
-        })
+      // Read API key from Firestore settings
+      var settingsPromise = window.FirebaseService
+        ? FirebaseService.settings.get()
+        : Promise.resolve({});
+
+      settingsPromise.then(function (settings) {
+        // Call CF Pages Function
+        return fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipients: toSend.map(function (r) { return { email: r.email, name: r.name || r.contactName || '' }; }),
+            subject: subject,
+            htmlContent: trackedHtml,
+            textContent: textContent || '',
+            tags: ['outreach', campaignName || 'bulk'],
+            apiKey: settings.brevoApiKey || '',
+            senderName: settings.brevoSenderName || 'Gideon Abochie',
+            senderEmail: settings.brevoSenderEmail || 'gideon@gideonabochie.com'
+          })
+        });
       })
         .then(function (r) { return r.json(); })
         .then(function (result) {

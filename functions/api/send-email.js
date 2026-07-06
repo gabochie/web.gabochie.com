@@ -11,11 +11,11 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const { recipients, subject, htmlContent, textContent, replyTo, tags } = await context.request.json();
+    const { recipients, subject, htmlContent, textContent, replyTo, tags, apiKey, senderName, senderEmail } = await context.request.json();
 
-    const API_KEY = context.env.BREVO_API_KEY;
+    const API_KEY = context.env.BREVO_API_KEY || apiKey;
     if (!API_KEY) {
-      return new Response(JSON.stringify({ error: 'BREVO_API_KEY not configured. Add it in Cloudflare Pages → Settings → Environment Variables.' }), { status: 500, headers });
+      return new Response(JSON.stringify({ error: 'BREVO_API_KEY not configured. Add it in admin Settings → Email Settings, or set it in Cloudflare Pages → Settings → Environment Variables.' }), { status: 500, headers });
     }
 
     if (!recipients || !recipients.length) {
@@ -28,11 +28,15 @@ export async function onRequestPost(context) {
 
     const batchSize = 1000;
     const results = [];
+    const sender = {
+      name: senderName || 'Gideon Abochie',
+      email: senderEmail || 'gideon@gideonabochie.com'
+    };
 
     for (let i = 0; i < recipients.length; i += batchSize) {
       const batch = recipients.slice(i, i + batchSize);
       const payload = {
-        sender: { name: 'Gideon Abochie', email: 'gideon@gideonabochie.com' },
+        sender: sender,
         to: batch.map(r => ({ email: r.email, name: r.name || r.email })),
         subject: subject,
         htmlContent: htmlContent,

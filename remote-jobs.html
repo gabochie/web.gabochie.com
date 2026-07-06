@@ -123,6 +123,10 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .empty-state h3{font-size:1.4rem;font-weight:700;margin-bottom:8px;color:var(--text)}
 .empty-state p{color:var(--text-dim);margin-bottom:20px}
 
+/* NEW JOB FLASH */
+@keyframes flash-new{0%{background:rgba(34,197,94,.15);border-color:var(--green)}100%{background:var(--surface);border-color:var(--border)}}
+.job-card.flash-new{animation:flash-new 2s ease-out}
+
 /* SAVED TOAST */
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 24px;font-size:.88rem;z-index:9999;opacity:0;transition:all .35s;pointer-events:none}
 .toast.show{opacity:1;bottom:120px}
@@ -178,13 +182,14 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
 <section class="jobs-hero">
   <div class="container">
     <h1>🌍 Remote Tech Jobs <span class="accent">Worldwide</span></h1>
-    <p class="subtitle">Find software developer, engineer, devops, data science and freelance tech roles across North America, UK, Europe, and Australia. All remote-friendly.</p>
+    <p class="subtitle">Find software developer, engineer, devops, data science and freelance tech roles across North America, UK, Europe, Australia, and the UAE. All remote-friendly.</p>
     <div class="countries">
       <span class="flag-badge">🇨🇦 Canada</span>
       <span class="flag-badge">🇺🇸 United States</span>
       <span class="flag-badge">🇬🇧 United Kingdom</span>
       <span class="flag-badge">🇩🇪 Germany</span>
       <span class="flag-badge">🇦🇺 Australia</span>
+      <span class="flag-badge">🇦🇪 UAE</span>
     </div>
   </div>
 </section>
@@ -201,6 +206,7 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
         <option value="UK">🇬🇧 United Kingdom</option>
         <option value="DE">🇩🇪 Germany</option>
         <option value="AU">🇦🇺 Australia</option>
+        <option value="AE">🇦🇪 UAE</option>
       </select>
       <div class="toggle-group active" id="remoteToggle" onclick="this.classList.toggle('active');searchJobs()">
         <span class="toggle-dot"></span>
@@ -209,7 +215,13 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
       <button class="btn btn-primary search-btn" onclick="searchJobs()">Search →</button>
     </div>
     <div class="filter-stats">
-      <span id="resultCount">Enter a search term to find jobs</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span id="resultCount">Enter a search term to find jobs</span>
+        <span class="live-badge" id="liveBadge" style="display:none;font-size:.72rem;padding:2px 10px;border-radius:100px;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);align-items:center;gap:5px">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite"></span>
+          <span>Live</span>
+        </span>
+      </div>
       <span id="lastUpdated"></span>
     </div>
   </div>

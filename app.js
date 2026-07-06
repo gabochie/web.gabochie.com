@@ -56,7 +56,7 @@
     renderPipeline();
     renderAutomation();
     initRoadmapSync();
-    // Pre-load Canada Jobs data silently
+    // Pre-load Remote Jobs data silently
     setTimeout(function () { searchRemoteJobs(); }, 1000);
     // Auto-run agents on first load
     if (window.Agents) window.Agents.checkAutoRun();
@@ -3717,50 +3717,50 @@
   };
 
   /* ----------------------------------------
-     CANADA JOBS TAB
+     REMOTE JOBS TAB
      ---------------------------------------- */
-  function renderCanadaJobs() {
-    var saved = JSON.parse(localStorage.getItem('ca_adminSavedJobs') || '[]');
-    renderCJStats(saved);
-    renderCJSaved(saved);
-    // Auto-search if no results shown yet
-    var container = document.getElementById('cj-results');
-    if (container && container.querySelector('.card p') && !container.querySelector('.job-card')) {
-      searchCanadaJobs();
+  function renderRemoteJobs() {
+    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
+    renderRJStats(saved);
+    renderRJSaved(saved);
+    var container = document.getElementById('rj-results');
+    if (container && container.querySelector('.card p') && !container.querySelector('.card .btn')) {
+      searchRemoteJobs();
     }
   }
 
-  window.searchCanadaJobs = function () {
-    var kw = document.getElementById('cj-search').value.trim() || 'software developer';
-    var province = document.getElementById('cj-province').value;
-    var remote = document.getElementById('cj-remote').checked;
-    var container = document.getElementById('cj-results');
+  window.searchRemoteJobs = function () {
+    var kw = document.getElementById('rj-search').value.trim() || 'software developer';
+    var country = document.getElementById('rj-country').value;
+    var remote = document.getElementById('rj-remote').checked;
+    var container = document.getElementById('rj-results');
     if (!container) return;
-    container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:12px"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div><p>Searching Canadian tech jobs...</p></div>';
+    container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:12px"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div><p>Searching global job boards...</p></div>';
 
-    fetch('/api/canada-jobs', {
+    fetch('/api/remote-jobs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ keywords: kw, province: province, remote: remote, page: 1 })
+      body: JSON.stringify({ keywords: kw, country: country, remote: remote, page: 1 })
     })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var jobs = data.jobs || [];
-      renderCJResults(jobs);
+      renderRJResults(jobs);
     })
     .catch(function () {
-      container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2)"><p>Could not load jobs. <button class="btn btn-sm btn-accent" onclick="searchCanadaJobs()" style="margin-top:8px">Retry</button></p></div>';
+      container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2)"><p>Could not load jobs. <button class="btn btn-sm btn-accent" onclick="searchRemoteJobs()" style="margin-top:8px">Retry</button></p></div>';
     });
   };
 
-  function renderCJResults(jobs) {
-    var container = document.getElementById('cj-results');
+  function renderRJResults(jobs) {
+    var container = document.getElementById('rj-results');
     if (!container) return;
     if (!jobs || jobs.length === 0) {
       container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2)"><p>No jobs found. Try different keywords or filters.</p></div>';
       return;
     }
-    var saved = JSON.parse(localStorage.getItem('ca_adminSavedJobs') || '[]');
+    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
+    var countryFlags = { CA: '🇨🇦', US: '🇺🇸', UK: '🇬🇧', DE: '🇩🇪', AU: '🇦🇺', AE: '🇦🇪' };
 
     container.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-size:.85rem;color:var(--text2)">' + jobs.length + ' jobs found</span></div>' +
       jobs.map(function (job) {
@@ -3768,13 +3768,14 @@
         var isSaved = saved.some(function (s) { return (s.url || s.title + s.company) === key; });
         var daysAgo = Math.floor((Date.now() - new Date(job.postedDate || Date.now()).getTime()) / 86400000);
         var dateStr = daysAgo < 1 ? 'Today' : daysAgo === 1 ? 'Yesterday' : daysAgo + 'd ago';
-        var tags = (job.tags || guessCJTags(job.title)).map(function (t) { return '<span class="tag" style="font-size:.7rem;padding:2px 10px">' + escHtml(t) + '</span>'; }).join('');
+        var tags = (job.tags || guessRJTags(job.title)).map(function (t) { return '<span class="tag" style="font-size:.7rem;padding:2px 10px">' + escHtml(t) + '</span>'; }).join('');
         var salaryHtml = job.salary ? '<span style="font-size:.82rem;color:var(--green)">💰 ' + escHtml(job.salary) + '</span>' : '';
         var remoteBadge = job.remote ? '<span style="font-size:.75rem;padding:3px 10px;border-radius:100px;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)">🌐 Remote</span>' : '<span style="font-size:.75rem;padding:3px 10px;border-radius:100px;background:var(--surface2);color:var(--text-muted)">🏢 On-site</span>';
+        var flag = countryFlags[job.country] || '🌍';
 
         return '<div class="card" style="padding:18px 20px;margin-bottom:10px;cursor:pointer" onclick="window.open(\'' + escAttr(job.url || '#') + '\',\'_blank\',\'noopener\')">' +
           '<div style="display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:8px">' +
-            '<div style="font-weight:700;font-size:.95rem;flex:1">' + escHtml(job.title) + '</div>' +
+            '<div style="font-weight:700;font-size:.95rem;flex:1">' + flag + ' ' + escHtml(job.title) + '</div>' +
             '<div style="display:flex;gap:6px;flex-shrink:0">' +
               remoteBadge +
               '<span style="font-size:.7rem;padding:3px 10px;border-radius:100px;background:var(--surface2);color:var(--text-muted)">' + escHtml(job.source || '') + '</span>' +
@@ -3789,7 +3790,7 @@
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">' +
             '<span style="font-size:.78rem;color:var(--text-muted)">📅 ' + dateStr + '</span>' +
             '<div style="display:flex;gap:6px">' +
-              '<button class="btn btn-sm ' + (isSaved ? 'btn-accent' : 'btn-secondary') + '" style="font-size:.75rem;padding:4px 14px" onclick="event.stopPropagation();toggleCJSave(' + JSON.stringify(job).replace(/"/g, '&quot;') + ')">' + (isSaved ? '✓ Saved' : '☆ Save') + '</button>' +
+              '<button class="btn btn-sm ' + (isSaved ? 'btn-accent' : 'btn-secondary') + '" style="font-size:.75rem;padding:4px 14px" onclick="event.stopPropagation();toggleRJSave(' + JSON.stringify(job).replace(/"/g, '&quot;') + ')">' + (isSaved ? '✓ Saved' : '☆ Save') + '</button>' +
               '<a href="' + escAttr(job.url || '#') + '" target="_blank" rel="noopener" class="btn btn-sm btn-primary" style="font-size:.75rem;padding:4px 14px" onclick="event.stopPropagation()">Apply →</a>' +
             '</div>' +
           '</div>' +
@@ -3797,8 +3798,8 @@
       }).join('');
   }
 
-  window.toggleCJSave = function (job) {
-    var saved = JSON.parse(localStorage.getItem('ca_adminSavedJobs') || '[]');
+  window.toggleRJSave = function (job) {
+    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
     var key = job.url || job.title + job.company;
     var idx = saved.findIndex(function (s) { return (s.url || s.title + s.company) === key; });
     if (idx >= 0) {
@@ -3808,21 +3809,20 @@
       saved.push(Object.assign({}, job, { savedAt: new Date().toISOString(), status: 'Saved' }));
       showToast('✓ Job saved!', 'success');
     }
-    localStorage.setItem('ca_adminSavedJobs', JSON.stringify(saved));
-    renderCJStats(saved);
-    renderCJSaved(saved);
-    // Re-render results to update button states
-    var container = document.getElementById('cj-results');
+    localStorage.setItem('rj_adminSavedJobs', JSON.stringify(saved));
+    renderRJStats(saved);
+    renderRJSaved(saved);
+    var container = document.getElementById('rj-results');
     if (container) {
       var cards = container.querySelectorAll('.card');
       if (cards.length > 0) {
-        searchCanadaJobs();
+        searchRemoteJobs();
       }
     }
   };
 
-  function renderCJStats(saved) {
-    var el = document.getElementById('cj-stats');
+  function renderRJStats(saved) {
+    var el = document.getElementById('rj-stats');
     if (!el) return;
     var applied = saved.filter(function (s) { return s.status === 'Applied'; }).length;
     var interview = saved.filter(function (s) { return s.status === 'Interview'; }).length;
@@ -3835,9 +3835,9 @@
     '</div>';
   }
 
-  function renderCJSaved(saved) {
-    var countEl = document.getElementById('cj-saved-count');
-    var listEl = document.getElementById('cj-saved-list');
+  function renderRJSaved(saved) {
+    var countEl = document.getElementById('rj-saved-count');
+    var listEl = document.getElementById('rj-saved-list');
     if (!listEl) return;
     if (countEl) countEl.textContent = saved.length;
 
@@ -3850,16 +3850,16 @@
       var idx = saved.length - 1 - i;
       var daysAgo = Math.floor((Date.now() - new Date(job.savedAt || Date.now()).getTime()) / 86400000);
       var dateStr = daysAgo < 1 ? 'Today' : daysAgo + 'd ago';
-      var statusColors = { Saved: 'var(--text2)', Applied: 'var(--yellow)', Interview: 'var(--green)', Offer: 'var(--accent)', Rejected: 'var(--red)' };
-      var statusColor = statusColors[job.status] || 'var(--text2)';
+      var countryFlags = { CA: '🇨🇦', US: '🇺🇸', UK: '🇬🇧', DE: '🇩🇪', AU: '🇦🇺', AE: '🇦🇪' };
+      var flag = countryFlags[job.country] || '🌍';
 
       return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">' +
         '<div style="flex:1;min-width:0">' +
-          '<div style="font-weight:600;font-size:.88rem">' + escHtml(job.title) + '</div>' +
+          '<div style="font-weight:600;font-size:.88rem">' + flag + ' ' + escHtml(job.title) + '</div>' +
           '<div style="font-size:.8rem;color:var(--text2)">' + escHtml(job.company) + ' · ' + escHtml(job.location) + '</div>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
-          '<select style="width:auto;font-size:.75rem;padding:4px 24px 4px 8px;height:30px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text);outline:none;appearance:none" onchange="updateCJStatus(' + idx + ',this.value)">' +
+          '<select style="width:auto;font-size:.75rem;padding:4px 24px 4px 8px;height:30px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text);outline:none;appearance:none" onchange="updateRJStatus(' + idx + ',this.value)">' +
             '<option value="Saved"' + (job.status === 'Saved' ? ' selected' : '') + '>📌 Saved</option>' +
             '<option value="Applied"' + (job.status === 'Applied' ? ' selected' : '') + '>📤 Applied</option>' +
             '<option value="Interview"' + (job.status === 'Interview' ? ' selected' : '') + '>🎯 Interview</option>' +
@@ -3867,49 +3867,49 @@
             '<option value="Rejected"' + (job.status === 'Rejected' ? ' selected' : '') + '>❌ Rejected</option>' +
           '</select>' +
           '<span style="font-size:.85rem;color:var(--text2)">' + dateStr + '</span>' +
-          '<button class="btn btn-sm btn-secondary" style="font-size:.75rem;padding:4px 8px;color:var(--red);border-color:transparent" onclick="removeCJSaved(' + idx + ')" title="Remove">✕</button>' +
+          '<button class="btn btn-sm btn-secondary" style="font-size:.75rem;padding:4px 8px;color:var(--red);border-color:transparent" onclick="removeRJSaved(' + idx + ')" title="Remove">✕</button>' +
         '</div>' +
       '</div>';
     }).join('');
   }
 
-  window.updateCJStatus = function (idx, status) {
-    var saved = JSON.parse(localStorage.getItem('ca_adminSavedJobs') || '[]');
+  window.updateRJStatus = function (idx, status) {
+    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
     if (saved[idx]) {
       saved[idx].status = status;
-      localStorage.setItem('ca_adminSavedJobs', JSON.stringify(saved));
-      renderCJStats(saved);
-      renderCJSaved(saved);
+      localStorage.setItem('rj_adminSavedJobs', JSON.stringify(saved));
+      renderRJStats(saved);
+      renderRJSaved(saved);
       showToast('Status updated: ' + status, 'success');
     }
   };
 
-  window.removeCJSaved = function (idx) {
-    var saved = JSON.parse(localStorage.getItem('ca_adminSavedJobs') || '[]');
+  window.removeRJSaved = function (idx) {
+    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
     saved.splice(idx, 1);
-    localStorage.setItem('ca_adminSavedJobs', JSON.stringify(saved));
-    renderCJStats(saved);
-    renderCJSaved(saved);
+    localStorage.setItem('rj_adminSavedJobs', JSON.stringify(saved));
+    renderRJStats(saved);
+    renderRJSaved(saved);
     showToast('Removed from saved', 'info');
   };
 
   window.exportSavedJobs = function () {
-    var saved = JSON.parse(localStorage.getItem('ca_adminSavedJobs') || '[]');
+    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
     if (saved.length === 0) { showToast('No saved jobs to export', 'info'); return; }
-    var csv = 'Title,Company,Location,URL,Salary,Status,Source,Date Saved\n';
+    var csv = 'Title,Company,Location,Country,URL,Salary,Status,Source,Date Saved\n';
     saved.forEach(function (j) {
-      csv += '"' + (j.title || '') + '","' + (j.company || '') + '","' + (j.location || '') + '","' + (j.url || '') + '","' + (j.salary || '') + '","' + (j.status || 'Saved') + '","' + (j.source || '') + '","' + (j.savedAt || '') + '"\n';
+      csv += '"' + (j.title || '') + '","' + (j.company || '') + '","' + (j.location || '') + '","' + (j.country || '') + '","' + (j.url || '') + '","' + (j.salary || '') + '","' + (j.status || 'Saved') + '","' + (j.source || '') + '","' + (j.savedAt || '') + '"\n';
     });
     var blob = new Blob([csv], { type: 'text/csv' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'canada-tech-jobs-saved.csv';
+    a.download = 'remote-tech-jobs-saved.csv';
     a.click();
     URL.revokeObjectURL(a.href);
     showToast('📥 Exported ' + saved.length + ' jobs to CSV', 'success');
   };
 
-  function guessCJTags(title) {
+  function guessRJTags(title) {
     var t = (title || '').toLowerCase();
     var tags = [];
     if (t.includes('react') || t.includes('frontend') || t.includes('ui') || t.includes('web dev')) tags.push('Frontend');

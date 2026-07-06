@@ -22,7 +22,8 @@ export async function onRequestPost(context) {
       US: { domain: 'www.indeed.com', label: 'Indeed US' },
       UK: { domain: 'www.indeed.co.uk', label: 'Indeed UK' },
       DE: { domain: 'de.indeed.com', label: 'Indeed Germany' },
-      AU: { domain: 'au.indeed.com', label: 'Indeed Australia' }
+      AU: { domain: 'au.indeed.com', label: 'Indeed Australia' },
+      AE: { domain: 'ae.indeed.com', label: 'Indeed UAE' }
     };
 
     const countriesToScrape = country && indeedConfigs[country] ? [country] : Object.keys(indeedConfigs);
@@ -47,7 +48,7 @@ export async function onRequestPost(context) {
                 results.push({
                   title: title.replace(/<\/?[^>]+(>|$)/g, '').trim(),
                   company: extractCompany(desc) || 'Company',
-                  location: (extractLocation(desc) || c === 'CA' ? 'Canada' : c === 'US' ? 'United States' : c === 'UK' ? 'United Kingdom' : c === 'DE' ? 'Germany' : 'Australia') + ' (' + cfg.label + ')',
+                  location: (extractLocation(desc) || c === 'CA' ? 'Canada' : c === 'US' ? 'United States' : c === 'UK' ? 'United Kingdom' : c === 'DE' ? 'Germany' : c === 'AU' ? 'Australia' : 'UAE') + ' (' + cfg.label + ')',
                   url: link.trim(),
                   description: desc.replace(/<\/?[^>]+(>|$)/g, '').trim().slice(0, 500),
                   postedDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
@@ -90,7 +91,7 @@ export async function onRequestPost(context) {
       jobs: filtered.slice(0, 60),
       total: filtered.length,
       page: page || 1,
-      sources: ['Indeed Canada', 'Indeed US', 'Indeed UK', 'Indeed Germany', 'Indeed Australia']
+      sources: ['Indeed Canada', 'Indeed US', 'Indeed UK', 'Indeed Germany', 'Indeed Australia', 'Indeed UAE']
     }), { headers });
 
   } catch (err) {
@@ -154,7 +155,13 @@ function getFallbackJobs(keyword, country, remote) {
     { title: 'DevOps Engineer', company: 'Xero', location: 'Melbourne, Australia', country: 'AU', remote: true, salary: 'A$120,000 - A$165,000', url: 'https://www.xero.com/about/careers/' },
     { title: 'Frontend Developer', company: 'SafetyCulture', location: 'Sydney, Australia', country: 'AU', remote: true, salary: 'A$100,000 - A$145,000', url: 'https://safetyculture.com/careers/' },
     { title: 'Freelance Web Developer', company: 'Various Startups', location: 'Remote, NA', country: 'US', remote: true, salary: '$80 - $150/hr', url: 'https://www.indeed.com' },
-    { title: 'Freelance Mobile Developer', company: 'Various Clients', location: 'Remote, EU', country: 'DE', remote: true, salary: '€60 - €120/hr', url: 'https://de.indeed.com' }
+    { title: 'Freelance Mobile Developer', company: 'Various Clients', location: 'Remote, EU', country: 'DE', remote: true, salary: '€60 - €120/hr', url: 'https://de.indeed.com' },
+    // UAE
+    { title: 'Software Engineer', company: 'Careem', location: 'Dubai, UAE', country: 'AE', remote: false, salary: 'AED 240,000 - 360,000', url: 'https://www.careem.com/en-ae/careers/' },
+    { title: 'Full Stack Developer', company: 'Talabat', location: 'Dubai, UAE', country: 'AE', remote: true, salary: 'AED 200,000 - 320,000', url: 'https://www.talabat.com/careers' },
+    { title: 'Data Scientist', company: 'Etisalat', location: 'Abu Dhabi, UAE', country: 'AE', remote: false, salary: 'AED 220,000 - 350,000', url: 'https://www.etisalat.ae/careers' },
+    { title: 'DevOps Engineer', company: 'Dubai Holding', location: 'Dubai, UAE', country: 'AE', remote: true, salary: 'AED 180,000 - 300,000', url: 'https://www.dubaiholding.com/en/careers' },
+    { title: 'Frontend Developer', company: 'Property Finder', location: 'Dubai, UAE', country: 'AE', remote: true, salary: 'AED 160,000 - 280,000', url: 'https://www.propertyfinder.ae/careers' }
   ];
 
   const kw = (keyword || '').toLowerCase();
@@ -179,7 +186,7 @@ function getFallbackJobs(keyword, country, remote) {
     postedDate: new Date(Date.now() - i * 86400000 * Math.floor(Math.random() * 5 + 1)).toISOString(),
     salary: j.salary,
     remote: j.remote,
-    source: j.country === 'CA' ? 'Tech Jobs Canada' : j.country === 'US' ? 'Tech Jobs USA' : j.country === 'UK' ? 'Tech Jobs UK' : j.country === 'DE' ? 'Tech Jobs Germany' : 'Tech Jobs Australia',
+    source: j.country === 'CA' ? 'Tech Jobs Canada' : j.country === 'US' ? 'Tech Jobs USA' : j.country === 'UK' ? 'Tech Jobs UK' : j.country === 'DE' ? 'Tech Jobs Germany' : j.country === 'AU' ? 'Tech Jobs Australia' : 'Tech Jobs UAE',
     country: j.country,
     tags: getTags(j.title),
     highlighted: j.title.includes('Senior') || j.title.includes('Lead') || j.title.includes('Architect')

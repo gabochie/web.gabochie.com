@@ -13,7 +13,36 @@ window.CommandCenter = (function () {
      PIPELINE METRICS
      ---------------------------------------- */
   function getPipelineMetrics() {
-    var leads = JSON.parse(localStorage.getItem('ga_leads') || '[]');
+    var leads = [];
+    try {
+      var raw = localStorage.getItem('ga_leads');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        leads = Array.isArray(parsed) ? parsed : Object.values(parsed);
+      }
+    } catch (e) {}
+
+    // Normalize Firestore leads to match expected format
+    leads = leads.map(function (l) {
+      return {
+        id: l.id,
+        name: l.name || l.company || 'Unknown',
+        company: l.company || '',
+        email: l.email || '',
+        url: l.url || '',
+        source: l.source || 'Unknown',
+        status: l.status || 'New',
+        segment: l.segment || (l.score >= 70 ? 'hot' : l.score >= 40 ? 'warm' : 'cold'),
+        pipelineStage: l.pipelineStage || l.status || 'prospect',
+        score: l.score || 0,
+        qualScore: l.qualScore || l.score || 0,
+        value: l.value || 0,
+        lastActivity: l.lastActivity || (l.createdAt ? new Date(l.createdAt).getTime() : 0),
+        contactedAt: l.contactedAt || 0,
+        createdAt: l.createdAt ? new Date(l.createdAt).getTime() : 0,
+        followUpSequence: l.followUpSequence || null
+      };
+    });
     var stages = {};
     var segments = { hot: 0, warm: 0, cold: 0, unclassified: 0 };
     var totalValue = 0;

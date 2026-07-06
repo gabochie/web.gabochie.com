@@ -75,6 +75,8 @@
         allLeads = buildDefaultLeads();
         saveLeads();
       }
+      // Sync to localStorage for Command Center
+      localStorage.setItem('ga_leads', JSON.stringify(allLeads));
       // Re-render active tab
       initApp();
     });

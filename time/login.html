@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In — Time Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+<style>
+.auth-page{min-height:100vh;display:flex;background:var(--bg)}
+.auth-left{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
+.auth-right{flex:1;background:linear-gradient(135deg,var(--primary-dark),#312e81,#1e1b4b);display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden}
+.auth-right::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(99,102,241,.1);top:-200px;right:-200px}
+.auth-right::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(34,211,238,.08);bottom:-100px;left:-100px}
+.auth-card{width:100%;max-width:400px}
+.auth-logo{font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.auth-logo span{font-size:1.6rem}
+.auth-title{font-size:1.8rem;font-weight:800;margin-bottom:4px}
+.auth-sub{color:var(--text2);margin-bottom:32px;font-size:.95rem}
+.auth-tabs{display:flex;gap:4px;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;margin-bottom:28px}
+.auth-tab{flex:1;padding:10px;text-align:center;border-radius:var(--radius-xs);font-size:.85rem;font-weight:600;cursor:pointer;color:var(--text3);background:none;border:none;transition:all .2s}
+.auth-tab.active{background:var(--primary);color:#fff}
+.auth-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:.8rem;margin-bottom:16px;display:none}
+.auth-sep{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text4);font-size:.8rem}
+.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-footer{text-align:center;margin-top:24px;font-size:.85rem;color:var(--text3)}
+.auth-right-content{position:relative;z-index:1;text-align:center;max-width:400px}
+.auth-right-title{font-size:2rem;font-weight:800;margin-bottom:12px;color:#fff}
+.auth-right-desc{color:rgba(255,255,255,.7);font-size:1rem;line-height:1.7}
+.auth-right-features{margin-top:32px;display:flex;flex-direction:column;gap:16px;text-align:left}
+.auth-feature{display:flex;align-items:flex-start;gap:12px;color:rgba(255,255,255,.85);font-size:.9rem}
+.auth-feature-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-card">
+      <div class="auth-logo"><span>⚡</span> Time Intelligence</div>
+      <div class="auth-title" id="authTitle">Welcome back</div>
+      <div class="auth-sub" id="authSub">Sign in to your forecast dashboard</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="you@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%" id="loginBtn">Sign In</button>
+        <div class="auth-sep">or continue with</div>
+        <button type="button" class="btn btn-secondary btn-lg" style="width:100%" onclick="handleGoogle()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#fff"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" style="display:none" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label class="form-label">Business Name</label>
+          <input type="text" class="form-input" id="signupName" placeholder="Mario's Restaurant" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="signupEmail" placeholder="you@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="signupPassword" placeholder="Min 8 characters" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Type</label>
+          <select class="form-input" id="signupType">
+            <option value="restaurant">Restaurant</option>
+            <option value="retail">Retail Store</option>
+            <option value="service">Service Business</option>
+            <option value="ecommerce">E-Commerce</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%" id="signupBtn">Create Account</button>
+      </form>
+
+      <div class="auth-footer">
+        <a href="/">← Back to home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-right-content">
+      <div class="auth-right-title">Predict demand.<br>Eliminate waste.</div>
+      <div class="auth-right-desc">AI-powered forecasting for small businesses. Know what to buy, when to stock, and how much to prepare — before you need it.</div>
+      <div class="auth-right-features">
+        <div class="auth-feature">
+          <div class="auth-feature-icon">📊</div>
+          <div><strong>87% forecast accuracy</strong><br>Trained on millions of seasonal patterns</div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">💰</div>
+          <div><strong>Save $4,200/month avg</strong><br>Reduce waste, optimize purchasing</div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">⚡</div>
+          <div><strong>Setup in 10 minutes</strong><br>Upload CSV or connect Google Sheets</div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">🤖</div>
+          <div><strong>Natural language insights</strong><br>Ask questions, get instant answers</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const authError = document.getElementById('authError');
+const authTitle = document.getElementById('authTitle');
+const authSub = document.getElementById('authSub');
+
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'signup' && i === 1));
+  });
+  loginForm.style.display = tab === 'login' ? 'block' : 'none';
+  signupForm.style.display = tab === 'signup' ? 'block' : 'none';
+  authError.style.display = 'none';
+  if (tab === 'login') {
+    authTitle.textContent = 'Welcome back';
+    authSub.textContent = 'Sign in to your forecast dashboard';
+  } else {
+    authTitle.textContent = 'Get started free';
+    authSub.textContent = 'Start forecasting in 10 minutes';
+  }
+}
+
+function showError(msg) {
+  authError.textContent = msg;
+  authError.style.display = 'block';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+  btn.innerHTML = '<span class="spinner"></span> Signing in...';
+  btn.disabled = true;
+  authError.style.display = 'none';
+
+  try {
+    const { getAuth, signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js');
+    const auth = getAuth();
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = '/app.html';
+  } catch (err) {
+    showError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*\)/, '').trim());
+    btn.innerHTML = 'Sign In';
+    btn.disabled = false;
+  }
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  const type = document.getElementById('signupType').value;
+  const btn = document.getElementById('signupBtn');
+  btn.innerHTML = '<span class="spinner"></span> Creating account...';
+  btn.disabled = true;
+  authError.style.display = 'none';
+
+  try {
+    const { getAuth, createUserWithEmailAndPassword, updateProfile } = await import('https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js');
+    const { getFirestore, doc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js');
+    const auth = getAuth();
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(user, { displayName: name });
+    const db = getFirestore();
+    await setDoc(doc(db, 'users', user.uid), {
+      name, email, type, plan: 'free',
+      createdAt: serverTimestamp()
+    });
+    window.location.href = '/app.html';
+  } catch (err) {
+    showError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*\)/, '').trim());
+    btn.innerHTML = 'Create Account';
+    btn.disabled = false;
+  }
+}
+
+async function handleGoogle() {
+  try {
+    const { getAuth, signInWithPopup, GoogleAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js');
+    const auth = getAuth();
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    window.location.href = '/app.html';
+  } catch (err) {
+    showError(err.message.replace('Firebase: ', '').trim());
+  }
+}
+
+// Check if already logged in
+import('https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js').then(({ getAuth, onAuthStateChanged }) => {
+  onAuthStateChanged(getAuth(), (user) => { if (user) window.location.href = '/app.html'; });
+});
+</script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+</body>
+</html>

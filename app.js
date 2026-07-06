@@ -2613,6 +2613,8 @@
      SMOKE TEST — Full App Health Check
      ---------------------------------------- */
   var SMOKE_RESULTS = null;
+  var SMOKE_INTERVAL = null;
+  var SMOKE_LIVE_DOT = null;
 
   function renderSmokeTest() {
     var btn = document.getElementById('smoke-run-btn');
@@ -2622,6 +2624,45 @@
         try { runSmokeTest(); } catch (e) { console.error('Smoke test error:', e); showToast('❌ Error: ' + e.message); }
       });
     }
+
+    // Create live indicator
+    var statusEl = document.getElementById('smoke-status');
+    if (statusEl && !document.getElementById('smoke-live-dot')) {
+      var dot = document.createElement('span');
+      dot.id = 'smoke-live-dot';
+      dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:12px;animation:pulse 2s infinite;vertical-align:middle';
+      dot.title = 'Auto-refreshing every 15s';
+      statusEl.parentNode.appendChild(dot);
+      SMOKE_LIVE_DOT = dot;
+    }
+
+    // Run immediately when switching to tab
+    runSmokeTest();
+
+    // Auto-refresh every 15s
+    if (!SMOKE_INTERVAL) {
+      SMOKE_INTERVAL = setInterval(function () {
+        runSmokeTest();
+      }, 15000);
+    }
+
+    // Pause/resume on visibility change
+    if (!document._smokeVisBound) {
+      document._smokeVisBound = true;
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          if (SMOKE_INTERVAL) { clearInterval(SMOKE_INTERVAL); SMOKE_INTERVAL = null; }
+          if (SMOKE_LIVE_DOT) SMOKE_LIVE_DOT.style.background = 'var(--text3)';
+        } else {
+          runSmokeTest();
+          if (!SMOKE_INTERVAL) {
+            SMOKE_INTERVAL = setInterval(function () { runSmokeTest(); }, 15000);
+          }
+          if (SMOKE_LIVE_DOT) SMOKE_LIVE_DOT.style.background = 'var(--green)';
+        }
+      });
+    }
+
     if (SMOKE_RESULTS) showSmokeResults(SMOKE_RESULTS);
   }
 
@@ -2755,7 +2796,9 @@
     var resultsEl = document.getElementById('smoke-results');
 
     if (statusEl) {
-      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> • <span style="color:var(--yellow)">' + results.warn + ' warnings</span> • <span style="color:var(--red)">' + results.fail + ' failed</span>';
+      var now = new Date();
+      var time = now.toLocaleTimeString();
+      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> • <span style="color:var(--yellow)">' + results.warn + ' warnings</span> • <span style="color:var(--red)">' + results.fail + ' failed</span> • <span style="color:var(--text3);font-size:11px">🔄 Live • ' + time + '</span>';
     }
 
     if (scoreEl) {

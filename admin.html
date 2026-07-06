@@ -459,6 +459,46 @@
     <p class="section-sub">Scout → Audit → Prioritize → Segment → Outreach</p>
   </div>
 
+  <!-- Manual Lead Entry -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📝 Add Leads Manually</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Paste URLs (one per line)</label>
+        <textarea id="manual-urls" rows="6" placeholder="https://oldplumbing.com&#10;https://smithlaw.com&#10;https://citydental.com" style="font-family:monospace;font-size:12px;width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);resize:vertical"></textarea>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Industry (applies to all)</label>
+        <select id="manual-industry" style="width:100%;margin-bottom:8px">
+          <option value="medical">Medical/Dental</option>
+          <option value="legal">Legal</option>
+          <option value="financial">Financial</option>
+          <option value="home services">Home Services</option>
+          <option value="manufacturing">Manufacturing</option>
+          <option value="automotive">Automotive</option>
+          <option value="retail">Retail</option>
+          <option value="restaurant">Restaurant</option>
+          <option value="real estate">Real Estate</option>
+          <option value="education">Education</option>
+        </select>
+        <button class="btn btn-sm btn-accent" onclick="importManualUrls()" style="width:100%;margin-bottom:8px">🔍 Audit & Score URLs</button>
+        <div style="font-size:11px;color:var(--text3);line-height:1.5">Each URL gets audited (mobile, performance, SEO), scored by pay-likelihood, and segmented.</div>
+      </div>
+    </div>
+    <div id="manual-import-status" style="margin-top:12px;font-size:12px;color:var(--text2)"></div>
+  </div>
+
+  <!-- CSV Import -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📊 Import CSV</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px">
+      Upload a CSV with columns: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">name, company, email, url, industry, phone, address</code> (only <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">url</code> is required)
+    </div>
+    <input type="file" id="csv-upload" accept=".csv" style="font-size:12px;margin-bottom:8px">
+    <button class="btn btn-sm btn-outline" onclick="importCSV()">📤 Import & Audit</button>
+    <div id="csv-import-status" style="margin-top:8px;font-size:12px;color:var(--text2)"></div>
+  </div>
+
   <!-- Controls -->
   <div class="card" style="margin-bottom:16px">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">

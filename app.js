@@ -2364,6 +2364,179 @@
   window.refreshPipeline = refreshPipeline;
 
   /* ----------------------------------------
+     MANUAL URL IMPORT — Audit & Score
+     ---------------------------------------- */
+  window.importManualUrls = function () {
+    var textarea = document.getElementById('manual-urls');
+    var industry = document.getElementById('manual-industry').value;
+    var statusEl = document.getElementById('manual-import-status');
+    if (!textarea || !textarea.value.trim()) {
+      showToast('Paste at least one URL');
+      return;
+    }
+
+    var urls = textarea.value.split('\n').map(function (u) { return u.trim(); }).filter(function (u) { return u.length > 5; });
+    if (urls.length === 0) { showToast('No valid URLs found'); return; }
+
+    statusEl.innerHTML = '⏳ Auditing ' + urls.length + ' URLs...';
+    var audited = 0;
+    var leads = [];
+
+    urls.forEach(function (url) {
+      // Ensure https://
+      if (!url.startsWith('http')) url = 'https://' + url;
+
+      // Create lead immediately
+      var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+      var lead = {
+        id: leadId,
+        name: url.replace(/https?:\/\//, '').split('/')[0],
+        company: url.replace(/https?:\/\//, '').split('/')[0],
+        url: url,
+        industry: industry,
+        source: 'Manual Import',
+        status: 'New',
+        score: 0,
+        pipelineStage: 'prospect',
+        segment: 'unclassified',
+        createdAt: new Date().toISOString()
+      };
+      leads.push(lead);
+
+      // Auto-audit the URL
+      fetch('/api/site-audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        if (data.score) {
+          lead.score = data.score;
+          lead.audit = data;
+        }
+        audited++;
+        statusEl.innerHTML = '⏳ Audited ' + audited + '/' + urls.length + ' — ' + url;
+        if (audited >= urls.length) finishImport(leads, statusEl);
+      }).catch(function () {
+        audited++;
+        if (audited >= urls.length) finishImport(leads, statusEl);
+      });
+    });
+  };
+
+  function finishImport(leads, statusEl) {
+    // Score and segment each lead
+    if (window.Pipeline) {
+      leads.forEach(function (l) {
+        var s = Pipeline.scoreLead(l);
+        l.pipelineStage = 'prospect';
+        l.segment = s.segment;
+        l.priority = s.priority;
+        l.value = s.estimatedDeal / 1000;
+      });
+    }
+
+    // Save to storage
+    try {
+      var existing = JSON.parse(localStorage.getItem('ga_leads') || '{}');
+      if (!Array.isArray(existing)) existing = Object.values(existing);
+      existing.forEach(function (l) { existing[l.id] = l; });
+      leads.forEach(function (l) { existing[l.id] = l; });
+      localStorage.setItem('ga_leads', JSON.stringify(existing));
+    } catch (e) {}
+
+    // Also save to Firebase if available
+    if (window.FirebaseService) {
+      leads.forEach(function (l) {
+        FirebaseService.leads.update(l.id, l).catch(function () {});
+      });
+    }
+
+    var hot = leads.filter(function (l) { return l.segment === 'hot'; }).length;
+    var warm = leads.filter(function (l) { return l.segment === 'warm'; }).length;
+    var cold = leads.filter(function (l) { return l.segment === 'cold'; }).length;
+
+    statusEl.innerHTML = '✅ Imported ' + leads.length + ' leads — 🔥 ' + hot + ' hot, 🟡 ' + warm + ' warm, ❄️ ' + cold + ' cold';
+    showToast('✅ ' + leads.length + ' leads imported & scored');
+    renderPipeline();
+  }
+
+  /* ----------------------------------------
+     CSV IMPORT
+     ---------------------------------------- */
+  window.importCSV = function () {
+    var fileInput = document.getElementById('csv-upload');
+    var statusEl = document.getElementById('csv-import-status');
+    if (!fileInput || !fileInput.files.length) {
+      showToast('Select a CSV file first');
+      return;
+    }
+
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var text = e.target.result;
+      var lines = text.split('\n').filter(function (l) { return l.trim(); });
+      if (lines.length < 2) { showToast('CSV needs a header row + data'); return; }
+
+      var headers = lines[0].split(',').map(function (h) { return h.trim().toLowerCase().replace(/"/g, ''); });
+      var urlIdx = headers.indexOf('url');
+      if (urlIdx === -1) { showToast('CSV must have a "url" column'); return; }
+
+      var nameIdx = headers.indexOf('name');
+      var companyIdx = headers.indexOf('company');
+      var emailIdx = headers.indexOf('email');
+      var industryIdx = headers.indexOf('industry');
+      var phoneIdx = headers.indexOf('phone');
+      var addressIdx = headers.indexOf('address');
+
+      var leads = [];
+      for (var i = 1; i < lines.length; i++) {
+        var cols = lines[i].split(',').map(function (c) { return c.trim().replace(/"/g, ''); });
+        var url = cols[urlIdx];
+        if (!url || url.length < 5) continue;
+        if (!url.startsWith('http')) url = 'https://' + url;
+
+        leads.push({
+          id: 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+          name: (nameIdx >= 0 ? cols[nameIdx] : '') || url.replace(/https?:\/\//, '').split('/')[0],
+          company: (companyIdx >= 0 ? cols[companyIdx] : '') || url.replace(/https?:\/\//, '').split('/')[0],
+          email: emailIdx >= 0 ? cols[emailIdx] : '',
+          url: url,
+          industry: (industryIdx >= 0 ? cols[industryIdx] : '') || 'unknown',
+          phone: phoneIdx >= 0 ? cols[phoneIdx] : '',
+          address: addressIdx >= 0 ? cols[addressIdx] : '',
+          source: 'CSV Import',
+          status: 'New',
+          score: 0,
+          pipelineStage: 'prospect',
+          segment: 'unclassified',
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      statusEl.innerHTML = '⏳ Importing ' + leads.length + ' leads from CSV...';
+
+      // Audit each URL
+      var audited = 0;
+      leads.forEach(function (l) {
+        fetch('/api/site-audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: l.url })
+        }).then(function (r) { return r.json(); }).then(function (data) {
+          if (data.score) { l.score = data.score; l.audit = data; }
+          audited++;
+          if (audited >= leads.length) finishImport(leads, statusEl);
+        }).catch(function () {
+          audited++;
+          if (audited >= leads.length) finishImport(leads, statusEl);
+        });
+      });
+    };
+    reader.readAsText(file);
+  };
+
+  /* ----------------------------------------
      EXPOSE GLOBALLY
      ---------------------------------------- */
   window.GAAdmin = {

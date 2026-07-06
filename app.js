@@ -198,6 +198,7 @@
     if (tabName === 'audit') { renderAudit(); startAuditRefresh(); }
     if (tabName === 'pipeline-auto') { renderPipeline(); startPipelineRefresh(); renderOrchestrator(); }
     if (tabName === 'smoke-test') renderSmokeTest();
+    if (tabName === 'offers') renderOffers();
   }
 
   /* ----------------------------------------

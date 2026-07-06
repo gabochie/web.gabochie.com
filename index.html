@@ -172,6 +172,8 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:800;letter-spacing:-.02em;text-decoration:none}
 .logo svg{flex-shrink:0}
 .logo-text span{color:var(--accent)}
+.nav-link{color:var(--text-dim);margin-right:20px;font-weight:500;font-size:.9rem;transition:color .2s}
+.nav-link:hover{color:var(--accent)}
 
 /* HERO */
 .hero{padding:160px 0 100px;position:relative}
@@ -353,7 +355,7 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
       </svg>
       <span class="logo-text">Gideon <span>Abochie</span></span>
     </a>
-    <a href="services.html" style="color:var(--text-dim);margin-right:16px;font-weight:500;font-size:.9rem;transition:color .2s">Services</a>
+    <a href="services.html" class="nav-link">Services</a>
     <a href="#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
   </div>
 </nav>
@@ -874,6 +876,30 @@ function submitForm(name,email,company,url,source){
     }
 
     FirebaseService.leads.update(leadId, leadData).catch(function () {});
+
+    // Send automated follow-up email via Brevo
+    if (email) {
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Your Free Website Audit — Gideon Abochie',
+          html: '<div style="font-family:Inter,system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#0b0b0f;color:#f0f0f0">' +
+            '<div style="font-size:1.5rem;font-weight:800;margin-bottom:24px">Gideon <span style="color:#e63946">Abochie</span></div>' +
+            '<h1 style="font-size:1.6rem;margin-bottom:12px">Your Free Website Audit</h1>' +
+            '<p style="color:#8a8a95;margin-bottom:20px">Thanks for requesting an audit' + (name ? ', ' + name : '') + '. We\'ll review your site and get back to you shortly.</p>' +
+            '<div style="background:#121216;border:1px solid #1f1f28;border-radius:12px;padding:24px;margin-bottom:24px">' +
+            '<div style="font-size:.8rem;color:#8a8a95;margin-bottom:8px">Next Steps</div>' +
+            '<div style="font-size:1rem;color:#f0f0f0;line-height:1.7">1. We analyze your site<br>2. We prepare recommendations<br>3. We reach out with a proposal</div>' +
+            '</div>' +
+            '<h2 style="font-size:1.2rem;margin-bottom:12px">Fixed-Price Packages</h2>' +
+            '<p style="color:#8a8a95;margin-bottom:20px">We offer redesign packages starting at $2,999. No hidden fees, no revenue share. <a href="https://gideonabochie.com/services.html" style="color:#e63946">See packages →</a></p>' +
+            '<p style="color:#55555f;font-size:.85rem">Or reply to this email to schedule a call.</p>' +
+            '</div>'
+        })
+      }).catch(function () {});
+    }
   }
 
   // Send lead via WhatsApp/email

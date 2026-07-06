@@ -201,7 +201,7 @@
     document.querySelectorAll('.mode-btn').forEach(function (b) {
       b.classList.toggle('active', b.dataset.mode === mode);
     });
-    if (typeof CommandCenter !== 'undefined') CommandCenter.render('command-center');
+    try { CommandCenter.render('command-center'); } catch (e) {}
   }
 
   /* ----------------------------------------

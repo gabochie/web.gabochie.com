@@ -1653,8 +1653,10 @@
     // Wire save buttons
     var saveEmailBtn = document.getElementById('settings-save-email');
     var saveNotifBtn = document.getElementById('settings-save-notifs');
+    var saveAiBtn = document.getElementById('settings-save-ai');
     if (saveEmailBtn) saveEmailBtn.addEventListener('click', function () { saveSettings('email'); });
     if (saveNotifBtn) saveNotifBtn.addEventListener('click', function () { saveSettings('notifications'); });
+    if (saveAiBtn) saveAiBtn.addEventListener('click', function () { saveSettings('ai'); });
   }
 
   function loadSettings() {
@@ -1664,12 +1666,16 @@
       var brevoKey = document.getElementById('settings-brevo-key');
       var brevoSender = document.getElementById('settings-brevo-sender');
       var brevoSenderName = document.getElementById('settings-brevo-sender-name');
+      var openaiKey = document.getElementById('settings-openai-key');
+      var openaiModel = document.getElementById('settings-openai-model');
       var notifyLeads = document.getElementById('settings-notify-leads');
       var notifyAudit = document.getElementById('settings-notify-audit');
       var notifyOutreach = document.getElementById('settings-notify-outreach');
       if (brevoKey) brevoKey.value = data.brevoApiKey || '';
       if (brevoSender) brevoSender.value = data.brevoSenderEmail || '';
       if (brevoSenderName) brevoSenderName.value = data.brevoSenderName || '';
+      if (openaiKey) openaiKey.value = data.openaiApiKey || '';
+      if (openaiModel) openaiModel.value = data.openaiModel || 'gpt-4o-mini';
       if (notifyLeads) notifyLeads.checked = data.notifyLeads !== false;
       if (notifyAudit) notifyAudit.checked = data.notifyAudit !== false;
       if (notifyOutreach) notifyOutreach.checked = data.notifyOutreach === true;
@@ -1687,6 +1693,9 @@
       data.notifyLeads = document.getElementById('settings-notify-leads').checked;
       data.notifyAudit = document.getElementById('settings-notify-audit').checked;
       data.notifyOutreach = document.getElementById('settings-notify-outreach').checked;
+    } else if (section === 'ai') {
+      data.openaiApiKey = document.getElementById('settings-openai-key').value;
+      data.openaiModel = document.getElementById('settings-openai-model').value;
     }
     FirebaseService.settings.save(data).then(function () {
       showToast('Settings saved');

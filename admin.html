@@ -342,6 +342,12 @@
     <button class="btn btn-sm btn-accent" id="settings-save-email">Save Email Settings</button>
   </div>
   <div class="card" style="max-width:600px;margin-top:16px">
+    <div class="card-title">🤖 AI Settings (OpenAI)</div>
+    <div class="form-group"><label for="settings-openai-key">OpenAI API Key</label><input type="password" id="settings-openai-key" placeholder="sk-..." style="font-family:monospace"></div>
+    <div class="form-group"><label for="settings-openai-model">Model</label><select id="settings-openai-model"><option value="gpt-4o-mini">GPT-4o Mini (fast, cheap)</option><option value="gpt-4o">GPT-4o (best quality)</option><option value="gpt-3.5-turbo">GPT-3.5 Turbo (fastest)</option></select></div>
+    <button class="btn btn-sm btn-accent" id="settings-save-ai">Save AI Settings</button>
+  </div>
+  <div class="card" style="max-width:600px;margin-top:16px">
     <div class="card-title">🔔 Notifications</div>
     <div class="form-group" style="display:flex;align-items:center;gap:12px">
       <input type="checkbox" id="settings-notify-leads" checked>

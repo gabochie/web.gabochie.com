@@ -596,38 +596,128 @@ window.Agents = (function () {
     agent.tasksTotal = leads.length;
     log('copywriter', 'start', 'Generating outreach for ' + leads.length + ' leads');
     var completed = 0;
+    var useRealAPI = false;
 
-    leads.forEach(function (lead) {
-      setTimeout(function () {
-        completed++;
-        agent.tasksDone = completed;
+    // Check if OpenAI API is available
+    var settingsPromise = window.FirebaseService
+      ? FirebaseService.settings.get()
+      : Promise.resolve({});
 
-        var seq = DRIP_SEQUENCES[lead.segment] || DRIP_SEQUENCES.cold;
-        var firstStep = seq[0];
-        var tpl = OUTREACH_TEMPLATES[firstStep.template];
-        var segmentTpl = tpl[lead.segment] || tpl.cold || tpl;
-        var message = {
-          subject: fillTemplate(segmentTpl.subject, lead),
-          body: fillTemplate(segmentTpl.body, lead),
-          channel: firstStep.channel,
-          generatedAt: Date.now()
-        };
-
-        updateLead(lead.id, {
-          outreachMessage: message, outreachGenerated: Date.now(),
-          followUpSequence: lead.segment, followUpStep: 0
-        });
-
-        // Initialize follow-up state
-        followUpState[lead.id] = { step: 0, nextAction: Date.now(), sequence: lead.segment };
-        save();
-
-        log('copywriter', 'generated', 'Outreach for ' + lead.name + ' (' + lead.segment + ')', 'success');
-        completeTask('cw_' + completed, { subject: message.subject });
-
-        if (completed >= leads.length) resolve('Generated ' + leads.length + ' messages');
-      }, 80 + Math.random() * 200);
+    settingsPromise.then(function (settings) {
+      return fetch('/api/generate-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead: { name: 'test' }, messageType: 'cold outreach', apiKey: settings.openaiApiKey || '' })
+      });
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.success) {
+        useRealAPI = true;
+        log('copywriter', 'api-ready', 'OpenAI API available — using real copywriting', 'success');
+      }
+      processLeads();
+    }).catch(function () {
+      processLeads();
     });
+
+    function processLeads() {
+      leads.forEach(function (lead) {
+        setTimeout(function () {
+          if (useRealAPI) {
+            // Use OpenAI API
+            settingsPromise.then(function (settings) {
+              return fetch('/api/generate-copy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  lead: {
+                    name: lead.name || lead.contactName || '',
+                    company: lead.company || lead.name || '',
+                    industry: lead.industry || '',
+                    url: lead.url || lead.website || '',
+                    rating: lead.rating || null,
+                    totalRatings: lead.totalRatings || 0,
+                    address: lead.address || ''
+                  },
+                  messageType: 'cold outreach',
+                  tone: 'professional but warm',
+                  apiKey: settings.openaiApiKey || ''
+                })
+              });
+            }).then(function (r) { return r.json(); }).then(function (data) {
+              completed++;
+              agent.tasksDone = completed;
+
+              var message;
+              if (data.success && data.message) {
+                message = {
+                  subject: data.message.subject,
+                  body: data.message.body,
+                  followUpSubject: data.message.followUpSubject,
+                  followUpBody: data.message.followUpBody,
+                  channel: 'email',
+                  generatedAt: Date.now(),
+                  model: 'gpt-4o-mini'
+                };
+              } else {
+                // Fallback to templates
+                message = generateTemplateMessage(lead);
+              }
+
+              updateLead(lead.id, {
+                outreachMessage: message, outreachGenerated: Date.now(),
+                followUpSequence: lead.segment, followUpStep: 0
+              });
+              followUpState[lead.id] = { step: 0, nextAction: Date.now(), sequence: lead.segment };
+              save();
+              log('copywriter', 'generated', 'AI outreach for ' + lead.name + ' (' + lead.segment + ')', 'success');
+              completeTask('cw_' + completed, { subject: message.subject });
+              if (completed >= leads.length) resolve('Generated ' + leads.length + ' AI messages');
+            }).catch(function () {
+              // Fallback
+              completed++;
+              agent.tasksDone = completed;
+              var message = generateTemplateMessage(lead);
+              updateLead(lead.id, {
+                outreachMessage: message, outreachGenerated: Date.now(),
+                followUpSequence: lead.segment, followUpStep: 0
+              });
+              followUpState[lead.id] = { step: 0, nextAction: Date.now(), sequence: lead.segment };
+              save();
+              log('copywriter', 'generated', 'Template outreach for ' + lead.name, 'success');
+              if (completed >= leads.length) resolve('Generated ' + leads.length + ' messages (templates)');
+            });
+          } else {
+            // Template-based
+            completed++;
+            agent.tasksDone = completed;
+            var message = generateTemplateMessage(lead);
+            updateLead(lead.id, {
+              outreachMessage: message, outreachGenerated: Date.now(),
+              followUpSequence: lead.segment, followUpStep: 0
+            });
+            followUpState[lead.id] = { step: 0, nextAction: Date.now(), sequence: lead.segment };
+            save();
+            log('copywriter', 'generated', 'Template outreach for ' + lead.name + ' (' + lead.segment + ')', 'success');
+            completeTask('cw_' + completed, { subject: message.subject });
+            if (completed >= leads.length) resolve('Generated ' + leads.length + ' messages (templates)');
+          }
+        }, 100 + Math.random() * 300);
+      });
+    }
+
+    function generateTemplateMessage(lead) {
+      var seq = DRIP_SEQUENCES[lead.segment] || DRIP_SEQUENCES.cold;
+      var firstStep = seq[0];
+      var tpl = OUTREACH_TEMPLATES[firstStep.template];
+      var segmentTpl = tpl[lead.segment] || tpl.cold || tpl;
+      return {
+        subject: fillTemplate(segmentTpl.subject, lead),
+        body: fillTemplate(segmentTpl.body, lead),
+        channel: firstStep.channel,
+        generatedAt: Date.now(),
+        model: 'template'
+      };
+    }
   }
 
   /* ----------------------------------------

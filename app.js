@@ -182,15 +182,19 @@
     stopFinderRefresh();
     stopStrategyRefresh();
     stopAuditRefresh();
+    stopAutomationRefresh();
+    stopVisitorsRefresh();
+    stopReportsRefresh();
+    stopOutreachRefresh();
     if (tabName === 'command-center') renderCommandCenter();
     if (tabName === 'pipeline') { renderPipeline(); startPipelineRefresh(); }
-    if (tabName === 'outreach') renderOutreach();
+    if (tabName === 'outreach') { renderOutreach(); startOutreachRefresh(); }
     if (tabName === 'finder') { initFinder(); startFinderRefresh(); }
     if (tabName === 'strategy') { renderStrategy(); startStrategyRefresh(); }
-    if (tabName === 'automation') renderAutomation();
+    if (tabName === 'automation') { renderAutomation(); startAutomationRefresh(); }
     if (tabName === 'roadmap') renderRoadmap();
-    if (tabName === 'visitors') renderVisitors();
-    if (tabName === 'reports') renderReports();
+    if (tabName === 'visitors') { renderVisitors(); startVisitorsRefresh(); }
+    if (tabName === 'reports') { renderReports(); startReportsRefresh(); }
     if (tabName === 'audit') { renderAudit(); startAuditRefresh(); }
     if (tabName === 'pipeline-auto') { renderPipeline(); startPipelineRefresh(); renderOrchestrator(); }
     if (tabName === 'smoke-test') renderSmokeTest();
@@ -925,6 +929,18 @@
     }
   }
 
+  /* Automation auto-refresh */
+  var AUTOMATION_INTERVAL = null;
+
+  function startAutomationRefresh() {
+    if (AUTOMATION_INTERVAL) clearInterval(AUTOMATION_INTERVAL);
+    AUTOMATION_INTERVAL = setInterval(function () { renderAutomation(); }, 30000);
+  }
+
+  function stopAutomationRefresh() {
+    if (AUTOMATION_INTERVAL) { clearInterval(AUTOMATION_INTERVAL); AUTOMATION_INTERVAL = null; }
+  }
+
   /* ----------------------------------------
      OUTREACH TAB — Bulk Outreach
      ---------------------------------------- */
@@ -936,6 +952,18 @@
     renderOutreachCampaigns();
     renderOutreachTemplates();
     wireOutreachCompose();
+  }
+
+  /* Outreach auto-refresh */
+  var OUTREACH_INTERVAL = null;
+
+  function startOutreachRefresh() {
+    if (OUTREACH_INTERVAL) clearInterval(OUTREACH_INTERVAL);
+    OUTREACH_INTERVAL = setInterval(function () { renderOutreach(); }, 15000);
+  }
+
+  function stopOutreachRefresh() {
+    if (OUTREACH_INTERVAL) { clearInterval(OUTREACH_INTERVAL); OUTREACH_INTERVAL = null; }
   }
 
   function renderOutreachLimits() {
@@ -2062,6 +2090,18 @@
     }
   }
 
+  /* Visitors auto-refresh */
+  var VISITORS_INTERVAL = null;
+
+  function startVisitorsRefresh() {
+    if (VISITORS_INTERVAL) clearInterval(VISITORS_INTERVAL);
+    VISITORS_INTERVAL = setInterval(function () { renderVisitors(); }, 30000);
+  }
+
+  function stopVisitorsRefresh() {
+    if (VISITORS_INTERVAL) { clearInterval(VISITORS_INTERVAL); VISITORS_INTERVAL = null; }
+  }
+
   /* ----------------------------------------
      REPORTS TAB — Dynamic Charts & Comparisons
      ---------------------------------------- */
@@ -2197,6 +2237,18 @@
   }
 
   function refreshReport() { renderReports(); }
+
+  /* Reports auto-refresh */
+  var REPORTS_INTERVAL = null;
+
+  function startReportsRefresh() {
+    if (REPORTS_INTERVAL) clearInterval(REPORTS_INTERVAL);
+    REPORTS_INTERVAL = setInterval(function () { renderReports(); }, 60000);
+  }
+
+  function stopReportsRefresh() {
+    if (REPORTS_INTERVAL) { clearInterval(REPORTS_INTERVAL); REPORTS_INTERVAL = null; }
+  }
 
   function sendReportEmail() {
     var period = document.getElementById('report-period').value;
@@ -2969,6 +3021,10 @@
           if (FINDER_INTERVAL) { clearInterval(FINDER_INTERVAL); FINDER_INTERVAL = null; }
           if (STRATEGY_INTERVAL) { clearInterval(STRATEGY_INTERVAL); STRATEGY_INTERVAL = null; }
           if (AUDIT_INTERVAL) { clearInterval(AUDIT_INTERVAL); AUDIT_INTERVAL = null; }
+          if (AUTOMATION_INTERVAL) { clearInterval(AUTOMATION_INTERVAL); AUTOMATION_INTERVAL = null; }
+          if (VISITORS_INTERVAL) { clearInterval(VISITORS_INTERVAL); VISITORS_INTERVAL = null; }
+          if (REPORTS_INTERVAL) { clearInterval(REPORTS_INTERVAL); REPORTS_INTERVAL = null; }
+          if (OUTREACH_INTERVAL) { clearInterval(OUTREACH_INTERVAL); OUTREACH_INTERVAL = null; }
         } else {
           var active = document.querySelector('.section.active');
           if (!active) return;
@@ -2989,6 +3045,18 @@
           if (active.id === 'audit') {
             runAudit();
             if (!AUDIT_INTERVAL) AUDIT_INTERVAL = setInterval(function () { runAudit(); }, 30000);
+          }
+          if (active.id === 'automation') {
+            if (!AUTOMATION_INTERVAL) AUTOMATION_INTERVAL = setInterval(function () { renderAutomation(); }, 30000);
+          }
+          if (active.id === 'visitors') {
+            if (!VISITORS_INTERVAL) VISITORS_INTERVAL = setInterval(function () { renderVisitors(); }, 30000);
+          }
+          if (active.id === 'reports') {
+            if (!REPORTS_INTERVAL) REPORTS_INTERVAL = setInterval(function () { renderReports(); }, 60000);
+          }
+          if (active.id === 'outreach') {
+            if (!OUTREACH_INTERVAL) OUTREACH_INTERVAL = setInterval(function () { renderOutreach(); }, 15000);
           }
         }
       });

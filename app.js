@@ -551,14 +551,14 @@
             p.qualScore = result.total || (result.scores || {}).total || 0;
             p.issues = result.issues || [];
             p.segment = p.qualScore >= 70 ? 'hot' : p.qualScore >= 50 ? 'warm' : 'cold';
-            if (window.Automation) Automation.trigger('lead-scored', p);
+            if (window.Automation) window.Automation.trigger('lead-scored', p);
             analyzed++;
             updateFinderProgress(analyzed, prospects.length);
             if (analyzed >= prospects.length) showFinderResults(prospects);
           }).catch(function () {
             p.qualScore = 30 + Math.floor(Math.random() * 40);
             p.segment = p.qualScore >= 60 ? 'warm' : 'cold';
-            if (window.Automation) Automation.trigger('lead-scored', p);
+            if (window.Automation) window.Automation.trigger('lead-scored', p);
             analyzed++;
             updateFinderProgress(analyzed, prospects.length);
             if (analyzed >= prospects.length) showFinderResults(prospects);
@@ -566,7 +566,7 @@
         } else {
           p.qualScore = 30 + Math.floor(Math.random() * 40);
           p.segment = p.qualScore >= 60 ? 'warm' : 'cold';
-          if (window.Automation) Automation.trigger('lead-scored', p);
+          if (window.Automation) window.Automation.trigger('lead-scored', p);
           analyzed++;
           updateFinderProgress(analyzed, prospects.length);
           if (analyzed >= prospects.length) showFinderResults(prospects);
@@ -790,30 +790,56 @@
     if (!container) return;
 
     var workflows = window.Automation.getAll();
-    container.innerHTML = workflows.map(function (wf) {
-      var steps = (wf.steps || []).map(function (s) { return s.label || s.action; }).join(' → ');
-      return '<div class="automation-wf ' + (wf.enabled ? 'enabled' : 'disabled') + '">' +
-        '<div class="awf-header">' +
-          '<span class="awf-name">' + esc(wf.name) + '</span>' +
-          '<label class="cc-toggle"><input type="checkbox" ' + (wf.enabled ? 'checked' : '') + ' onchange="Automation.toggle(\'' + wf.id + '\')"><span class="cc-toggle-slider"></span></label>' +
-        '</div>' +
-        '<div class="awf-desc">' + esc(wf.description) + '</div>' +
-        '<div class="awf-steps">' + esc(steps) + '</div>' +
-        '<div class="awf-meta">Runs: ' + (wf.runs || 0) + '</div>' +
-      '</div>';
-    }).join('');
+    if (!workflows || !workflows.length) {
+      container.innerHTML = '<div style="color:var(--text2);padding:16px">No workflows configured.</div>';
+      return;
+    }
+
+    var categories = { 'lead-management': '🎯 Lead Management', 'email': '📧 Email', 'ai': '🤖 AI', 'analytics': '📊 Analytics' };
+    var html = '';
+
+    Object.keys(categories).forEach(function (cat) {
+      var catWorkflows = workflows.filter(function (w) { return w.category === cat; });
+      if (!catWorkflows.length) return;
+      html += '<div style="margin-bottom:20px">';
+      html += '<div style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">' + categories[cat] + '</div>';
+      catWorkflows.forEach(function (wf) {
+        var steps = (wf.steps || []).map(function (s) { return s.label || s.action; }).join(' → ');
+        html += '<div class="automation-wf ' + (wf.enabled ? 'enabled' : 'disabled') + '" data-wf-id="' + wf.id + '">';
+        html += '<div class="awf-header">';
+        html += '<span class="awf-name">' + esc(wf.name) + '</span>';
+        html += '<label class="cc-toggle"><input type="checkbox" ' + (wf.enabled ? 'checked' : '') + ' data-toggle-wf="' + wf.id + '"><span class="cc-toggle-slider"></span></label>';
+        html += '</div>';
+        html += '<div class="awf-desc">' + esc(wf.description) + '</div>';
+        html += '<div class="awf-steps">' + esc(steps) + '</div>';
+        html += '<div class="awf-meta">Runs: ' + (wf.runs || 0) + (wf.lastRun ? ' • Last: ' + new Date(wf.lastRun).toLocaleDateString() : '') + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    container.innerHTML = html;
+
+    // Wire toggle handlers
+    container.querySelectorAll('[data-toggle-wf]').forEach(function (toggle) {
+      toggle.addEventListener('change', function () {
+        window.Automation.toggle(toggle.dataset.toggleWf);
+        renderAutomation();
+      });
+    });
 
     // Render automation log
     var logContainer = document.getElementById('automation-log');
     if (logContainer) {
-      var log = window.Automation.getLog(20);
-      logContainer.innerHTML = log.length === 0 ? '<div style="color:var(--text2);padding:16px">No automation activity yet.</div>' :
+      var log = window.Automation.getLog(30);
+      logContainer.innerHTML = log.length === 0 ? '<div style="color:var(--text2);padding:16px">No automation activity yet. Workflows run automatically on schedule.</div>' :
         log.map(function (e) {
-          return '<div class="automation-log-entry ' + (e.level || 'info') + '">' +
-            '<span class="ale-time">' + new Date(e.ts).toLocaleTimeString() + '</span> ' +
-            '<span class="ale-action">' + esc(e.action) + '</span> ' +
-            '<span class="ale-detail">' + esc(e.detail) + '</span>' +
-          '</div>';
+          var levelColor = e.level === 'error' ? 'var(--red)' : e.level === 'warning' ? 'var(--yellow)' : e.level === 'success' ? 'var(--green)' : 'var(--text2)';
+          return '<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;gap:12px;align-items:flex-start">' +
+            '<span style="color:var(--text3);white-space:nowrap">' + new Date(e.ts).toLocaleTimeString() + '</span>' +
+            '<span style="color:' + levelColor + ';font-weight:600;min-width:80px">' + esc(e.action) + '</span>' +
+            '<span style="color:var(--text2)">' + esc(e.detail) + '</span>' +
+            '</div>';
         }).join('');
     }
   }

@@ -7,8 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "lint": "eslint *.js netlify/functions/*.js --ignore-pattern node_modules",
-    "lint:fix": "eslint *.js netlify/functions/*.js --fix --ignore-pattern node_modules",
+    "lint": "eslint *.js functions/api/*.js functions/api/**/*.js --ignore-pattern node_modules",
+    "lint:fix": "eslint *.js functions/api/*.js functions/api/**/*.js --fix --ignore-pattern node_modules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

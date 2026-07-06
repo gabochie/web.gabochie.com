@@ -9,8 +9,8 @@ window.OutreachEngine = (function () {
      CONFIG
      ---------------------------------------- */
   var CONFIG = {
-    brevoApiKey: '', // Set via Netlify env var
-    trackBaseUrl: '/.netlify/functions/track',
+    brevoApiKey: '', // Set via CF Pages env var
+    trackBaseUrl: '/api/track',
     maxEmailsPerDay: 290, // Stay under Brevo 300/day limit
     maxWhatsAppPerDay: 50,
     batchSize: 50,
@@ -79,8 +79,8 @@ window.OutreachEngine = (function () {
 
       logAction('email-batch', 'Sending ' + toSend.length + ' emails via Brevo', 'info');
 
-      // Call Netlify Function
-      fetch(CONFIG.trackBaseUrl.replace('/track/open', '/send-email').replace('/.netlify/functions/track', '/.netlify/functions/send-email'), {
+      // Call CF Pages Function
+      fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

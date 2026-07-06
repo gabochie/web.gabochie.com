@@ -144,7 +144,7 @@ window.Scoring = (function () {
       if (!/^https?:\/\//.test(url)) url = 'https://' + url;
 
       // Try Netlify Function first (production)
-      fetch('/.netlify/functions/analyze', {
+      fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url })

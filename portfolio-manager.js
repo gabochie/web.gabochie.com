@@ -107,7 +107,7 @@ window.PortfolioManager = (function () {
     var statusEl = document.getElementById('pm-status');
     if (statusEl) statusEl.textContent = 'Auditing ' + site.name + '...';
 
-    fetch('/.netlify/functions/site-audit', {
+    fetch('/api/site-audit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: site.url })

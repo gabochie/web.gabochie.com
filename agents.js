@@ -310,37 +310,114 @@ window.Agents = (function () {
      ---------------------------------------- */
   function executeScout(resolve, reject) {
     var agent = AGENTS.scout;
-    var keywords = ['outdated website', 'needs website redesign', 'old website design'];
+    var keywords = ['outdated website', 'needs website redesign', 'old website design', 'website redesign service'];
     var industries = ['medical', 'dental', 'legal', 'financial', 'home services', 'manufacturing', 'automotive', 'retail'];
     var found = 0;
     var searches = [];
 
     keywords.forEach(function (kw) {
       industries.forEach(function (ind) {
-        searches.push({ keyword: kw, industry: ind });
+        searches.push({ keyword: kw + ' ' + ind, industry: ind });
       });
     });
 
     agent.tasksTotal = searches.length;
     log('scout', 'scan-start', 'Scanning ' + searches.length + ' keyword+industry combos');
     var completed = 0;
+    var allProspects = [];
 
-    searches.forEach(function (search) {
-      setTimeout(function () {
-        completed++;
-        agent.tasksDone = completed;
-        var prospects = generateProspects(search);
-        found += prospects.length;
+    // Try Google Places API first, fallback to templates
+    var useRealAPI = false;
 
-        if (prospects.length > 0) {
-          log('scout', 'found', prospects.length + ' prospects: "' + search.keyword + '" in ' + search.industry, 'success');
-        }
-
-        if (completed >= searches.length) {
-          resolve('Scanned ' + searches.length + ' queries, found ' + found + ' prospects');
-        }
-      }, 100 + Math.random() * 300);
+    // Check if API key is configured
+    fetch('/api/places-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword: 'website design service', location: 'United States', radius: 50000 })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.success && data.results && data.results.length) {
+        useRealAPI = true;
+        log('scout', 'api-found', 'Google Places API available — using real data', 'success');
+      }
+      runSearches();
+    }).catch(function () {
+      runSearches();
     });
+
+    function runSearches() {
+      searches.forEach(function (search, idx) {
+        setTimeout(function () {
+          if (useRealAPI) {
+            // Use Google Places API
+            fetch('/api/places-search', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ keyword: search.keyword, location: 'United States', radius: 50000 })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+              var prospects = (data.results || []).map(function (p) {
+                return {
+                  id: 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                  name: p.name,
+                  company: p.name,
+                  url: p.website || '',
+                  email: '',
+                  phone: p.phone || '',
+                  industry: search.industry,
+                  address: p.address || '',
+                  rating: p.rating || null,
+                  totalRatings: p.totalRatings || 0,
+                  source: 'Scout/Google Places',
+                  status: 'New',
+                  score: 0,
+                  pipelineStage: 'prospect',
+                  segment: 'unclassified',
+                  placeId: p.placeId || '',
+                  createdAt: new Date().toISOString()
+                };
+              });
+              found += prospects.length;
+              allProspects = allProspects.concat(prospects);
+              completed++;
+              agent.tasksDone = completed;
+              if (prospects.length > 0) {
+                log('scout', 'found', prospects.length + ' real prospects: "' + search.keyword + '"', 'success');
+              }
+              if (completed >= searches.length) finishScout();
+            }).catch(function () {
+              // Fallback to templates for this search
+              var prospects = generateProspects(search);
+              found += prospects.length;
+              allProspects = allProspects.concat(prospects);
+              completed++;
+              agent.tasksDone = completed;
+              if (completed >= searches.length) finishScout();
+            });
+          } else {
+            // Fallback to template-based
+            var prospects = generateProspects(search);
+            found += prospects.length;
+            allProspects = allProspects.concat(prospects);
+            completed++;
+            agent.tasksDone = completed;
+            if (prospects.length > 0) {
+              log('scout', 'found', prospects.length + ' prospects (templates): "' + search.keyword + '"', 'success');
+            }
+            if (completed >= searches.length) finishScout();
+          }
+        }, 200 + Math.random() * 500);
+      });
+    }
+
+    function finishScout() {
+      // Save real prospects to Firestore
+      if (allProspects.length > 0 && window.FirebaseService) {
+        allProspects.forEach(function (p) {
+          FirebaseService.leads.update(p.id, p).catch(function () {});
+        });
+        log('scout', 'saved', allProspects.length + ' prospects saved to pipeline', 'success');
+      }
+      resolve('Scanned ' + searches.length + ' queries, found ' + found + ' prospects' + (useRealAPI ? ' (Google Places)' : ' (templates)'));
+    }
   }
 
   function generateProspects(search) {

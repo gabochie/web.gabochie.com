@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fidelity Investments - Redesign Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a1a; background: #fff; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.preview-bar { background: #e74c3c; color: #fff; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; }
+.preview-bar span { opacity: 0.85; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+nav { background: #fff; border-bottom: 1px solid #e8ecef; position: sticky; top: 0; z-index: 100; }
+nav .container { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.nav-logo { font-size: 22px; font-weight: 800; color: #1a4a2e; letter-spacing: -0.5px; text-decoration: none; }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { text-decoration: none; color: #444; font-size: 15px; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: #1a4a2e; }
+.nav-cta { background: #1a4a2e; color: #fff !important; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; transition: background 0.2s; }
+.nav-cta:hover { background: #143d25 !important; color: #fff !important; }
+.mobile-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.mobile-toggle span { width: 24px; height: 2px; background: #1a4a2e; border-radius: 2px; }
+.hero { background: linear-gradient(135deg, #1a4a2e 0%, #0f2b1a 100%); color: #fff; padding: 100px 0 90px; text-align: center; }
+.hero h1 { font-size: 52px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 18px; }
+.hero p { font-size: 20px; font-weight: 300; opacity: 0.9; max-width: 640px; margin: 0 auto 36px; line-height: 1.6; }
+.hero-btn { display: inline-block; background: #fff; color: #1a4a2e; font-weight: 700; font-size: 17px; padding: 16px 44px; border-radius: 8px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+.hero-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+.stats { background: #f6f8f7; padding: 60px 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
+.stat-item h2 { font-size: 38px; font-weight: 800; color: #1a4a2e; letter-spacing: -1px; }
+.stat-item p { font-size: 15px; color: #666; margin-top: 4px; font-weight: 500; }
+.section { padding: 80px 0; }
+.section-title { text-align: center; font-size: 34px; font-weight: 700; color: #1a4a2e; letter-spacing: -0.8px; margin-bottom: 12px; }
+.section-sub { text-align: center; font-size: 17px; color: #666; max-width: 560px; margin: 0 auto 48px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.card { background: #fff; border: 1px solid #e8ecef; border-radius: 12px; padding: 36px 28px; transition: box-shadow 0.25s, transform 0.25s; }
+.card:hover { box-shadow: 0 12px 32px rgba(26,74,46,0.08); transform: translateY(-4px); }
+.card-icon { width: 48px; height: 48px; background: #eaf2ed; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 22px; color: #1a4a2e; }
+.card h3 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
+.card p { font-size: 15px; color: #666; line-height: 1.6; }
+.products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.product-item { background: #f6f8f7; border-radius: 10px; padding: 28px 24px; text-align: center; transition: background 0.2s, transform 0.2s; cursor: default; }
+.product-item:hover { background: #eaf2ed; transform: translateY(-3px); }
+.product-item h4 { font-size: 17px; font-weight: 700; color: #1a4a2e; margin-bottom: 6px; }
+.product-item p { font-size: 14px; color: #777; }
+.insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.insight-card { border: 1px solid #e8ecef; border-radius: 12px; padding: 32px 28px; transition: box-shadow 0.25s; }
+.insight-card:hover { box-shadow: 0 8px 24px rgba(26,74,46,0.06); }
+.insight-card h4 { font-size: 18px; font-weight: 700; color: #1a4a2e; margin-bottom: 8px; }
+.insight-card p { font-size: 15px; color: #666; line-height: 1.6; }
+.insight-card a { color: #1a4a2e; font-weight: 600; font-size: 14px; text-decoration: none; display: inline-block; margin-top: 14px; }
+.insight-card a:hover { text-decoration: underline; }
+footer { background: #1a4a2e; color: #fff; padding: 56px 0 32px; }
+footer .container { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+footer h5 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 14px; opacity: 0.7; }
+footer a { color: #cce0d4; text-decoration: none; font-size: 14px; display: block; margin-bottom: 8px; }
+footer a:hover { color: #fff; }
+footer p { font-size: 14px; opacity: 0.8; line-height: 1.7; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); margin-top: 36px; padding-top: 22px; text-align: center; font-size: 13px; opacity: 0.55; }
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .mobile-toggle { display: flex; }
+  .hero h1 { font-size: 36px; }
+  .hero p { font-size: 17px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .cards, .products-grid, .insights-grid { grid-template-columns: 1fr; }
+  footer .container { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 540px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat-item h2 { font-size: 28px; }
+  footer .container { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-bar">Redesign Preview for Fidelity Investments &middot; Print / Save PDF</div>
+
+<nav>
+<div class="container">
+  <a href="#" class="nav-logo">Fidelity</a>
+  <ul class="nav-links">
+    <li><a href="#">Investing</a></li>
+    <li><a href="#">Planning</a></li>
+    <li><a href="#">Advice</a></li>
+    <li><a href="#">Retirement</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#" class="nav-cta">Open Account</a></li>
+  </ul>
+  <button class="mobile-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</div>
+</nav>
+
+<section class="hero">
+<div class="container">
+  <h1>Your Financial Future, Optimized.</h1>
+  <p>Personalized investing and retirement planning backed by decades of expertise &mdash; built to help you grow, manage, and protect your wealth for the long term.</p>
+  <a href="#" class="hero-btn">Open an Account</a>
+</div>
+</section>
+
+<section class="stats">
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat-item"><h2>$4.5T</h2><p>AUM</p></div>
+    <div class="stat-item"><h2>40M+</h2><p>Customers</p></div>
+    <div class="stat-item"><h2>75+</h2><p>Years in Business</p></div>
+    <div class="stat-item"><h2>#1</h2><p>Retirement Provider</p></div>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+  <h2 class="section-title">Why Fidelity</h2>
+  <p class="section-sub">We put your goals first with low costs, award-winning service, and tools built for every stage of your financial journey.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">&#9660;</div>
+      <h3>Zero Expense Ratio Funds</h3>
+      <p>Invest in our lineup of zero expense ratio index funds and keep more of what you earn with no minimums to start.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#9742;</div>
+      <h3>24/7 Support</h3>
+      <p>Reach dedicated professionals anytime, day or night. Phone, chat, and secure messaging available around the clock.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#9733;</div>
+      <h3>Award-Winning Platform</h3>
+      <p>Consistently ranked #1 by investors and independent reviewers for trading tools, research, and customer satisfaction.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="section" style="background:#f6f8f7;">
+<div class="container">
+  <h2 class="section-title">Investment Products</h2>
+  <p class="section-sub">A full range of solutions from DIY trading to managed portfolios — find the right fit for your goals.</p>
+  <div class="products-grid">
+    <div class="product-item"><h4>Mutual Funds</h4><p>5,000+ funds from Fidelity and partners</p></div>
+    <div class="product-item"><h4>ETFs</h4><p>Commission-free ETFs for every strategy</p></div>
+    <div class="product-item"><h4>Retirement Accounts</h4><p>IRA, 401(k), Roth &amp; more</p></div>
+    <div class="product-item"><h4>Managed Accounts</h4><p>Professional portfolio management</p></div>
+    <div class="product-item"><h4>Trading</h4><p>Stocks, options, bonds, CDs</p></div>
+    <div class="product-item"><h4>Fixed Income</h4><p>Bonds, treasuries, and CDs</p></div>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+  <h2 class="section-title">Tools &amp; Insights</h2>
+  <p class="section-sub">Data-driven research and planning tools to help you make confident decisions at every step.</p>
+  <div class="insights-grid">
+    <div class="insight-card">
+      <h4>Retirement Planner</h4>
+      <p>Model different scenarios, adjust contributions, and see your projected income in retirement with our interactive tool.</p>
+      <a href="#">Explore planner &rarr;</a>
+    </div>
+    <div class="insight-card">
+      <h4>Stock Screener</h4>
+      <p>Filter thousands of stocks by sector, valuation, dividend yield, and dozens of other criteria to find your next opportunity.</p>
+      <a href="#">Screen stocks &rarr;</a>
+    </div>
+    <div class="insight-card">
+      <h4>Market Research</h4>
+      <p>Daily analysis, earnings reports, and expert commentary from Fidelity&rsquo;s research team to keep you informed.</p>
+      <a href="#">View research &rarr;</a>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="container">
+  <div>
+    <h5>Fidelity</h5>
+    <p>Headquartered in Boston, Massachusetts, Fidelity Investments is one of the world&rsquo;s largest asset managers with $4.5 trillion in assets under administration. Guided by the Johnson family, we have been helping investors build better financial futures since 1946.</p>
+  </div>
+  <div>
+    <h5>Services</h5>
+    <a href="#">Investing</a>
+    <a href="#">Retirement</a>
+    <a href="#">Wealth Management</a>
+    <a href="#">Life Insurance</a>
+    <a href="#">Advisory</a>
+  </div>
+  <div>
+    <h5>Resources</h5>
+    <a href="#">Help Center</a>
+    <a href="#">Research</a>
+    <a href="#">Tools</a>
+    <a href="#">Learning Center</a>
+    <a href="#">Accessibility</a>
+  </div>
+  <div>
+    <h5>Company</h5>
+    <a href="#">About Us</a>
+    <a href="#">Careers</a>
+    <a href="#">Newsroom</a>
+    <a href="#">Investor Relations</a>
+    <a href="#">Contact</a>
+  </div>
+</div>
+<div class="container footer-bottom">Fidelity Investments &middot; Boston, MA &middot; &copy; 2026 Fidelity &mdash; Redesign Concept</div>
+</footer>
+
+</body>
+</html>

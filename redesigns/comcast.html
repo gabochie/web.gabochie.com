@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comcast / Xfinity — Redesign Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a1a; background: #fff; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* Preview bar */
+.preview-bar { background: #cc0000; color: #fff; text-align: center; padding: 10px 16px; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; }
+.preview-bar span { opacity: 0.85; }
+
+/* Nav */
+.nav { background: #fff; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; }
+.nav .container { display: flex; align-items: center; gap: 32px; height: 64px; }
+.nav-logo { font-size: 22px; font-weight: 800; color: #0066cc; letter-spacing: -0.5px; }
+.nav-logo span { font-weight: 400; color: #1a1a1a; }
+.nav-links { display: flex; align-items: center; gap: 24px; list-style: none; margin-left: auto; }
+.nav-links a { font-size: 14px; font-weight: 500; color: #333; transition: color 0.2s; }
+.nav-links a:hover { color: #0066cc; }
+.nav-cta { background: #0066cc; color: #fff !important; padding: 8px 18px; border-radius: 6px; font-weight: 600; font-size: 13px; transition: background 0.2s; }
+.nav-cta:hover { background: #0052a3 !important; }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #0066cc 0%, #004d99 100%); color: #fff; padding: 96px 0 80px; text-align: center; }
+.hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 16px; }
+.hero p { font-size: clamp(16px, 2vw, 20px); opacity: 0.9; max-width: 600px; margin: 0 auto 32px; }
+.hero-btn { display: inline-block; background: #fff; color: #0066cc; font-weight: 700; font-size: 16px; padding: 14px 36px; border-radius: 8px; transition: transform 0.2s, box-shadow 0.2s; }
+.hero-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+/* Stats */
+.stats { background: #f8fafc; padding: 48px 0; border-bottom: 1px solid #e5e7eb; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+.stat-num { font-size: 32px; font-weight: 800; color: #0066cc; }
+.stat-label { font-size: 14px; color: #555; margin-top: 4px; }
+
+/* Section */
+.section { padding: 72px 0; }
+.section-alt { background: #f8fafc; }
+.section-title { font-size: 30px; font-weight: 700; text-align: center; margin-bottom: 48px; letter-spacing: -0.5px; }
+
+/* Plans */
+.plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.plan-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px 24px; text-align: center; transition: box-shadow 0.2s, border-color 0.2s; }
+.plan-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.06); border-color: #0066cc; }
+.plan-card.featured { border: 2px solid #0066cc; box-shadow: 0 4px 24px rgba(0,102,204,0.1); position: relative; }
+.plan-card.featured::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #0066cc; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 16px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+.plan-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.plan-speed { font-size: 36px; font-weight: 800; color: #0066cc; margin-bottom: 4px; }
+.plan-speed-label { font-size: 13px; color: #777; margin-bottom: 16px; }
+.plan-desc { font-size: 14px; color: #555; margin-bottom: 24px; line-height: 1.5; }
+.plan-price { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.plan-price small { font-size: 14px; font-weight: 400; color: #777; }
+.plan-cta { display: inline-block; background: #0066cc; color: #fff; font-weight: 600; font-size: 14px; padding: 12px 32px; border-radius: 6px; transition: background 0.2s; }
+.plan-cta:hover { background: #0052a3; }
+
+/* Why Xfinity */
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feature-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px 24px; text-align: center; transition: box-shadow 0.2s; }
+.feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.06); }
+.feature-icon { width: 56px; height: 56px; background: #e6f0fa; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; }
+.feature-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.feature-desc { font-size: 14px; color: #555; line-height: 1.5; }
+
+/* Services */
+.services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.service-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px 20px; text-align: center; transition: box-shadow 0.2s; }
+.service-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.06); }
+.service-icon { width: 52px; height: 52px; background: #0066cc; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 24px; color: #fff; }
+.service-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.service-desc { font-size: 13px; color: #555; line-height: 1.5; }
+
+/* Footer */
+.footer { background: #0a1628; color: #9ca3af; padding: 56px 0 32px; font-size: 14px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+.footer-brand h3 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+.footer-brand p { line-height: 1.6; max-width: 300px; }
+.footer h4 { color: #fff; font-weight: 600; font-size: 14px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+.footer ul { list-style: none; }
+.footer ul li { margin-bottom: 10px; }
+.footer ul a { color: #9ca3af; transition: color 0.2s; }
+.footer ul a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid #1f2937; padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-bottom span { font-size: 12px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .plans-grid, .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .nav .container { flex-wrap: wrap; height: auto; padding: 12px 24px; gap: 12px; }
+  .nav-links { margin-left: 0; width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .plans-grid, .features-grid, .services-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .hero { padding: 56px 0 48px; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-bar">&#9898; Redesign Preview for Comcast / Xfinity &middot; Print / Save PDF</div>
+
+<nav class="nav">
+<div class="container">
+<a href="#" class="nav-logo">Comcast <span>| Xfinity</span></a>
+<ul class="nav-links">
+<li><a href="#">Internet</a></li>
+<li><a href="#">TV</a></li>
+<li><a href="#">Home Phone</a></li>
+<li><a href="#">Business</a></li>
+<li><a href="#">Support</a></li>
+<li><a href="#">My Account</a></li>
+<li><a href="#" class="nav-cta">Shop Now</a></li>
+</ul>
+</div>
+</nav>
+
+<section class="hero">
+<div class="container">
+<h1>Connect Your Home.<br>Simplify Your Life.</h1>
+<p>Experience lightning-fast gig-speed internet with Xfinity. Stream, work, learn, and game — all at once. No lags, just life.</p>
+<a href="#" class="hero-btn">Shop Internet Plans</a>
+</div>
+</section>
+
+<section class="stats">
+<div class="container">
+<div class="stats-grid">
+<div><div class="stat-num">32M+</div><div class="stat-label">Internet Customers</div></div>
+<div><div class="stat-num">1.2Gbps</div><div class="stat-label">Max Speed</div></div>
+<div><div class="stat-num">99.9%</div><div class="stat-label">Reliability</div></div>
+<div><div class="stat-num">40+</div><div class="stat-label">Years of Innovation</div></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="internet">
+<div class="container">
+<h2 class="section-title">Internet Plans</h2>
+<div class="plans-grid">
+<div class="plan-card">
+<div class="plan-name">Connect</div>
+<div class="plan-speed">300</div>
+<div class="plan-speed-label">Mbps</div>
+<div class="plan-desc">Reliable speeds for streaming, browsing &amp; social media.</div>
+<div class="plan-price">$35<small>/mo</small></div>
+<br>
+<a href="#" class="plan-cta">Shop Connect</a>
+</div>
+<div class="plan-card featured">
+<div class="plan-name">Fast</div>
+<div class="plan-speed">800</div>
+<div class="plan-speed-label">Mbps</div>
+<div class="plan-desc">Power through 4K streaming, gaming &amp; video calls.</div>
+<div class="plan-price">$55<small>/mo</small></div>
+<br>
+<a href="#" class="plan-cta">Shop Fast</a>
+</div>
+<div class="plan-card">
+<div class="plan-name">Gigabit</div>
+<div class="plan-speed">1.2</div>
+<div class="plan-speed-label">Gbps</div>
+<div class="plan-desc">Blazing speed for the whole family. 20+ devices supported.</div>
+<div class="plan-price">$75<small>/mo</small></div>
+<br>
+<a href="#" class="plan-cta">Shop Gigabit</a>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section section-alt">
+<div class="container">
+<h2 class="section-title">Why Xfinity</h2>
+<div class="features-grid">
+<div class="feature-card">
+<div class="feature-icon">&#9889;</div>
+<div class="feature-title">Fastest WiFi</div>
+<div class="feature-desc">Get the fastest in-home WiFi with our advanced xFi Gateway. Seamless coverage throughout your entire home.</div>
+</div>
+<div class="feature-card">
+<div class="feature-icon">&#128737;</div>
+<div class="feature-title">xFi Advanced Security</div>
+<div class="feature-desc">Protect your family online with real-time threat protection, parental controls, and secure browsing.</div>
+</div>
+<div class="feature-card">
+<div class="feature-icon">&#128222;</div>
+<div class="feature-title">24/7 Support</div>
+<div class="feature-desc">Our US-based support team is available anytime, day or night. Chat, call, or visit a store near you.</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<h2 class="section-title">Services</h2>
+<div class="services-grid">
+<div class="service-card">
+<div class="service-icon">&#128241;</div>
+<div class="service-name">Xfinity Mobile</div>
+<div class="service-desc">Unlimited data on the nation's largest 5G network. Plans starting at $15/mo.</div>
+</div>
+<div class="service-card">
+<div class="service-icon">&#127916;</div>
+<div class="service-name">Xfinity Stream</div>
+<div class="service-desc">Stream 300,000+ movies &amp; shows. Live TV, DVR, and Peacock included.</div>
+</div>
+<div class="service-card">
+<div class="service-icon">&#128161;</div>
+<div class="service-name">Xfinity Home</div>
+<div class="service-desc">Smart home security with cameras, sensors, voice control, and 24/7 monitoring.</div>
+</div>
+<div class="service-card">
+<div class="service-icon">&#127970;</div>
+<div class="service-name">Business Solutions</div>
+<div class="service-desc">Reliable internet, voice, and TV solutions built for businesses of every size.</div>
+</div>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="container">
+<div class="footer-grid">
+<div class="footer-brand">
+<h3>Comcast</h3>
+<p>Headquartered in Philadelphia, Pennsylvania — connecting millions of homes and businesses across the United States with innovative media and technology solutions.</p>
+</div>
+<div>
+<h4>Services</h4>
+<ul>
+<li><a href="#">Internet</a></li>
+<li><a href="#">TV</a></li>
+<li><a href="#">Home Phone</a></li>
+<li><a href="#">Xfinity Mobile</a></li>
+<li><a href="#">Xfinity Home</a></li>
+</ul>
+</div>
+<div>
+<h4>Support</h4>
+<ul>
+<li><a href="#">Contact Us</a></li>
+<li><a href="#">My Account</a></li>
+<li><a href="#">Pay My Bill</a></li>
+<li><a href="#">Service Status</a></li>
+<li><a href="#">Accessibility</a></li>
+</ul>
+</div>
+<div>
+<h4>Company</h4>
+<ul>
+<li><a href="#">About Comcast</a></li>
+<li><a href="#">NBCUniversal</a></li>
+<li><a href="#">Careers</a></li>
+<li><a href="#">Investors</a></li>
+<li><a href="#">Privacy Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span>&copy; 2026 Comcast Corporation. All rights reserved. Philadelphia, PA.</span>
+<span>Redesign Preview &mdash; For demonstration purposes only.</span>
+</div>
+</div>
+</footer>
+
+</body>
+</html>

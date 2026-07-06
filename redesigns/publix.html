@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publix Redesign Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fdfcf8;
+      color: #1a1a1a;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .preview-bar {
+      background: #c1121f;
+      color: #fff;
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .preview-bar span {
+      opacity: 0.9;
+    }
+
+    /* Nav */
+    .nav {
+      background: #fff;
+      border-bottom: 1px solid #e8e3d9;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: #2d6a4f;
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+
+    .logo::first-letter {
+      font-size: 28px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #2d6a4f;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+      color: #fff;
+      padding: 100px 24px 90px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      opacity: 0.92;
+      margin-bottom: 32px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #fefae0;
+      color: #2d6a4f;
+      padding: 14px 36px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #fff;
+    }
+
+    /* Section common */
+    .section {
+      padding: 80px 24px;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 48px;
+    }
+
+    /* Stats */
+    .stats {
+      background: #fefae0;
+      padding: 56px 24px;
+    }
+
+    .stats-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 36px;
+      font-weight: 800;
+      color: #2d6a4f;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #555;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Services */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .service-card {
+      background: #fff;
+      border: 1px solid #e8e3d9;
+      border-radius: 12px;
+      padding: 32px 24px 28px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+    }
+
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      background: #fefae0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #2d6a4f;
+    }
+
+    .service-card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .service-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Weekly Ad */
+    .weekly-ad {
+      background: #f4f1ea;
+    }
+
+    .ad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .ad-item {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e8e3d9;
+      transition: transform 0.2s;
+    }
+
+    .ad-item:hover {
+      transform: translateY(-3px);
+    }
+
+    .ad-img {
+      aspect-ratio: 1 / 1;
+      background: linear-gradient(135deg, #d8f3dc, #b7e4c7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      color: #2d6a4f;
+    }
+
+    .ad-detail {
+      padding: 16px 18px;
+    }
+
+    .ad-detail h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .ad-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #c1121f;
+    }
+
+    .ad-price small {
+      font-size: 13px;
+      font-weight: 400;
+      color: #666;
+    }
+
+    .ad-save {
+      display: inline-block;
+      background: #c1121f;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
+    }
+
+    .ad-cta-wrap {
+      text-align: center;
+      margin-top: 36px;
+    }
+
+    .ad-cta-wrap .btn {
+      background: #2d6a4f;
+      color: #fff;
+    }
+
+    /* Why Publix */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .why-card {
+      background: #fff;
+      border: 1px solid #e8e3d9;
+      border-radius: 12px;
+      padding: 36px 28px 32px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .why-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+    }
+
+    .why-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 18px;
+      background: #2d6a4f;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+    }
+
+    .why-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .why-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      background: #2d6a4f;
+      color: rgba(255, 255, 255, 0.85);
+      padding: 48px 24px 32px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand .logo {
+      color: #fff;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .footer-brand p {
+      font-size: 13px;
+      line-height: 1.7;
+      opacity: 0.8;
+    }
+
+    .footer h4 {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .footer ul {
+      list-style: none;
+    }
+
+    .footer ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer ul a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer ul a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 16px;
+      }
+
+      .nav-links a {
+        font-size: 12px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+
+      .services-grid,
+      .ad-grid,
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-inner {
+        flex-direction: column;
+        height: auto;
+        padding: 12px 16px;
+        gap: 8px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Preview Bar -->
+  <div class="preview-bar">
+    <span>&#9670; Redesign Preview for Publix &middot; Print / Save PDF</span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="logo">Publix</a>
+      <ul class="nav-links">
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">Weekly Ad</a></li>
+        <li><a href="#">Pharmacy</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Where Shopping is a Pleasure.</h1>
+      <p>For generations, Publix has been committed to offering fresh products,<br>friendly service, and genuine care for the communities we serve.</p>
+      <a href="#" class="btn">View Weekly Ad</a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">1,400+</div>
+        <div class="stat-label">Stores</div>
+      </div>
+      <div>
+        <div class="stat-num">$54B+</div>
+        <div class="stat-label">Sales</div>
+      </div>
+      <div>
+        <div class="stat-num">250,000+</div>
+        <div class="stat-label">Employees</div>
+      </div>
+      <div>
+        <div class="stat-num">7</div>
+        <div class="stat-label">States</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="section">
+    <div class="section-inner">
+      <h2 class="section-title">Our Services</h2>
+      <p class="section-sub">Everything you need under one roof.</p>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">&#9733;</div>
+          <h3>Pharmacy</h3>
+          <p>Prescriptions, immunizations, and health advice from trusted pharmacists.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#127838;</div>
+          <h3>Bakery</h3>
+          <p>Freshly baked bread, cakes, pastries, and custom celebration cakes.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#129366;</div>
+          <h3>Deli</h3>
+          <p>Premium meats, cheeses, subs, and grab-and-go meals made daily.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#127800;</div>
+          <h3>Floral</h3>
+          <p>Fresh-cut flowers, arrangements, and plants for every occasion.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#127860;</div>
+          <h3>Catering</h3>
+          <p>Platters, trays, and full-service catering for events of any size.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#127873;</div>
+          <h3>Gift Cards</h3>
+          <p>The perfect gift for any occasion, redeemable at any Publix store.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Weekly Ad -->
+  <section class="section weekly-ad">
+    <div class="section-inner">
+      <h2 class="section-title">Weekly Ad</h2>
+      <p class="section-sub">Great savings, every week.</p>
+      <div class="ad-grid">
+        <div class="ad-item">
+          <div class="ad-img">&#127822;</div>
+          <div class="ad-detail">
+            <h4>Fresh Produce</h4>
+            <div class="ad-price">$1.99 <small>ea.</small></div>
+            <span class="ad-save">Save $1.00</span>
+          </div>
+        </div>
+        <div class="ad-item">
+          <div class="ad-img">&#129473;</div>
+          <div class="ad-detail">
+            <h4>Premium Steak</h4>
+            <div class="ad-price">$8.99 <small>/ lb</small></div>
+            <span class="ad-save">Save $3.00</span>
+          </div>
+        </div>
+        <div class="ad-item">
+          <div class="ad-img">&#129364;</div>
+          <div class="ad-detail">
+            <h4>Large Shrimp</h4>
+            <div class="ad-price">$6.99 <small>/ lb</small></div>
+            <span class="ad-save">Save $2.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="ad-cta-wrap">
+        <a href="#" class="btn">Browse All Deals</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Publix -->
+  <section class="section">
+    <div class="section-inner">
+      <h2 class="section-title">Why Publix</h2>
+      <p class="section-sub">What makes us different.</p>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">&#128188;</div>
+          <h3>Employee Ownership</h3>
+          <p>Every eligible associate is a company owner, which means our team is personally invested in serving you.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#10003;</div>
+          <h3>Fresh Guarantee</h3>
+          <p>If you're not completely satisfied with any produce or meat item, we'll replace it or refund your money.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#129309;</div>
+          <h3>Community Giving</h3>
+          <p>We proudly support local food banks, schools, and nonprofit organizations across the Southeast.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">Publix</a>
+          <p>Founded in 1930 by George W. Jenkins in Winter Haven, Florida. Employee-owned, community-focused, and committed to service excellence.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#">Weekly Ad</a></li>
+            <li><a href="#">Pharmacy</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Gift Cards</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#">Bakery</a></li>
+            <li><a href="#">Deli</a></li>
+            <li><a href="#">Floral</a></li>
+            <li><a href="#">Catering</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="#">Customer Service</a></li>
+            <li><a href="#">Store Locator</a></li>
+            <li><a href="#">Investor Relations</a></li>
+            <li><a href="#">Corporate</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Publix Super Markets, Inc. All rights reserved.</span>
+        <span>Lakeland, FL</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

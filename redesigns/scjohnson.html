@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S.C. Johnson — Redesign Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Inter, system-ui, sans-serif; color: #1a1a1a; background: #fff; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+/* preview bar */
+.preview-bar { background: #c62828; color: #fff; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 500; letter-spacing: .4px; }
+.preview-bar a { color: #fff; text-decoration: underline; }
+
+/* nav */
+nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 48px; max-width: 1280px; margin: 0 auto; }
+nav .logo { font-size: 22px; font-weight: 800; color: #003da5; letter-spacing: -.5px; }
+nav .logo span { color: #1a1a1a; }
+nav .nav-links { display: flex; gap: 28px; list-style: none; font-size: 14px; font-weight: 500; }
+nav .nav-links a { text-decoration: none; color: #333; transition: color .2s; }
+nav .nav-links a:hover { color: #003da5; }
+
+/* hero */
+.hero { background: linear-gradient(135deg, #003da5 0%, #002b7a 100%); color: #fff; padding: 96px 48px 80px; text-align: center; }
+.hero h1 { font-size: 52px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 16px; }
+.hero p { font-size: 19px; font-weight: 400; max-width: 640px; margin: 0 auto 32px; opacity: .88; }
+.hero .cta { display: inline-block; background: #fff; color: #003da5; font-weight: 700; font-size: 16px; padding: 14px 40px; border-radius: 40px; text-decoration: none; transition: box-shadow .2s; }
+.hero .cta:hover { box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+
+/* stats */
+.stats { display: flex; justify-content: center; gap: 48px; padding: 48px 48px; max-width: 1000px; margin: 0 auto; }
+.stat { text-align: center; }
+.stat .num { font-size: 36px; font-weight: 800; color: #003da5; letter-spacing: -1px; }
+.stat .label { font-size: 13px; color: #555; font-weight: 500; text-transform: uppercase; letter-spacing: .6px; margin-top: 2px; }
+
+/* section headings */
+.section { padding: 64px 48px; max-width: 1200px; margin: 0 auto; }
+.section-title { font-size: 34px; font-weight: 700; color: #003da5; text-align: center; margin-bottom: 12px; letter-spacing: -.8px; }
+.section-sub { text-align: center; color: #555; font-size: 16px; margin-bottom: 44px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+/* brands grid */
+.brands-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.brand-card { background: #f5f7fa; border-radius: 14px; padding: 32px 16px; text-align: center; transition: box-shadow .2s, transform .2s; }
+.brand-card:hover { box-shadow: 0 8px 28px rgba(0,61,165,.1); transform: translateY(-3px); }
+.brand-card .icon { width: 56px; height: 56px; background: #003da5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 24px; color: #fff; font-weight: 700; }
+.brand-card h3 { font-size: 18px; font-weight: 700; color: #003da5; margin-bottom: 4px; }
+.brand-card p { font-size: 13px; color: #666; }
+
+/* innovation cards */
+.innovation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.ino-card { border: 1px solid #e6eaf0; border-radius: 14px; padding: 36px 24px; text-align: center; transition: box-shadow .2s; }
+.ino-card:hover { box-shadow: 0 6px 20px rgba(0,61,165,.08); }
+.ino-card .ino-icon { font-size: 36px; margin-bottom: 14px; }
+.ino-card h3 { font-size: 20px; font-weight: 700; color: #003da5; margin-bottom: 8px; }
+.ino-card p { font-size: 14px; color: #555; }
+
+/* legacy */
+.legacy { padding: 64px 48px; max-width: 1200px; margin: 0 auto; }
+.timeline { position: relative; padding-left: 32px; border-left: 3px solid #003da5; margin-top: 32px; }
+.timeline-item { margin-bottom: 28px; position: relative; }
+.timeline-item::before { content: ''; position: absolute; left: -40px; top: 6px; width: 14px; height: 14px; background: #003da5; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 3px #003da5; }
+.timeline-item .year { font-size: 15px; font-weight: 700; color: #003da5; letter-spacing: .5px; }
+.timeline-item p { font-size: 15px; color: #333; margin-top: 2px; }
+
+/* footer */
+footer { background: #003da5; color: #fff; padding: 44px 48px 32px; margin-top: 16px; }
+footer .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 28px; }
+footer .footer-col h4 { font-size: 15px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .8px; }
+footer .footer-col ul { list-style: none; }
+footer .footer-col ul li { margin-bottom: 6px; }
+footer .footer-col ul a { color: rgba(255,255,255,.78); text-decoration: none; font-size: 14px; transition: color .2s; }
+footer .footer-col ul a:hover { color: #fff; }
+footer .footer-bottom { max-width: 1200px; margin: 28px auto 0; border-top: 1px solid rgba(255,255,255,.15); padding-top: 20px; font-size: 13px; color: rgba(255,255,255,.65); text-align: center; }
+
+/* responsive */
+@media (max-width: 768px) {
+  nav { flex-direction: column; gap: 12px; padding: 16px 20px; }
+  nav .nav-links { flex-wrap: wrap; justify-content: center; gap: 14px; font-size: 13px; }
+  .hero { padding: 60px 20px 56px; }
+  .hero h1 { font-size: 34px; }
+  .stats { flex-wrap: wrap; gap: 24px; padding: 32px 20px; }
+  .brands-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .innovation-grid { grid-template-columns: 1fr; }
+  .section { padding: 40px 20px; }
+  .legacy { padding: 40px 20px; }
+  footer .footer-inner { flex-direction: column; text-align: center; }
+  footer { padding: 32px 20px 24px; }
+}
+@media (max-width: 480px) {
+  .brands-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  .stat .num { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-bar">Redesign Preview for S.C. Johnson · <a href="#" onclick="window.print()">Print</a> / <a href="#" onclick="window.print()">Save PDF</a></div>
+
+<nav>
+  <div class="logo">SC <span>Johnson</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Brands</a></li>
+    <li><a href="#">Innovation</a></li>
+    <li><a href="#">Our Legacy</a></li>
+    <li><a href="#">Sustainability</a></li>
+    <li><a href="#">Careers</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <h1>A Family Company. A Better World.</h1>
+  <p>For 138 years, the Johnson family has built trusted household brands — driven by quality, innovation, and a commitment to doing what&rsquo;s right for people and the planet.</p>
+  <a href="#" class="cta">Explore Our Brands</a>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="num">138+</div><div class="label">Years</div></div>
+  <div class="stat"><div class="num">5th</div><div class="label">Gen Family</div></div>
+  <div class="stat"><div class="num">$10B+</div><div class="label">Revenue</div></div>
+  <div class="stat"><div class="num">100+</div><div class="label">Countries</div></div>
+</div>
+
+<section class="section">
+  <h2 class="section-title">Our Brands</h2>
+  <p class="section-sub">The most trusted names in home cleaning, pest control, food storage, and air care — used by millions every day.</p>
+  <div class="brands-grid">
+    <div class="brand-card"><div class="icon">R</div><h3>Raid</h3><p>Insect control</p></div>
+    <div class="brand-card"><div class="icon">G</div><h3>Glade</h3><p>Air care</p></div>
+    <div class="brand-card"><div class="icon">Z</div><h3>Ziploc</h3><p>Food storage</p></div>
+    <div class="brand-card"><div class="icon">W</div><h3>Windex</h3><p>Surface cleaning</p></div>
+    <div class="brand-card"><div class="icon">D</div><h3>Drano</h3><p>Drain care</p></div>
+    <div class="brand-card"><div class="icon">S</div><h3>Scrubbing Bubbles</h3><p>Bathroom care</p></div>
+    <div class="brand-card"><div class="icon">O</div><h3>OFF!</h3><p>Personal insect repellent</p></div>
+    <div class="brand-card"><div class="icon">P</div><h3>Pledge</h3><p>Furniture care</p></div>
+  </div>
+</section>
+
+<section class="section" style="background:#f5f7fa;max-width:100%;padding:64px 48px;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <h2 class="section-title">Innovation &amp; Sustainability</h2>
+    <p class="section-sub">Three pillars that guide every product we make — from ingredient science to community well-being.</p>
+    <div class="innovation-grid">
+      <div class="ino-card"><div class="ino-icon">&#9852;</div><h3>Greenlist&trade; Ingredients</h3><p>Our signature program that rates raw materials for environmental &amp; human-health impact, driving cleaner formulations across all brands.</p></div>
+      <div class="ino-card"><div class="ino-icon">&#9851;</div><h3>Zero Waste</h3><p>14 manufacturing sites have achieved TRUE Zero Waste certification — diverting 99%+ of waste from landfills through reuse and recycling.</p></div>
+      <div class="ino-card"><div class="ino-icon">&#9733;</div><h3>Community Impact</h3><p>Through the SC Johnson Fund, we&rsquo;ve invested $100M+ in Racine and global communities — education, environment, and disaster relief.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="legacy">
+  <h2 class="section-title">Family Legacy</h2>
+  <p class="section-sub">Five generations of the Johnson family have led with purpose, integrity, and a long-term view.</p>
+  <div class="timeline">
+    <div class="timeline-item"><div class="year">1886</div><p>Samuel Curtis Johnson parquet flooring business founded in Racine, Wisconsin.</p></div>
+    <div class="timeline-item"><div class="year">1914</div><p>First branded product — Johnson&rsquo;s Prepared Wax — revolutionizes home care.</p></div>
+    <div class="timeline-item"><div class="year">1955</div><p>Raid&reg; introduced, changing pest control forever.</p></div>
+    <div class="timeline-item"><div class="year">1998</div><p>Glade&reg; becomes the #1 air-care brand in the U.S.</p></div>
+    <div class="timeline-item"><div class="year">2000s</div><p>Greenlist&trade; program launched; commitment to transparency and ingredient safety.</p></div>
+    <div class="timeline-item"><div class="year">Today</div><p>5th-generation family leadership — still privately held, still based in Racine, WI.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h4>SC Johnson</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Our History</a></li>
+        <li><a href="#">Leadership</a></li>
+        <li><a href="#">Newsroom</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Brands</h4>
+      <ul>
+        <li><a href="#">Glade</a></li>
+        <li><a href="#">Raid</a></li>
+        <li><a href="#">Ziploc</a></li>
+        <li><a href="#">Windex</a></li>
+        <li><a href="#">Scrubbing Bubbles</a></li>
+        <li><a href="#">Drano</a></li>
+        <li><a href="#">OFF!</a></li>
+        <li><a href="#">Pledge</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Sustainability</h4>
+      <ul>
+        <li><a href="#">Greenlist</a></li>
+        <li><a href="#">Zero Waste</a></li>
+        <li><a href="#">Our Commitment</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press Inquiries</a></li>
+        <li><a href="#">Consumer Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">S.C. Johnson &amp; Son, Inc. &middot; Racine, Wisconsin &middot; Family-owned since 1886</div>
+</footer>
+
+</body>
+</html>

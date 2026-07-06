@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hearst Communications — Redesign Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f8f6f0;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    .preview-bar {
+      background: #cc0000;
+      color: #fff;
+      text-align: center;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 1rem;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ─── HEADER / NAV ─── */
+    header {
+      background: #1a1a2e;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #b8960f;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: #fff;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: rgba(255, 255, 255, 0.78);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: #b8960f;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      margin: 5px 0;
+      border-radius: 2px;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
+      color: #fff;
+      padding: 6rem 0 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      left: -20%;
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(circle at 30% 50%, rgba(184, 150, 15, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: #b8960f;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      color: rgba(255, 255, 255, 0.7);
+      max-width: 640px;
+      margin: 0 auto 2.2rem;
+      position: relative;
+    }
+
+    .hero .cta {
+      display: inline-block;
+      background: #b8960f;
+      color: #fff;
+      padding: 0.9rem 2.4rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.25s;
+      position: relative;
+    }
+
+    .hero .cta:hover {
+      background: #d4aa1a;
+    }
+
+    /* ─── STATS ─── */
+    .stats {
+      background: #fff;
+      border-bottom: 1px solid #eae6dd;
+      padding: 3rem 0;
+    }
+
+    .stats .container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item .number {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #b8960f;
+      line-height: 1.2;
+    }
+
+    .stat-item .label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 0.25rem;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section-dark {
+      background: #1a1a2e;
+      color: #fff;
+    }
+
+    .section-dark .section-title {
+      color: #fff;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 3rem;
+      max-width: 600px;
+    }
+
+    .section-dark .section-sub {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ─── BRANDS GRID ─── */
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .brand-card {
+      background: #fff;
+      border: 1px solid #eae6dd;
+      border-radius: 8px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .brand-card:hover {
+      border-color: #b8960f;
+      box-shadow: 0 4px 16px rgba(184, 150, 15, 0.12);
+    }
+
+    /* ─── DIVISIONS ─── */
+    .divisions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .division-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 2.5rem 1.8rem;
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    .division-card:hover {
+      border-color: #b8960f;
+      background: rgba(184, 150, 15, 0.06);
+    }
+
+    .division-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: #fff;
+    }
+
+    .division-card p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.6;
+    }
+
+    .division-card .icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    /* ─── TIMELINE ─── */
+    .timeline {
+      position: relative;
+      padding-left: 2.5rem;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 0.7rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ddd;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5rem;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -2.5rem;
+      top: 0.3rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #b8960f;
+      border: 3px solid #f8f6f0;
+    }
+
+    .timeline-item .year {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #b8960f;
+    }
+
+    .timeline-item .desc {
+      font-size: 0.95rem;
+      color: #555;
+      margin-top: 0.2rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #111;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 3.5rem 0 2rem;
+      font-size: 0.85rem;
+    }
+
+    footer .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2.5rem;
+    }
+
+    footer h4 {
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    footer a {
+      color: rgba(255, 255, 255, 0.55);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.5rem;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: #b8960f;
+    }
+
+    footer .brand {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #b8960f;
+      margin-bottom: 0.75rem;
+    }
+
+    footer .brand span {
+      color: #fff;
+    }
+
+    footer .tagline {
+      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.6;
+    }
+
+    footer .copyright {
+      grid-column: 1 / -1;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .stats .container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .divisions-grid {
+        grid-template-columns: 1fr;
+      }
+
+      footer .container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats .container {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      footer .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PREVIEW BAR -->
+  <div class="preview-bar">
+    Redesign Preview for Hearst Communications &middot; Print / Save PDF
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <a href="#" class="logo">Hearst<span>.</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav>
+        <a href="#">Our Brands</a>
+        <a href="#">Divisions</a>
+        <a href="#">Leadership</a>
+        <a href="#">History</a>
+        <a href="#">Careers</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>1887. <em>And Beyond.</em></h1>
+      <p>For more than 138 years, Hearst has shaped global media&mdash;spanning magazines, newspapers, television, and financial services with an influence that reaches billions.</p>
+      <a href="#" class="cta">Explore Our Brands</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="container">
+      <div class="stat-item">
+        <div class="number">138+</div>
+        <div class="label">Years</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">360+</div>
+        <div class="label">Brands</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">15M+</div>
+        <div class="label">Daily Readers</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">30+</div>
+        <div class="label">TV Stations</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR BRANDS -->
+  <section class="section" id="brands">
+    <div class="container">
+      <h2 class="section-title">Our Brands</h2>
+      <p class="section-sub">From fashion to finance, Hearst&rsquo;s portfolio reaches every corner of culture.</p>
+      <div class="brands-grid">
+        <div class="brand-card">Cosmopolitan</div>
+        <div class="brand-card">Esquire</div>
+        <div class="brand-card">Harper&rsquo;s Bazaar</div>
+        <div class="brand-card">Good Housekeeping</div>
+        <div class="brand-card">Men&rsquo;s Health</div>
+        <div class="brand-card">Popular Mechanics</div>
+        <div class="brand-card">Town &amp; Country</div>
+        <div class="brand-card">HGTV Magazine</div>
+        <div class="brand-card">Car and Driver</div>
+        <div class="brand-card">Bicycling</div>
+        <div class="brand-card">Road &amp; Track</div>
+        <div class="brand-card">Delish</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR DIVISIONS -->
+  <section class="section section-dark" id="divisions">
+    <div class="container">
+      <h2 class="section-title">Our Divisions</h2>
+      <p class="section-sub">Three pillars driving Hearst&rsquo;s century-spanning enterprise.</p>
+      <div class="divisions-grid">
+        <div class="division-card">
+          <span class="icon">&#128214;</span>
+          <h3>Hearst Magazines</h3>
+          <p>Over 25 market-leading titles including Cosmopolitan, Esquire, and Harper&rsquo;s Bazaar, reaching 90M+ readers each month across print and digital.</p>
+        </div>
+        <div class="division-card">
+          <span class="icon">&#128250;</span>
+          <h3>Hearst Television</h3>
+          <p>A leading local television station group with 30+ stations across 26 markets, reaching more than 18M households nationwide.</p>
+        </div>
+        <div class="division-card">
+          <span class="icon">&#128137;</span>
+          <h3>Hearst Health</h3>
+          <p>A network of health information and data services including Fitch Ratings&rsquo; healthcare group, MCG, Zynx Health, and Homecare Homebase.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY / TIMELINE -->
+  <section class="section" id="history">
+    <div class="container">
+      <h2 class="section-title">Hearst History</h2>
+      <p class="section-sub">From a single newspaper to a global media powerhouse.</p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="year">1887</div>
+          <div class="desc">William Randolph Hearst takes control of the <em>San Francisco Examiner</em>, laying the foundation for the Hearst empire.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1895</div>
+          <div class="desc">Acquires the <em>New York Journal</em>, igniting the legendary circulation war with Joseph Pulitzer.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1903</div>
+          <div class="desc">Launches <em>Motor</em> magazine (now <em>Car and Driver</em>), marking Hearst&rsquo;s first foray into specialty publishing.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1910s&ndash;1930s</div>
+          <div class="desc">Builds a global newspaper chain, acquires wire services, and expands into newsreels and film production.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1948</div>
+          <div class="desc">Enters television with the launch of WBAL-TV in Baltimore, the beginning of Hearst Television.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">1990s</div>
+          <div class="desc">Diversifies into financial services and health data, acquiring Fitch Ratings and building Hearst Health.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">Today</div>
+          <div class="desc">A $12B+ privately held media and information company with 360+ brands across 40+ countries.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div>
+        <div class="brand">Hearst<span>.</span></div>
+        <p class="tagline">A global media, information, and services company founded in 1887.</p>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#">Our Brands</a>
+        <a href="#">Divisions</a>
+        <a href="#">Leadership</a>
+        <a href="#">History</a>
+        <a href="#">Careers</a>
+      </div>
+      <div>
+        <h4>More</h4>
+        <a href="#">Press</a>
+        <a href="#">Investors</a>
+        <a href="#">Sustainability</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="#">300 W 57th St</a>
+        <a href="#">New York, NY 10019</a>
+        <a href="#">(212) 649-2000</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="copyright">
+        &copy; 2025 Hearst Communications, Inc. &mdash; All Rights Reserved. &mdash; New York, NY
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

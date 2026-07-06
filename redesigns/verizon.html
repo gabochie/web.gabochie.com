@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verizon · Redesign Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #111;
+      background: #fff;
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ─── PREVIEW BAR ─── */
+    .preview-bar {
+      background: #e63946;
+      color: #fff;
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .preview-bar span {
+      opacity: 0.9;
+    }
+
+    /* ─── NAV ─── */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 800;
+      color: #111;
+      letter-spacing: -0.5px;
+    }
+
+    .logo em {
+      font-style: normal;
+      color: #e63946;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      font-size: 15px;
+      font-weight: 500;
+      color: #333;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #e63946;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-actions .btn-outline {
+      border: 1.5px solid #111;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .nav-actions .btn-outline:hover {
+      background: #111;
+      color: #fff;
+    }
+
+    .nav-actions .btn-solid {
+      background: #e63946;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .nav-actions .btn-solid:hover {
+      background: #c72f3d;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: #111;
+      color: #fff;
+      padding: 100px 48px 90px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: #bbb;
+      max-width: 640px;
+      margin: 0 auto 36px;
+    }
+
+    .hero .btn-hero {
+      display: inline-block;
+      background: #e63946;
+      color: #fff;
+      padding: 14px 40px;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .hero .btn-hero:hover {
+      background: #c72f3d;
+    }
+
+    /* ─── STATS ─── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      padding: 48px 48px;
+      max-width: 1280px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item .num {
+      font-size: 36px;
+      font-weight: 800;
+      color: #e63946;
+    }
+
+    .stat-item .label {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header {
+      text-align: center;
+      padding: 60px 48px 0;
+    }
+
+    .section-header h2 {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .section-header p {
+      color: #777;
+      max-width: 560px;
+      margin: 8px auto 0;
+      font-size: 16px;
+    }
+
+    /* ─── PLANS ─── */
+    .plans {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 40px 48px 64px;
+      max-width: 1280px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .plan-card {
+      flex: 1;
+      min-width: 260px;
+      max-width: 340px;
+      border: 1.5px solid #eee;
+      border-radius: 14px;
+      padding: 32px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .plan-card:hover {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      border-color: #e63946;
+    }
+
+    .plan-card.featured {
+      border-color: #e63946;
+      box-shadow: 0 8px 30px rgba(230, 57, 70, 0.08);
+    }
+
+    .plan-card .plan-name {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #e63946;
+    }
+
+    .plan-card .plan-price {
+      font-size: 42px;
+      font-weight: 800;
+      margin: 12px 0 4px;
+    }
+
+    .plan-card .plan-price sup {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .plan-card .plan-desc {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    .plan-card ul {
+      list-style: none;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .plan-card ul li {
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .plan-card ul li::before {
+      content: "\2713";
+      color: #e63946;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .plan-card .btn-plan {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      border: 1.5px solid #111;
+      transition: 0.2s;
+    }
+
+    .plan-card .btn-plan:hover {
+      background: #111;
+      color: #fff;
+    }
+
+    .plan-card.featured .btn-plan {
+      background: #e63946;
+      color: #fff;
+      border-color: #e63946;
+    }
+
+    .plan-card.featured .btn-plan:hover {
+      background: #c72f3d;
+    }
+
+    /* ─── WHY VERIZON ─── */
+    .why {
+      background: #f7f7f9;
+      padding: 64px 48px;
+    }
+
+    .why-cards {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      max-width: 1280px;
+      margin: 36px auto 0;
+      flex-wrap: wrap;
+    }
+
+    .why-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 36px 32px;
+      flex: 1;
+      min-width: 250px;
+      max-width: 340px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .why-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+    }
+
+    .why-card .icon {
+      font-size: 36px;
+      font-weight: 300;
+      color: #e63946;
+      margin-bottom: 12px;
+    }
+
+    .why-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .why-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* ─── BUSINESS ─── */
+    .business {
+      padding: 64px 48px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .business-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 36px;
+    }
+
+    .biz-card {
+      border: 1.5px solid #eee;
+      border-radius: 12px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .biz-card:hover {
+      border-color: #e63946;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .biz-card .icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+      color: #e63946;
+    }
+
+    .biz-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .biz-card p {
+      font-size: 13px;
+      color: #888;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #111;
+      color: #aaa;
+      padding: 48px 48px 32px;
+    }
+
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .footer-col h4 {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer-col ul li a {
+      font-size: 14px;
+      color: #aaa;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 36px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .footer-bottom .location {
+      color: #e63946;
+      font-weight: 600;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 24px;
+      }
+
+      .nav-links {
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-actions {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .hero p {
+        font-size: 17px;
+      }
+
+      .stats {
+        gap: 24px;
+        padding: 32px 24px;
+      }
+
+      .stat-item .num {
+        font-size: 28px;
+      }
+
+      .section-header h2 {
+        font-size: 28px;
+      }
+
+      .plans,
+      .why-cards {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .plan-card,
+      .why-card {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .business-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .business-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero {
+        padding: 64px 24px 56px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PREVIEW BAR -->
+  <div class="preview-bar">
+    <span>Redesign Preview for Verizon &middot; Print / Save PDF</span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="logo"><em>Veri</em>zon</div>
+    <ul class="nav-links">
+      <li><a href="#">Wireless</a></li>
+      <li><a href="#">Home Internet</a></li>
+      <li><a href="#">Business</a></li>
+      <li><a href="#">Support</a></li>
+      <li><a href="#">My Account</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="#" class="btn-outline">Sign In</a>
+      <a href="#" class="btn-solid">Shop</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Connect to What Matters.</h1>
+    <p>Reliable 5G nationwide coverage and fiber-optic internet — built for the way you live, work, and play.</p>
+    <a href="#" class="btn-hero">Shop Plans</a>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-item">
+      <div class="num">140M+</div>
+      <div class="label">Connections</div>
+    </div>
+    <div class="stat-item">
+      <div class="num">99%</div>
+      <div class="label">5G Nationwide</div>
+    </div>
+    <div class="stat-item">
+      <div class="num">15M+</div>
+      <div class="label">FIOS Customers</div>
+    </div>
+    <div class="stat-item">
+      <div class="num">#1</div>
+      <div class="label">Network Reliability</div>
+    </div>
+  </div>
+
+  <!-- PLANS -->
+  <div class="section-header">
+    <h2>Plans Built for You</h2>
+    <p>From unlimited talk and text to premium 5G Ultra Wideband — find your perfect plan.</p>
+  </div>
+  <div class="plans">
+    <div class="plan-card">
+      <div class="plan-name">Welcome</div>
+      <div class="plan-price"><sup>$</sup>50</div>
+      <div class="plan-desc">Great for essential connectivity</div>
+      <ul>
+        <li>Unlimited talk &amp; text</li>
+        <li>5G Nationwide</li>
+        <li>30 GB premium data</li>
+        <li>Mobile hotspot included</li>
+      </ul>
+      <a href="#" class="btn-plan">Select Plan</a>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-name">Plus</div>
+      <div class="plan-price"><sup>$</sup>70</div>
+      <div class="plan-desc">Best value for streaming &amp; gaming</div>
+      <ul>
+        <li>Unlimited premium data</li>
+        <li>5G Ultra Wideband</li>
+        <li>50 GB mobile hotspot</li>
+        <li>Disney+ &amp; Hulu included</li>
+      </ul>
+      <a href="#" class="btn-plan">Select Plan</a>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Ultimate</div>
+      <div class="plan-price"><sup>$</sup>90</div>
+      <div class="plan-desc">Maximum speed &amp; perks</div>
+      <ul>
+        <li>Unlimited premium data</li>
+        <li>5G Ultra Wideband</li>
+        <li>60 GB mobile hotspot</li>
+        <li>International data included</li>
+      </ul>
+      <a href="#" class="btn-plan">Select Plan</a>
+    </div>
+  </div>
+
+  <!-- WHY VERIZON -->
+  <section class="why">
+    <div class="section-header">
+      <h2>Why Verizon</h2>
+      <p>The network that keeps America connected — at home, at work, and everywhere in between.</p>
+    </div>
+    <div class="why-cards">
+      <div class="why-card">
+        <div class="icon">&raquo;</div>
+        <h3>5G Ultra Wideband</h3>
+        <p>Experience lightning-fast speeds with the power of mmWave and C-band spectrum.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">&bull;</div>
+        <h3>100% Fiber Network</h3>
+        <p>FIOS delivers symmetrical gigabit speeds over the nation&rsquo;s most advanced fiber infrastructure.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">&#9742;</div>
+        <h3>24/7 Customer Support</h3>
+        <p>Real people, real help — whenever you need it, however you reach us.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUSINESS SOLUTIONS -->
+  <section class="business">
+    <div class="section-header">
+      <h2>Business Solutions</h2>
+      <p>Enterprise-grade technology to power your business — from 5G to cloud and security.</p>
+    </div>
+    <div class="business-grid">
+      <div class="biz-card">
+        <div class="icon">&#9889;</div>
+        <h3>5G Business</h3>
+        <p>Private 5G and fixed wireless for enterprise.</p>
+      </div>
+      <div class="biz-card">
+        <div class="icon">&#8601;</div>
+        <h3>FIOS Business</h3>
+        <p>Dedicated fiber with 99.9% uptime SLA.</p>
+      </div>
+      <div class="biz-card">
+        <div class="icon">&#10003;</div>
+        <h3>Security</h3>
+        <p>Threat detection, DDoS protection &amp; more.</p>
+      </div>
+      <div class="biz-card">
+        <div class="icon">&#8962;</div>
+        <h3>IoT</h3>
+        <p>Connected devices, fleet tracking &amp; smart cities.</p>
+      </div>
+      <div class="biz-card">
+        <div class="icon">&#9729;</div>
+        <h3>Cloud Solutions</h3>
+        <p>Edge compute, hybrid cloud &amp; SD-WAN.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Plans</h4>
+        <ul>
+          <li><a href="#">Mobile Plans</a></li>
+          <li><a href="#">Home Internet</a></li>
+          <li><a href="#">FIOS</a></li>
+          <li><a href="#">Prepaid</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Business</h4>
+        <ul>
+          <li><a href="#">Small Business</a></li>
+          <li><a href="#">Enterprise</a></li>
+          <li><a href="#">Public Sector</a></li>
+          <li><a href="#">Partners</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Order Status</a></li>
+          <li><a href="#">Pay Bill</a></li>
+          <li><a href="#">Community Forums</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Verizon</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Investors</a></li>
+          <li><a href="#">Newsroom</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 Verizon. All rights reserved.</div>
+      <div><a href="#">Privacy Policy</a> &middot; <a href="#">Terms of Service</a> &middot; <a href="#">Accessibility</a></div>
+      <div class="location">New York, NY</div>
+    </div>
+  </footer>
+
+</body>
+</html>

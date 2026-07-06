@@ -1,0 +1,685 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gideon Abochie — Website Redesign & CRO Agency</title>
+<meta name="description" content="We find outdated websites, build modern high-conversion replacements, and deliver 40-60% more engagement. Get your free website score in 60 seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0b0f;--surface:#121216;--surface2:#1a1a20;--accent:#e63946;--accent-dark:#c33040;--green:#22c55e;--red:#ef4444;--text:#f0f0f0;--text-dim:#8a8a95;--text-muted:#55555f;--border:#1f1f28;--radius:12px;--radius-sm:8px;--radius-xs:6px;--shadow:0 8px 32px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-sm);font-weight:600;font-size:1rem;border:none;cursor:pointer;transition:all .25s ease;text-align:center}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-2px);box-shadow:0 6px 24px rgba(230,57,70,.35)}
+.btn-secondary{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:10px 20px;font-size:.9rem}
+.section{padding:100px 0}
+.section-title{font-size:2.8rem;font-weight:800;margin-bottom:16px;line-height:1.15}
+.section-sub{color:var(--text-dim);font-size:1.1rem;max-width:600px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:all .3s ease}
+.card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow)}
+input,select,textarea{width:100%;padding:13px 16px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-xs);color:var(--text);outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a8a95' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+label{display:block;font-size:.85rem;font-weight:500;color:var(--text-dim);margin-bottom:6px}
+.form-group{margin-bottom:16px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(11,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+
+/* HERO */
+.hero{padding:160px 0 100px;position:relative}
+.hero .container{display:grid;grid-template-columns:1fr 440px;gap:60px;align-items:start}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.25);border-radius:100px;font-size:.85rem;font-weight:500;color:var(--accent);margin-bottom:24px}
+.hero-badge .pulse{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(230,57,70,.6)}50%{opacity:.8;box-shadow:0 0 0 8px rgba(230,57,70,0)}}
+.hero h1{font-size:3.4rem;font-weight:900;line-height:1.1;margin-bottom:20px;letter-spacing:-.03em}
+.hero h1 .accent{color:var(--accent)}
+.hero p{color:var(--text-dim);font-size:1.1rem;margin-bottom:32px;max-width:540px}
+.hero-ctas{display:flex;gap:14px;margin-bottom:48px;flex-wrap:wrap}
+.social-proof{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;border-top:1px solid var(--border);padding-top:32px}
+.social-proof .stat-num{font-size:1.6rem;font-weight:800;color:var(--accent)}
+.social-proof .stat-label{font-size:.8rem;color:var(--text-dim);margin-top:4px}
+
+/* LEAD FORM */
+.lead-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px;position:sticky;top:100px}
+.lead-form h3{font-size:1.4rem;font-weight:700;margin-bottom:6px}
+.lead-form .form-sub{color:var(--text-dim);font-size:.9rem;margin-bottom:24px}
+.lead-form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:16px}
+.lead-form .trust{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:.78rem;color:var(--text-muted);flex-wrap:wrap}
+
+/* SOCIAL PROOF BAR */
+.proof-bar{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 0;background:var(--surface)}
+.proof-bar .container{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.proof-bar .stat-num{font-size:1.8rem;font-weight:800;color:var(--accent)}
+.proof-bar .stat-label{color:var(--text-dim);font-size:.85rem;margin-top:4px}
+
+/* PROBLEM/SOLUTION */
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:48px}
+.ps-card{padding:40px;border-radius:var(--radius)}
+.ps-card h3{font-size:1.5rem;font-weight:700;margin-bottom:28px}
+.ps-card ul{list-style:none}
+.ps-card li{padding:14px 0;border-bottom:1px solid var(--border);font-size:.95rem;display:flex;align-items:start;gap:12px}
+.ps-card li:last-child{border-bottom:none}
+.problem .ps-card{background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15)}
+.problem .icon{color:var(--red);font-size:1.1rem;flex-shrink:0}
+.solution .ps-card{background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15)}
+.solution .icon{color:var(--green);font-size:1.1rem;flex-shrink:0}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px;counter-reset:step}
+.step{position:relative;padding:32px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);counter-increment:step}
+.step::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--accent);color:#fff;font-weight:700;border-radius:50%;margin-bottom:20px;font-size:1.1rem}
+.step h4{font-size:1.1rem;font-weight:700;margin-bottom:10px}
+.step p{color:var(--text-dim);font-size:.9rem}
+
+/* PORTFOLIO */
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.portfolio-card{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);transition:all .3s}
+.portfolio-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow)}
+.portfolio-thumb{height:200px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:rgba(255,255,255,.15);position:relative;overflow:hidden}
+.portfolio-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(0,0,0,.4))}
+.portfolio-info{padding:24px;background:var(--surface)}
+.portfolio-info .tag{display:inline-block;padding:4px 12px;background:rgba(230,57,70,.1);color:var(--accent);border-radius:100px;font-size:.75rem;font-weight:600;margin-bottom:12px}
+.portfolio-info h4{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.portfolio-info p{color:var(--text-dim);font-size:.85rem}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.price-card{padding:40px 32px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column}
+.price-card.featured{border-color:var(--accent);position:relative}
+.price-card.featured::before{content:'MOST POPULAR';position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:4px 18px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.08em}
+.price-card h3{font-size:1.3rem;font-weight:700;margin-bottom:4px}
+.price-card .price{font-size:2.2rem;font-weight:800;margin:16px 0 8px}
+.price-card .price-desc{color:var(--text-dim);font-size:.85rem;margin-bottom:28px}
+.price-card ul{list-style:none;margin-bottom:32px;flex:1}
+.price-card li{padding:8px 0;font-size:.9rem;color:var(--text-dim);display:flex;align-items:center;gap:10px}
+.price-card li::before{content:'✓';color:var(--green);font-weight:700;font-size:.85rem}
+.price-card .btn{width:100%;justify-content:center}
+
+/* TESTIMONIALS */
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.testimonial-card{padding:32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.testimonial-card .stars{color:#f59e0b;font-size:1rem;margin-bottom:16px}
+.testimonial-card blockquote{font-size:.95rem;color:var(--text-dim);margin-bottom:20px;font-style:italic;line-height:1.7}
+.testimonial-card .author-name{font-weight:700;font-size:.95rem}
+.testimonial-card .author-role{color:var(--text-muted);font-size:.8rem}
+.testimonial-card .metric{display:inline-block;margin-top:12px;padding:6px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:100px;color:var(--green);font-size:.8rem;font-weight:600}
+
+/* FAQ */
+.faq-list{max-width:780px;margin:48px auto 0}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:22px 0;cursor:pointer;font-weight:600;font-size:1.05rem;transition:color .2s}
+.faq-q:hover{color:var(--accent)}
+.faq-q .arrow{font-size:1.4rem;transition:transform .3s;color:var(--text-muted)}
+.faq-item.open .faq-q .arrow{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:22px}
+.faq-a p{color:var(--text-dim);font-size:.95rem}
+
+/* FINAL CTA */
+.final-cta{text-align:center;padding:120px 0;background:linear-gradient(180deg,var(--bg),var(--surface),var(--bg))}
+.final-cta h2{font-size:2.8rem;font-weight:900;margin-bottom:32px}
+.final-cta .ctas{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:48px}
+.contact-info{display:flex;flex-direction:column;gap:20px}
+.contact-item{display:flex;align-items:center;gap:14px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.contact-item .icon{font-size:1.3rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(230,57,70,.08);border-radius:var(--radius-xs);flex-shrink:0}
+.contact-item .label{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.contact-item .value{font-weight:600;font-size:.95rem}
+.contact-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px}
+.contact-form .btn{width:100%;justify-content:center}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;color:var(--text-muted);font-size:.85rem}
+footer .footer-logo{font-size:1.2rem;font-weight:800;margin-bottom:8px}
+footer .footer-logo span{color:var(--accent)}
+
+/* STICKY BAR */
+.sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(18,18,22,.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:14px 0;transform:translateY(100%);transition:transform .4s ease;display:flex;align-items:center}
+.sticky-bar.visible{transform:translateY(0)}
+.sticky-bar .container{display:flex;align-items:center;justify-content:space-between;width:100%}
+.sticky-bar .bar-text{font-weight:600;font-size:.95rem}
+.sticky-bar .bar-ctas{display:flex;gap:10px}
+
+/* EXIT POPUP */
+.popup-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px}
+.popup-overlay.active{display:flex}
+.popup{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:48px 40px;max-width:480px;width:100%;position:relative;animation:popIn .35s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.popup-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer}
+.popup h3{font-size:1.6rem;font-weight:800;margin-bottom:8px}
+.popup .form-sub{color:var(--text-dim);font-size:.9rem;margin-bottom:28px}
+.popup .btn{width:100%;justify-content:center}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;right:24px;z-index:3000;background:var(--green);color:#fff;padding:16px 28px;border-radius:var(--radius-sm);font-weight:600;font-size:.9rem;transform:translateY(20px);opacity:0;transition:all .35s ease;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:968px){
+  .hero .container{grid-template-columns:1fr}
+  .hero h1{font-size:2.4rem}
+  .lead-form{position:static}
+  .social-proof{grid-template-columns:repeat(2,1fr);gap:16px}
+  .proof-bar .container{grid-template-columns:repeat(2,1fr)}
+  .ps-grid,.contact-grid{grid-template-columns:1fr}
+  .steps,.portfolio-grid,.pricing-grid,.testimonials-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .hero h1{font-size:2rem}
+  .hero{padding:130px 0 60px}
+  .section{padding:60px 0}
+  .section-title{font-size:2rem}
+  .social-proof{grid-template-columns:1fr 1fr}
+  .proof-bar .container{grid-template-columns:1fr 1fr}
+  .steps,.portfolio-grid,.pricing-grid,.testimonials-grid{grid-template-columns:1fr}
+  .portal-dashboard .meta{grid-template-columns:1fr}
+  .final-cta h2{font-size:2rem}
+  .sticky-bar .bar-text{font-size:.8rem}
+  nav .container{gap:12px}
+  .btn-sm{padding:10px 16px;font-size:.82rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="container">
+    <a href="#" class="logo">Gideon <span>Abochie</span></a>
+    <a href="#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge"><span class="pulse"></span> Free audit — limited spots this month</div>
+      <h1>Your Website Is Losing You Customers. <span class="accent">We Fix That.</span></h1>
+      <p>We find outdated websites in North America, build modern high-conversion replacements, and deliver 40-60% more engagement. Get your free website score in 60 seconds.</p>
+      <div class="hero-ctas">
+        <a href="#audit" class="btn btn-primary">Get My Free Score →</a>
+        <a href="#portfolio" class="btn btn-secondary">See Our Work</a>
+      </div>
+      <div class="social-proof">
+        <div><div class="stat-num">161+</div><div class="stat-label">Sites Analyzed</div></div>
+        <div><div class="stat-num">30</div><div class="stat-label">States Covered</div></div>
+        <div><div class="stat-num">40-60%</div><div class="stat-label">Avg Improvement</div></div>
+        <div><div class="stat-num">9</div><div class="stat-label">Week Delivery</div></div>
+      </div>
+    </div>
+    <div class="lead-form" id="audit">
+      <h3>Get Your Free Website Audit</h3>
+      <p class="form-sub">Enter your URL. Get your score. No obligation.</p>
+      <form id="heroForm" name="Website Audit" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="Website Audit">
+        <p class="hidden" style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+        <div class="form-group">
+          <label for="heroName">Name</label>
+          <input type="text" id="heroName" placeholder="John Smith" required>
+        </div>
+        <div class="form-group">
+          <label for="heroEmail">Work Email</label>
+          <input type="email" id="heroEmail" placeholder="john@company.com" required>
+        </div>
+        <div class="form-group">
+          <label for="heroUrl">Company Website URL</label>
+          <input type="url" id="heroUrl" placeholder="https://yourcompany.com" required>
+        </div>
+        <div class="form-group">
+          <label for="heroIndustry">Industry</label>
+          <select id="heroIndustry" required>
+            <option value="" disabled selected>Select your industry</option>
+            <option>Medical</option><option>Dental</option><option>Home Services</option>
+            <option>Manufacturing</option><option>Legal</option><option>Financial</option>
+            <option>Automotive</option><option>Retail</option><option>Technology</option>
+            <option>Energy</option><option>Food</option><option>Insurance</option>
+            <option>Real Estate</option><option>Hospitality</option><option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">🔍 Analyze My Website — Free</button>
+        <div class="trust">✓ No credit card required · Results in 60 seconds · 100% free</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF BAR -->
+<section class="proof-bar">
+  <div class="container">
+    <div><div class="stat-num">$4T+</div><div class="stat-label">Client Revenue</div></div>
+    <div><div class="stat-num">11</div><div class="stat-label">Redesigns Delivered</div></div>
+    <div><div class="stat-num">4</div><div class="stat-label">Canadian Provinces</div></div>
+    <div><div class="stat-num">4.9★</div><div class="stat-label">Client Rating</div></div>
+  </div>
+</section>
+
+<!-- PROBLEM / SOLUTION -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:8px">
+      <h2 class="section-title" style="display:inline-block">Why Businesses Choose Us</h2>
+    </div>
+    <div class="ps-grid">
+      <div class="problem">
+        <div class="ps-card">
+          <h3>Your website is silently costing you money</h3>
+          <ul>
+            <li><span class="icon">✗</span> Outdated design — Visitors judge credibility in 0.05 seconds</li>
+            <li><span class="icon">✗</span> Mobile failures — 60% of traffic is mobile, lost without responsive</li>
+            <li><span class="icon">✗</span> Slow load times — Every 1-second delay reduces conversions by 7%</li>
+            <li><span class="icon">✗</span> Missing CTAs — No clear path to contact = visitors leave</li>
+          </ul>
+        </div>
+      </div>
+      <div class="solution">
+        <div class="ps-card">
+          <h3>Modern redesign that converts</h3>
+          <ul>
+            <li><span class="icon">✓</span> Mobile-first design — Works perfectly on every device</li>
+            <li><span class="icon">✓</span> Conversion optimization — Strategic CTAs and user flows</li>
+            <li><span class="icon">✓</span> Performance guaranteed — 95+ Lighthouse scores</li>
+            <li><span class="icon">✓</span> ROI-focused — 40-60% more engagement within 90 days</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="background:var(--surface)">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:8px">
+      <h2 class="section-title" style="display:inline-block">How It Works</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h4>Free Audit</h4><p>Enter your URL. We analyze design, mobile, performance. Get your score instantly.</p></div>
+      <div class="step"><h4>Strategy Call</h4><p>We review findings, discuss goals, and propose the right tier.</p></div>
+      <div class="step"><h4>Design & Build</h4><p>Our team creates your modern redesign. You review in your client portal.</p></div>
+      <div class="step"><h4>Launch & Grow</h4><p>We deploy, monitor, optimize. You watch conversions climb.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="section" id="portfolio">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Results That Speak</h2>
+      <p class="section-sub" style="margin:0 auto 16px">Real redesigns delivering real business outcomes.</p>
+    </div>
+    <div class="portfolio-grid" id="portfolioGrid"></div>
+    <div style="text-align:center;margin-top:40px">
+      <a href="#audit" class="btn btn-primary">Get Your Redesign →</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" style="background:var(--surface)" id="pricing">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Choose Your Tier</h2>
+      <p class="section-sub" style="margin:0 auto 16px">Transparent pricing. No hidden fees. Results guaranteed.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Essentials</h3>
+        <div class="price">$5K–$25K</div>
+        <div class="price-desc">Perfect for small businesses ready to convert</div>
+        <ul>
+          <li>5-page redesign</li><li>Mobile-first responsive</li><li>SEO optimized</li>
+          <li>Contact form integration</li><li>Analytics setup</li><li>2 revision rounds</li>
+        </ul>
+        <a href="#audit" class="btn btn-secondary">Get Started</a>
+      </div>
+      <div class="price-card featured">
+        <h3>Professional</h3>
+        <div class="price">$10K–$75K</div>
+        <div class="price-desc">Full-service redesign for growing companies</div>
+        <ul>
+          <li>10-page custom design</li><li>UI/UX design system</li><li>Content strategy</li>
+          <li>CMS integration</li><li>Advanced SEO</li><li>Performance optimization</li>
+          <li>4 revision rounds</li><li>30-day post-launch support</li>
+        </ul>
+        <a href="#audit" class="btn btn-primary">Get Started</a>
+      </div>
+      <div class="price-card">
+        <h3>Enterprise</h3>
+        <div class="price">$20K–$150K</div>
+        <div class="price-desc">Custom solutions for large-scale operations</div>
+        <ul>
+          <li>Unlimited pages</li><li>Custom web applications</li><li>CRM/ERP integration</li>
+          <li>Analytics dashboard</li><li>Dedicated project manager</li><li>Unlimited revisions</li>
+          <li>90-day post-launch support</li><li>Team training</li>
+        </ul>
+        <a href="#audit" class="btn btn-secondary">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">What Our Clients Say</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Our online bookings increased 47% within 60 days of launch. The design finally matches the quality of care we provide. Patients comment on the website constantly."</blockquote>
+        <div class="author-name">Dr. Rebecca Torres</div>
+        <div class="author-role">Beverly Hills Medical Group</div>
+        <div class="metric">+47% Online Bookings</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Gideon's team transformed our digital presence completely. We went from a dated 2010 site to a modern platform that actually generates qualified leads for our fabrication business."</blockquote>
+        <div class="author-name">Marcus Johnson</div>
+        <div class="author-role">CEO, Atlas Fabrication</div>
+        <div class="metric">3x Lead Generation</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Mobile traffic conversions up 52%. The new site is fast, professional, and our clients constantly compliment the experience. Best investment we've made this year."</blockquote>
+        <div class="author-name">Sarah Liu</div>
+        <div class="author-role">Smith & Associates Law</div>
+        <div class="metric">+52% Mobile Conversions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" style="background:var(--surface)">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">How long does a redesign take?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>Most projects are completed in 6-9 weeks depending on the tier and complexity. Essentials projects typically finish in 6 weeks, Professional in 7-8, and Enterprise in 8-12 weeks. You'll have full visibility through your client portal throughout the process.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do I need to provide content?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>For Professional and Enterprise tiers, we handle content strategy, copywriting, and optimization as part of the package. Essentials tier clients provide their own content, but we offer add-on content services if needed.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I don't like the design?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>Every tier includes revision rounds — 2 for Essentials, 4 for Professional, unlimited for Enterprise. You'll also preview your redesign in your client portal before launch. Our process ensures we're aligned before any code is written.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Will my SEO rankings be affected?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>We perform a full SEO migration on every project — preserving your existing rankings and implementing improvements. Most clients see improved rankings within 60-90 days after launch due to better performance and structure.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How is this different from Wix?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>Wix gives you a template. We build custom, hand-coded websites that you own 100%. No platform lock-in, no recurring fees, faster performance, better SEO, and conversion optimization built into every page.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Your competitors' sites are modern. Is yours?</h2>
+    <div class="ctas">
+      <a href="#audit" class="btn btn-primary" style="font-size:1.1rem;padding:18px 36px">Get My Free Audit →</a>
+      <a href="https://wa.me/233243262019" class="btn btn-secondary" style="font-size:1.1rem;padding:18px 36px" target="_blank" rel="noopener">💬 WhatsApp Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENT PORTAL -->
+<section class="section portal-section" id="portal">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Client Portal</h2>
+      <p class="section-sub" style="margin:0 auto 32px">Already working with us? Access your project dashboard, preview your redesign, and submit feedback.</p>
+      <a href="portal.html" class="btn btn-primary" style="font-size:1.1rem;padding:18px 40px">🔒 Open Client Portal →</a>
+      <p style="color:var(--text-muted);font-size:.85rem;margin-top:16px">Secure login with your company credentials</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Get In Touch</h2>
+      <p class="section-sub" style="margin:0 auto">Ready to transform your website? Let's talk.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="icon">📧</div>
+          <div><div class="label">Email</div><div class="value">gideon@gideonabochie.com</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="icon">💬</div>
+          <div><div class="label">WhatsApp</div><div class="value">+233 243 262 019</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="icon">📍</div>
+          <div><div class="label">Location</div><div class="value">Remote — North America</div></div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <form id="contactForm" name="Contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="Contact">
+          <p class="hidden" style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+          <div class="form-group">
+            <label for="cName">Name</label>
+            <input type="text" id="cName" required>
+          </div>
+          <div class="form-group">
+            <label for="cEmail">Email</label>
+            <input type="email" id="cEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="cCompany">Company</label>
+            <input type="text" id="cCompany">
+          </div>
+          <div class="form-group">
+            <label for="cMessage">Message</label>
+            <textarea id="cMessage" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">Gideon <span>Abochie</span></div>
+    <div style="margin:12px 0">
+      <a href="privacy.html" style="color:var(--text-dim);margin:0 10px;font-size:.85rem">Privacy Policy</a>
+      <a href="terms.html" style="color:var(--text-dim);margin:0 10px;font-size:.85rem">Terms of Service</a>
+      <a href="cookies.html" style="color:var(--text-dim);margin:0 10px;font-size:.85rem">Cookie Policy</a>
+    </div>
+    <p>&copy; 2026 Gideon Abochie. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar" id="stickyBar">
+  <div class="container">
+    <span class="bar-text">🔥 Free Website Audit — Get your score in 60 seconds</span>
+    <div class="bar-ctas">
+      <a href="#audit" class="btn btn-primary btn-sm">Get Free Score →</a>
+      <a href="https://wa.me/233243262019" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">💬 WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- EXIT POPUP -->
+<div class="popup-overlay" id="exitPopup">
+  <div class="popup">
+    <button class="popup-close" id="popupClose">&times;</button>
+    <h3>Wait — Don't Leave Yet</h3>
+    <p class="form-sub">Get your free website audit before you go.</p>
+    <form id="popupForm" name="Exit Popup" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="Exit Popup">
+      <p class="hidden" style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <div class="form-group">
+        <label for="popName">Name</label>
+        <input type="text" id="popName" required>
+      </div>
+      <div class="form-group">
+        <label for="popEmail">Email</label>
+        <input type="email" id="popEmail" required>
+      </div>
+      <div class="form-group">
+        <label for="popUrl">Website URL</label>
+        <input type="url" id="popUrl" placeholder="https://yourcompany.com" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Send My Free Audit →</button>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+FirebaseService.init();
+// PORTFOLIO DATA
+var portfolio=[
+  {name:'Berkshire Hathaway',tag:'Finance',color:'#1a3a5c',file:'berkshire',result:'Full redesign — modernized trillion-dollar brand presence'},
+  {name:'Verizon',tag:'Telecom',color:'#1a1a2a',file:'verizon',result:'Mobile-first redesign for 135M+ customer base'},
+  {name:'McDonald\'s',tag:'Food',color:'#8b0000',file:'mcdonalds',result:'Global brand refresh — conversion-focused ordering flow'},
+  {name:'Fidelity',tag:'Finance',color:'#1a2a4a',file:'fidelity',result:'Trust-focused redesign for 35B financial services'},
+  {name:'Hearst',tag:'Media',color:'#2a1a2a',file:'hearst',result:'Digital-first media platform redesign'},
+  {name:'Publix',tag:'Retail',color:'#1a4a1a',file:'publix',result:'E-commerce ready grocery experience'}
+];
+
+var WHATSAPP='233243262019';
+var EMAIL='gideon@gideonabochie.com';
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')},4000);
+}
+
+function openWhatsApp(text){
+  window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(text),'_blank');
+}
+function openEmail(subject,body){
+  window.location='mailto:'+EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+function submitForm(name,email,company,url,source){
+  var msg='New website audit request from '+source+':\n\nName: '+name+'\nEmail: '+email+'\nCompany: '+(company||'N/A')+'\nWebsite: '+(url||'N/A');
+  openWhatsApp(msg);
+  setTimeout(function(){openEmail('Website Audit Request — '+name,msg);},800);
+  showToast('✓ Submitted! Opening WhatsApp & email...');
+  // Submit to Netlify Forms in background
+  fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({'form-name':source,'name':name,'email':email,'company':company||'','url':url||''}).toString()}).catch(function(){});
+}
+
+// RENDER PORTFOLIO
+(function(){
+  var grid=document.getElementById('portfolioGrid');
+  portfolio.forEach(function(p){
+    var card=document.createElement('a');
+    card.href='redesigns/'+p.file+'.html';
+    card.className='portfolio-card';
+    card.innerHTML='<div class="portfolio-thumb" style="background:'+p.color+'">'+p.name.charAt(0)+'</div><div class="portfolio-info"><span class="tag">'+p.tag+'</span><h4>'+p.name+'</h4><p>'+p.result+'</p></div>';
+    grid.appendChild(card);
+  });
+})();
+
+// HERO FORM
+document.getElementById('heroForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('heroName').value;
+  var em=document.getElementById('heroEmail').value;
+  var u=document.getElementById('heroUrl').value;
+  var ind=document.getElementById('heroIndustry').value;
+  submitForm(n,em,ind,u,'Website Audit Form');
+  this.reset();
+});
+
+// CONTACT FORM
+document.getElementById('contactForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('cName').value;
+  var em=document.getElementById('cEmail').value;
+  var co=document.getElementById('cCompany').value;
+  var m=document.getElementById('cMessage').value;
+  var msg='New contact message:\n\nName: '+n+'\nEmail: '+em+'\nCompany: '+(co||'N/A')+'\nMessage: '+m;
+  openWhatsApp(msg);
+  setTimeout(function(){openEmail('Contact from '+n,msg);},800);
+  showToast('✓ Message sent! Opening WhatsApp & email...');
+  fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({'form-name':'Contact','name':n,'email':em,'company':co||'','message':m}).toString()}).catch(function(){});
+  this.reset();
+});
+
+// POPUP FORM
+document.getElementById('popupForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('popName').value;
+  var em=document.getElementById('popEmail').value;
+  var u=document.getElementById('popUrl').value;
+  submitForm(n,em,'',u,'Exit Popup');
+  document.getElementById('exitPopup').classList.remove('active');
+  this.reset();
+});
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){
+    this.parentElement.classList.toggle('open');
+  });
+});
+
+// STICKY BAR
+window.addEventListener('scroll',function(){
+  document.getElementById('stickyBar').classList.toggle('visible',window.scrollY>400);
+});
+
+// EXIT POPUP
+var popupShown=false;
+document.addEventListener('mouseout',function(e){
+  if(!popupShown&&e.clientY<2){
+    popupShown=true;
+    document.getElementById('exitPopup').classList.add('active');
+  }
+});
+document.getElementById('popupClose').addEventListener('click',function(){
+  document.getElementById('exitPopup').classList.remove('active');
+});
+document.getElementById('exitPopup').addEventListener('click',function(e){
+  if(e.target===this)this.classList.remove('active');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Portal | Gideon Abochie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="portal.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">Gideon <span>Abochie</span></div>
+    <h1>Client Portal</h1>
+    <p class="auth-sub">Access your project dashboard, preview redesigns, and submit feedback.</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginCompany">Company</label>
+        <select id="loginCompany" required>
+          <option value="" disabled selected>Select your company</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      <div class="auth-error" id="authError"></div>
+    </form>
+    <div class="auth-footer">Secure access. All activity is logged.</div>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div class="app" id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">GA <span>Portal</span></div>
+      <div class="sidebar-company" id="sbCompany"></div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-link active" data-view="overview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="sidebar-link" data-view="preview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Redesign Preview</span>
+      </button>
+      <button class="sidebar-link" data-view="feedback">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Feedback</span>
+      </button>
+      <button class="sidebar-link" data-view="timeline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Timeline</span>
+      </button>
+      <button class="sidebar-link" data-view="files">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Files</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-link" id="logoutBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- OVERVIEW VIEW -->
+    <section class="view active" id="view-overview">
+      <div class="view-header">
+        <h1>Project Overview</h1>
+        <div class="view-sub" id="overviewSubtitle"></div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-info"><div class="stat-label">Project Phase</div><div class="stat-value" id="statPhase">—</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="stat-info"><div class="stat-label">Tasks Complete</div><div class="stat-value" id="statTasks">0/0</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="stat-info"><div class="stat-label">Feedback Items</div><div class="stat-value" id="statFeedback">0</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="stat-info"><div class="stat-label">Files Shared</div><div class="stat-value" id="statFiles">0</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>Project Details</h2></div>
+        <div class="detail-grid">
+          <div class="detail-item"><div class="detail-label">Industry</div><div class="detail-value" id="detailIndustry">—</div></div>
+          <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value" id="detailLocation">—</div></div>
+          <div class="detail-item"><div class="detail-label">Tier</div><div class="detail-value" id="detailTier">—</div></div>
+          <div class="detail-item"><div class="detail-label">Start Date</div><div class="detail-value" id="detailStart">—</div></div>
+          <div class="detail-item"><div class="detail-label">Est. Delivery</div><div class="detail-value" id="detailDelivery">—</div></div>
+          <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value" id="detailStatus">—</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>Milestones</h2></div>
+        <div class="milestones" id="milestonesList"></div>
+      </div>
+    </section>
+
+    <!-- PREVIEW VIEW -->
+    <section class="view" id="view-preview">
+      <div class="view-header">
+        <h1>Redesign Preview</h1>
+        <div class="view-sub">Review your modern website redesign</div>
+      </div>
+      <div class="preview-container" id="previewContainer">
+        <div class="preview-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <h3>Redesign Preview</h3>
+          <p>Your redesigned website will appear here once ready.</p>
+          <a href="#" class="btn btn-primary" id="previewLink" target="_blank" rel="noopener" style="display:none">Open Full Preview →</a>
+        </div>
+      </div>
+      <div class="preview-feedback-bar">
+        <h3>Quick Feedback on Preview</h3>
+        <div class="quick-feedback">
+          <button class="feedback-quick-btn" data-rating="love">😍 Love it</button>
+          <button class="feedback-quick-btn" data-rating="like">👍 Looks good</button>
+          <button class="feedback-quick-btn" data-rating="changes">🔧 Need changes</button>
+          <button class="feedback-quick-btn" data-rating="discuss">💬 Let's discuss</button>
+        </div>
+        <textarea id="previewFeedbackText" placeholder="Add specific feedback about the design..." rows="3"></textarea>
+        <button class="btn btn-accent" id="submitPreviewFeedback">Submit Feedback</button>
+      </div>
+    </section>
+
+    <!-- FEEDBACK VIEW -->
+    <section class="view" id="view-feedback">
+      <div class="view-header">
+        <h1>Feedback</h1>
+        <div class="view-sub">Submit and track feedback on your project</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Submit New Feedback</h2></div>
+        <form id="feedbackForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fbCategory">Category</label>
+              <select id="fbCategory">
+                <option value="design">Design</option>
+                <option value="content">Content</option>
+                <option value="functionality">Functionality</option>
+                <option value="bug">Bug Report</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fbPriority">Priority</label>
+              <select id="fbPriority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="fbSubject">Subject</label>
+            <input type="text" id="fbSubject" placeholder="Brief description of your feedback" required>
+          </div>
+          <div class="form-group">
+            <label for="fbMessage">Details</label>
+            <textarea id="fbMessage" rows="4" placeholder="Describe your feedback in detail. Include page names, element descriptions, or screenshots." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Attachments</label>
+            <div class="file-upload" id="fileUploadArea">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Drop files here or <strong>click to browse</strong></span>
+              <input type="file" id="fbFiles" multiple accept="image/*,.pdf,.doc,.docx,.txt" style="display:none">
+            </div>
+            <div class="file-list" id="fileList"></div>
+          </div>
+          <button type="submit" class="btn btn-accent">Submit Feedback</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Feedback History</h2></div>
+        <div id="feedbackHistory"></div>
+      </div>
+    </section>
+
+    <!-- TIMELINE VIEW -->
+    <section class="view" id="view-timeline">
+      <div class="view-header">
+        <h1>Project Timeline</h1>
+        <div class="view-sub">Track progress and milestones</div>
+      </div>
+      <div class="timeline" id="timelineList"></div>
+    </section>
+
+    <!-- FILES VIEW -->
+    <section class="view" id="view-files">
+      <div class="view-header">
+        <h1>Files</h1>
+        <div class="view-sub">Shared files and assets</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Upload Files</h2>
+        </div>
+        <div class="file-upload" id="filesUploadArea">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Drop files here or <strong>click to browse</strong></span>
+          <input type="file" id="filesUpload" multiple style="display:none">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>All Files</h2></div>
+        <div id="filesList"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<footer style="margin-left:var(--sidebar-w);padding:20px 28px;border-top:1px solid var(--border);font-size:.75rem;color:var(--text3);display:flex;gap:16px;flex-wrap:wrap">
+  <span>&copy; 2026 Gideon Abochie</span>
+  <a href="privacy.html" style="color:var(--text3);text-decoration:none">Privacy</a>
+  <a href="terms.html" style="color:var(--text3);text-decoration:none">Terms</a>
+  <a href="cookies.html" style="color:var(--text3);text-decoration:none">Cookies</a>
+</footer>
+
+<script src="portal.js"></script>
+</body>
+</html>

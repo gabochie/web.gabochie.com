@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargill — Redesign Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1e2a1e;
+      line-height: 1.6;
+      background: #f9f8f5;
+    }
+
+    .preview-bar {
+      background: #c73e2b;
+      color: #fff;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      padding: 0.4rem 1rem;
+      text-transform: uppercase;
+    }
+
+    .preview-bar a {
+      color: #fff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: #fff;
+      border-bottom: 1px solid #e3e0d7;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #2b5a2b;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span {
+      color: #c73e2b;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #2e3a2e;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #2b5a2b;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #2e3a2e;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1e3a1e 0%, #2b5a2b 40%, #3c7a3c 100%);
+      color: #fff;
+      padding: 5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    .hero-content {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      font-weight: 400;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      padding: 0.85rem 2.5rem;
+      background: #c73e2b;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .hero-btn:hover {
+      background: #a83222;
+    }
+
+    /* STATS */
+    .stats {
+      background: #f3f0e8;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #2b5a2b;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-item p {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #5a6b5a;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.25rem;
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 4.5rem 1.5rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e3a1e;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-sub {
+      text-align: center;
+      font-size: 1rem;
+      color: #5a6b5a;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+
+    /* IMPACT CARDS */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      border: 1px solid #eae7de;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #e1ecdc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.25rem;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e3a1e;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: #5a6b5a;
+      line-height: 1.7;
+    }
+
+    /* INDUSTRY GRID */
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .industry-item {
+      background: #fff;
+      border: 1px solid #eae7de;
+      border-radius: 6px;
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #1e3a1e;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .industry-item:hover {
+      border-color: #8cad7a;
+      background: #f4f8f0;
+    }
+
+    .industry-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2b5a2b;
+      flex-shrink: 0;
+    }
+
+    /* SUSTAINABILITY */
+    .sustainability {
+      background: #1e3a1e;
+      color: #fff;
+    }
+
+    .sustainability .section-title {
+      color: #fff;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .value-item {
+      text-align: center;
+    }
+
+    .value-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #aad4aa;
+      margin-bottom: 0.5rem;
+    }
+
+    .value-item h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .value-item p {
+      font-size: 0.85rem;
+      color: #b5c9b5;
+      line-height: 1.6;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #0f1f0f;
+      color: #b5c9b5;
+      padding: 3rem 1.5rem 1.5rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-col h4 {
+      color: #e3ede3;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-col ul a {
+      color: #8ca58c;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul a:hover {
+      color: #c6d6c6;
+    }
+
+    .footer-logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #e3ede3;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-logo span {
+      color: #c73e2b;
+    }
+
+    .footer-about {
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #243624;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #5f7a5f;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer-bottom em {
+      font-style: normal;
+      color: #8ca58c;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .impact-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero {
+        padding: 3rem 1.5rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: #fff;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+        border-bottom: 1px solid #e3e0d7;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      nav {
+        position: relative;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .impact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .industry-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="preview-bar">Redesign Preview for Cargill · <a href="#" onclick="window.print()">Print / Save PDF</a></div>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="logo">Cargill<span>.</span></div>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Industries</a></li>
+        <li><a href="#">Products</a></li>
+        <li><a href="#">Innovation</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Feeding the World, Responsibly</h1>
+      <p>For over 155&nbsp;years, Cargill has connected farmers with markets, customers with ingredients, and people with the food they need — building a stronger, more sustainable global food supply chain.</p>
+      <a href="#" class="hero-btn">Explore Our Impact</a>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>155+</h3>
+        <p>Years of Heritage</p>
+      </div>
+      <div class="stat-item">
+        <h3>$165B</h3>
+        <p>Annual Revenue</p>
+      </div>
+      <div class="stat-item">
+        <h3>160k+</h3>
+        <p>Employees Worldwide</p>
+      </div>
+      <div class="stat-item">
+        <h3>70</h3>
+        <p>Countries Served</p>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <h2 class="section-title">Our Impact</h2>
+      <p class="section-sub">How we nourish the world, protect the planet, and strengthen communities across the entire food system.</p>
+      <div class="impact-grid">
+        <div class="card">
+          <div class="card-icon">🌾</div>
+          <h3>Food Security</h3>
+          <p>We work across 70 countries to ensure stable, safe, and affordable food reaches the people who need it most — from grain origination to distribution.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌿</div>
+          <h3>Sustainable Agriculture</h3>
+          <p>Partnering with farmers to adopt regenerative practices, reduce emissions, and protect forests while improving livelihoods across our supply chains.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔗</div>
+          <h3>Supply Chain Innovation</h3>
+          <p>Leveraging data, technology, and deep logistics expertise to build transparent, resilient food supply chains that can adapt to a changing world.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: #f3f0e8;">
+    <div class="container">
+      <h2 class="section-title">Industry Solutions</h2>
+      <p class="section-sub">Serving the global food, agriculture, and industrial markets with depth and expertise across six core sectors.</p>
+      <div class="industry-grid">
+        <div class="industry-item"><span class="industry-dot"></span> Animal Nutrition</div>
+        <div class="industry-item"><span class="industry-dot"></span> Food Ingredients</div>
+        <div class="industry-item"><span class="industry-dot"></span> Bioindustrial</div>
+        <div class="industry-item"><span class="industry-dot"></span> Cocoa &amp; Chocolate</div>
+        <div class="industry-item"><span class="industry-dot"></span> Grains &amp; Oilseeds</div>
+        <div class="industry-item"><span class="industry-dot"></span> Trading</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sustainability">
+    <div class="container">
+      <h2 class="section-title">Our Commitment to Sustainability</h2>
+      <p class="section-sub" style="color: #b5c9b5;">Guided by our purpose — we will nourish the world in a safe, responsible, and sustainable way.</p>
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="value-number">100%</div>
+          <h4>Deforestation-Free</h4>
+          <p>Supply chains in cocoa, palm, and soy by 2030</p>
+        </div>
+        <div class="value-item">
+          <div class="value-number">30%</div>
+          <h4>Emissions Reduction</h4>
+          <p>Scope 1 &amp; 2 greenhouse gas intensity target</p>
+        </div>
+        <div class="value-item">
+          <div class="value-number">10M+</div>
+          <h4>Farmers Reached</h4>
+          <p>Supporting sustainable livelihoods globally</p>
+        </div>
+        <div class="value-item">
+          <div class="value-number">50%</div>
+          <h4>Water Intensity</h4>
+          <p>Reduction in high-risk watersheds by 2030</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-logo">Cargill<span>.</span></div>
+        <p class="footer-about">We help the world thrive by delivering unique insights, supply chain expertise, and innovative solutions across food, agriculture, and industrial markets.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Our History</a></li>
+          <li><a href="#">Leadership</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Newsroom</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Markets</h4>
+        <ul>
+          <li><a href="#">Agriculture</a></li>
+          <li><a href="#">Food &amp; Beverage</a></li>
+          <li><a href="#">Animal Nutrition</a></li>
+          <li><a href="#">Bioindustrial</a></li>
+          <li><a href="#">Financial Services</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Supplier Portal</a></li>
+          <li><a href="#">Investor Relations</a></li>
+          <li><a href="#">Sustainability Report</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Cargill, Incorporated. All rights reserved. &nbsp;·&nbsp; <em>Wayzata, Minnesota</em> &nbsp;·&nbsp; <a href="#" style="color:#5f7a5f;text-decoration:none;">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('navToggle').addEventListener('click', function () {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

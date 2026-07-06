@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GA Admin | Gideon Abochie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a class="sidebar-logo" href="#"><span>GA</span> Admin</a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="sidebar-link active" data-tab="command-center">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>Command Center</span>
+    </button>
+    <button class="sidebar-link" data-tab="pipeline">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span>Pipeline</span>
+    </button>
+    <button class="sidebar-link" data-tab="finder">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>Leads Finder</span>
+    </button>
+    <button class="sidebar-link" data-tab="outreach">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>Outreach</span>
+    </button>
+    <button class="sidebar-link" data-tab="strategy">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <span>Strategy</span>
+    </button>
+    <button class="sidebar-link" data-tab="automation">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      <span>Automation</span>
+    </button>
+    <button class="sidebar-link" data-tab="roadmap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Roadmap</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="index.html" target="_blank" class="sidebar-link sidebar-external">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      <span>Public Site</span>
+    </a>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- COMMAND CENTER TAB -->
+<section id="command-center" class="section active">
+  <div class="section-header">
+    <h2 class="section-title">Command Center</h2>
+    <p class="section-sub">Real-time agent status, pipeline metrics, and activity feed</p>
+  </div>
+  <div id="cc-dashboard"></div>
+</section>
+
+<!-- PIPELINE TAB -->
+<section id="pipeline" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Sales Pipeline</h2>
+    <p class="section-sub">Track leads through every stage — from prospect to closed deal</p>
+  </div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" data-mode="enterprise">Enterprise <span id="mode-e-count">116</span></button>
+    <button class="mode-btn" data-mode="mainstreet">Main Street <span id="mode-ms-count">45</span></button>
+  </div>
+  <div id="pipeline-stages-bar" class="pipeline-stages-bar"></div>
+  <div id="dash-stats" class="stats"></div>
+  <div class="filter-bar">
+    <select id="f-stage"><option value="">Stage: All</option><option value="prospect">Prospect</option><option value="qualified">Qualified</option><option value="contacted">Contacted</option><option value="engaged">Engaged</option><option value="meeting">Meeting</option><option value="proposal">Proposal</option><option value="closed-won">Closed Won</option><option value="closed-lost">Closed Lost</option></select>
+    <select id="f-state"><option value="">State: All</option></select>
+    <select id="f-segment"><option value="">Segment: All</option><option value="hot">🔥 Hot</option><option value="warm">🟡 Warm</option><option value="cold">🔵 Cold</option></select>
+    <select id="f-priority"><option value="">Priority: All</option><option>High</option><option>Medium</option><option>Low</option></select>
+    <select id="f-industry"><option value="">Industry: All</option></select>
+    <select id="f-sort"><option value="qualScore">Growth Score</option><option value="name">Name</option><option value="value">Revenue</option><option value="state">State</option><option value="pipelineStage">Stage</option></select>
+    <input type="text" id="f-search" placeholder="Search...">
+    <button class="btn btn-sm btn-outline" id="dash-apply-btn">Apply</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th data-sort="name">Company</th>
+        <th data-sort="contactName">Contact</th>
+        <th data-sort="pipelineStage">Stage</th>
+        <th data-sort="segment">Segment</th>
+        <th data-sort="industry">Industry</th>
+        <th data-sort="value">Revenue</th>
+        <th data-sort="qualScore">Score</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="dash-tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- LEADS FINDER TAB -->
+<section id="finder" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Leads Finder</h2>
+    <p class="section-sub">Bulk scan the internet — find outdated websites, qualify businesses, extract contacts, generate outreach</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔍 Bulk Scan</div>
+    <p class="section-sub" style="margin:0 0 16px">Enter keywords to find businesses with outdated websites, or paste URLs directly (one per line)</p>
+    <div class="row">
+      <div class="form-group" style="flex:1"><label>Keywords</label><input type="text" id="finder-keywords" placeholder="e.g. dental clinic, law firm, HVAC company"></div>
+      <div class="form-group" style="flex:1"><label>Industry</label><select id="finder-industry"><option value="">All Industries</option><option>Medical</option><option>Dental</option><option>Legal</option><option>Financial</option><option>Home Services</option><option>Manufacturing</option><option>Automotive</option><option>Retail</option><option>Technology</option></select></div>
+      <div class="form-group" style="align-self:end"><button class="btn btn-accent" id="finder-bulk-btn">🔍 Scan Internet</button></div>
+    </div>
+    <div class="form-group" style="margin-top:12px"><label>Or paste URLs (one per line)</label><textarea id="finder-urls" rows="3" placeholder="https://example1.com&#10;https://example2.com&#10;https://example3.com"></textarea></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn btn-sm btn-outline" id="finder-analyze-urls-btn">📊 Analyze URLs</button>
+      <button class="btn btn-sm btn-outline" id="finder-extract-btn">👤 Extract Contacts</button>
+      <div id="finder-progress" style="display:none"><span class="spinner"></span> <span id="finder-progress-text">Scanning...</span></div>
+    </div>
+  </div>
+
+  <div id="finder-results" style="display:none">
+    <div class="card">
+      <div class="card-title">📊 Scan Results <span id="finder-result-count"></span></div>
+      <div id="finder-results-list"></div>
+    </div>
+  </div>
+
+  <div id="finder-selected" style="display:none">
+    <div class="card">
+      <div class="card-title">🎯 Selected Lead</div>
+      <div id="finder-selected-detail"></div>
+    </div>
+  </div>
+
+  <div id="finder-outreach" style="display:none">
+    <div class="card">
+      <div class="card-title">✍️ Generated Outreach</div>
+      <div id="finder-outreach-content"></div>
+    </div>
+  </div>
+
+  <div id="finder-scores" class="finder-scorecard" style="display:none"></div>
+  <div id="finder-issues" style="display:none">
+    <div class="card"><div class="card-title">⚠️ Conversion Gaps Detected</div><ul id="finder-issues-list"></ul></div>
+  </div>
+  <div id="finder-form" style="display:none">
+    <div class="card">
+      <div class="card-title">💾 Save to Pipeline</div>
+      <div class="row">
+        <div class="form-group"><label>Company</label><input type="text" id="f-name"></div>
+        <div class="form-group"><label>Contact Name</label><input type="text" id="f-contact"></div>
+        <div class="form-group"><label>Contact Email</label><input type="email" id="f-email"></div>
+        <div class="form-group"><label>Contact Title</label><input type="text" id="f-title"></div>
+      </div>
+      <div class="row">
+        <div class="form-group"><label>State</label><select id="f-state2"></select></div>
+        <div class="form-group"><label>Industry</label><select id="f-industry2"></select></div>
+        <div class="form-group"><label>Revenue ($M)</label><input type="number" id="f-value" value="1" step="0.1"></div>
+        <div class="form-group"><label>Segment</label><select id="f-segment2"><option value="hot">🔥 Hot</option><option value="warm">🟡 Warm</option><option value="cold">🔵 Cold</option></select></div>
+      </div>
+      <button class="btn btn-green" id="finder-save-btn">+ Save to Pipeline</button>
+    </div>
+  </div>
+</section>
+
+<!-- OUTREACH TAB -->
+<section id="outreach" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Bulk Outreach</h2>
+    <p class="section-sub">Send personalized emails & WhatsApp in bulk — track opens, clicks, and replies</p>
+  </div>
+
+  <!-- Daily Limits -->
+  <div id="outreach-limits" class="outreach-limits"></div>
+
+  <!-- Stats Row -->
+  <div id="outreach-stats" class="stats"></div>
+
+  <!-- Compose -->
+  <div class="card">
+    <div class="card-title">✍️ Compose Bulk Outreach</div>
+    <div class="row">
+      <div class="form-group" style="flex:1"><label>Campaign Name</label><input type="text" id="out-campaign" placeholder="e.g. Hot Leads Q1"></div>
+      <div class="form-group"><label>Channel</label><select id="out-channel"><option value="email">📧 Email (Brevo)</option><option value="whatsapp">💬 WhatsApp</option></select></div>
+      <div class="form-group"><label>Target Segment</label><select id="out-segment"><option value="hot">🔥 Hot Leads</option><option value="warm">🟡 Warm Leads</option><option value="all">All Qualified</option><option value="custom">Custom Selection</option></select></div>
+    </div>
+    <div id="out-email-fields">
+      <div class="form-group"><label>Subject</label><input type="text" id="out-subject" placeholder="Quick question about {company}"></div>
+      <div class="form-group"><label>HTML Body</label><textarea id="out-html" rows="8" placeholder="Hi {contactName},&#10;&#10;I noticed {company}'s website could use some improvements...&#10;&#10;Best,&#10;Gideon"></textarea></div>
+    </div>
+    <div id="out-whatsapp-fields" style="display:none">
+      <div class="form-group"><label>WhatsApp Message</label><textarea id="out-whatsapp-msg" rows="6" placeholder="Hi {contactName}, I noticed {company}'s website could use some improvements. Score: {score}/100. Would you be open to a quick chat?"></textarea></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="form-group"><label>Schedule</label><select id="out-schedule"><option value="now">Send Now</option><option value="1h">In 1 Hour</option><option value="tomorrow">Tomorrow 9am</option><option value="queue">Add to Queue</option></select></div>
+      <div class="form-group" style="align-self:end">
+        <button class="btn btn-accent" id="out-send-btn">📤 Send Bulk Outreach</button>
+        <button class="btn btn-outline" id="out-preview-btn" style="margin-left:8px">👁️ Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div id="out-preview" style="display:none">
+    <div class="card">
+      <div class="card-title">👁️ Preview <span id="out-preview-count"></span></div>
+      <div id="out-preview-list"></div>
+    </div>
+  </div>
+
+  <!-- Queue -->
+  <div class="card">
+    <div class="card-title">📋 Send Queue <span id="out-queue-count"></span></div>
+    <div id="out-queue-list"></div>
+  </div>
+
+  <!-- Sent Log -->
+  <div class="card">
+    <div class="card-title">📤 Sent Log</div>
+    <div id="out-sent-log"></div>
+  </div>
+
+  <!-- Campaigns -->
+  <div class="card">
+    <div class="card-title">📊 Campaigns</div>
+    <div id="out-campaigns"></div>
+  </div>
+
+  <!-- Templates -->
+  <div class="card">
+    <div class="card-title">📝 Quick Templates</div>
+    <div id="outreach-templates"></div>
+  </div>
+</section>
+
+<!-- STRATEGY TAB -->
+<section id="strategy" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Strategy</h2>
+    <p class="section-sub">Playbooks, pricing, and email templates</p>
+  </div>
+  <div id="strategy-content"></div>
+</section>
+
+<!-- AUTOMATION TAB -->
+<section id="automation" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Automation</h2>
+    <p class="section-sub">Workflows, triggers, drip sequences, and scheduling</p>
+  </div>
+  <div class="card">
+    <div class="card-title">⚡ Automation Workflows</div>
+    <div id="automation-workflows"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 Activity Log</div>
+    <div id="automation-log"></div>
+  </div>
+</section>
+
+<!-- ROADMAP TAB -->
+<section id="roadmap" class="section">
+  <div class="section-header">
+    <h2 class="section-title">Build Roadmap</h2>
+    <p class="section-sub">Production pipeline — phases, milestones, and ship dates</p>
+  </div>
+  <div class="roadmap-stats" id="roadmap-stats"></div>
+  <div class="roadmap-controls">
+    <div class="filter-bar">
+      <select id="rm-filter-phase"><option value="">All Phases</option></select>
+      <select id="rm-filter-status"><option value="">All Status</option><option>Done</option><option>In Progress</option><option>Blocked</option><option>Todo</option></select>
+      <button class="btn btn-sm btn-outline" id="rm-apply-btn">Apply</button>
+      <button class="btn btn-sm btn-accent" id="rm-add-task-btn">+ Add Task</button>
+      <button class="btn btn-sm btn-outline" id="rm-export-btn">Export JSON</button>
+    </div>
+  </div>
+  <div id="roadmap-board" class="roadmap-board"></div>
+  <div id="roadmap-timeline" class="roadmap-timeline"></div>
+</section>
+
+</main>
+
+<!-- PROPOSAL MODAL -->
+<div id="proposal-modal" class="modal-overlay">
+  <div class="modal modal-xl">
+    <div class="modal-header"><h2>Conversion System Proposal</h2><button class="modal-close" id="close-proposal-btn">✕</button></div>
+    <div class="proposal-actions"><button class="btn btn-accent btn-sm" id="print-proposal-btn">🖨️ Print / Save PDF</button></div>
+    <div id="proposal-content" class="proposal"></div>
+  </div>
+</div>
+
+<!-- NOTES MODAL -->
+<div id="notes-modal" class="modal-overlay">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h2>Notes</h2><button class="modal-close" id="close-notes-btn">✕</button></div>
+    <div id="notes-lead-name" style="font-size:14px;font-weight:600;margin-bottom:8px"></div>
+    <textarea id="notes-text"></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-accent btn-sm" id="save-notes-btn">Save Notes</button>
+      <button class="btn btn-outline btn-sm" id="cancel-notes-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- VOICE ASSISTANT -->
+<button class="voice-fab" id="voiceFab">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+</button>
+
+<div class="voice-panel" id="voicePanel">
+  <div class="voice-panel-header">
+    <h3><span class="dot" id="voiceDot"></span> GA Voice Assistant</h3>
+    <button class="voice-close" id="voiceClose">✕</button>
+  </div>
+  <div class="voice-messages" id="voiceMessages"></div>
+  <div class="voice-input-bar">
+    <button class="voice-mic" id="voiceMic">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+    </button>
+    <input type="text" class="voice-input" id="voiceInput" placeholder="Type a command or speak...">
+    <button class="voice-send" id="voiceSend">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer style="margin-left:var(--sidebar-w);padding:20px 28px;border-top:1px solid var(--border);font-size:.75rem;color:var(--text3);display:flex;gap:16px;flex-wrap:wrap">
+  <span>&copy; 2026 Gideon Abochie</span>
+  <a href="privacy.html" style="color:var(--text3);text-decoration:none">Privacy</a>
+  <a href="terms.html" style="color:var(--text3);text-decoration:none">Terms</a>
+  <a href="cookies.html" style="color:var(--text3);text-decoration:none">Cookies</a>
+</footer>
+
+<script src="firebase-config.js"></script>
+<script src="data.js"></script>
+<script src="scoring.js"></script>
+<script src="preview-engine.js"></script>
+<script src="proposal.js"></script>
+<script src="outreach.js"></script>
+<script src="agents.js"></script>
+<script src="automation.js"></script>
+<script src="command-center.js"></script>
+<script src="outreach-engine.js"></script>
+<script src="app.js"></script>
+<script src="voice-assistant.js"></script>
+
+</body>
+</html>

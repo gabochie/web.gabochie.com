@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koch Industries — Redesign Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1a1a2e;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Preview Bar ---- */
+.preview-bar {
+  background: #c62828;
+  color: #fff;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+}
+
+.preview-bar span {
+  opacity: 0.9;
+}
+
+/* ---- Navigation ---- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.97);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 64px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-logo-mark {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #0d9488, #14b8a6);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.nav-logo-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.nav-links a:hover {
+  color: #14b8a6;
+}
+
+/* ---- Hero ---- */
+.hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%);
+  padding: 120px 24px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(13,148,136,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 50%, rgba(13,148,136,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(13,148,136,0.15);
+  border: 1px solid rgba(13,148,136,0.3);
+  color: #5eead4;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: #94a3b8;
+  max-width: 600px;
+  margin: 0 auto 36px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.hero-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 14px 36px;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hero-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(13,148,136,0.35);
+}
+
+/* ---- Stats ---- */
+.stats {
+  background: #1e293b;
+  padding: 56px 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.stats-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 8px;
+}
+
+.stat-value {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: #14b8a6;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ---- Section Shared ---- */
+.section {
+  padding: 90px 24px;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0d9488;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 1.05rem;
+  color: #64748b;
+  max-width: 600px;
+  font-weight: 300;
+}
+
+/* ---- Divisions Grid ---- */
+.divisions {
+  background: #f8fafc;
+}
+
+.divisions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.division-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.division-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+  border-color: #0d9488;
+}
+
+.division-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #0d9488, #14b8a6);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #fff;
+  margin-bottom: 18px;
+}
+
+.division-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.division-card p {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* ---- Principles ---- */
+.principles {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.principles .section-label {
+  color: #5eead4;
+}
+
+.principles .section-title {
+  color: #f8fafc;
+}
+
+.principles .section-sub {
+  color: #94a3b8;
+}
+
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.principle-item {
+  padding: 28px 0;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.principle-item h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #14b8a6;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.principle-item p {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.mbm-quote {
+  margin-top: 48px;
+  padding: 32px 40px;
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid #0d9488;
+  border-radius: 8px;
+}
+
+.mbm-quote blockquote {
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: #cbd5e1;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.mbm-quote cite {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5eead4;
+  font-style: normal;
+}
+
+/* ---- Footer ---- */
+.footer {
+  background: #0b1121;
+  padding: 56px 24px 32px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-brand .nav-logo {
+  margin-bottom: 12px;
+}
+
+.footer-brand .nav-logo-text {
+  font-size: 1rem;
+}
+
+.footer-brand p {
+  font-size: 0.85rem;
+  color: #64748b;
+  max-width: 300px;
+  line-height: 1.7;
+}
+
+.footer-col h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 8px;
+}
+
+.footer-col ul a {
+  text-decoration: none;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+
+.footer-col ul a:hover {
+  color: #14b8a6;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-bottom p {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.footer-bottom-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.footer-bottom-links a {
+  text-decoration: none;
+  font-size: 0.78rem;
+  color: #475569;
+  transition: color 0.2s;
+}
+
+.footer-bottom-links a:hover {
+  color: #14b8a6;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 992px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .divisions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .hero {
+    padding: 80px 24px 64px;
+  }
+
+  .principles-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .divisions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-item {
+    padding: 4px;
+  }
+
+  .section {
+    padding: 56px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-bar"><span>Redesign Preview for Koch Industries · Print / Save PDF</span></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-mark">K</div>
+      <span class="nav-logo-text">Koch Industries</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Divisions</a></li>
+      <li><a href="#">Principles</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Privately Held · Est. 1940</div>
+    <h1>Innovating for a Better World</h1>
+    <p>For more than eight decades, Koch Industries has been transforming raw materials into products that improve everyday life — driven by industrial excellence, principle-based management, and long-term value creation.</p>
+    <a href="#" class="hero-btn">Explore Our Divisions</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-value">$125B+</div>
+      <div class="stat-label">Annual Revenue</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">120,000+</div>
+      <div class="stat-label">Employees</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">70+</div>
+      <div class="stat-label">Countries</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">10+</div>
+      <div class="stat-label">Divisions</div>
+    </div>
+  </div>
+</section>
+
+<section class="section divisions">
+  <div class="section-inner">
+    <span class="section-label">Our Companies</span>
+    <h2 class="section-title">A Diversified Industrial Portfolio</h2>
+    <p class="section-sub">From energy and chemicals to engineered solutions and advanced electronics, our divisions operate across the global industrial economy.</p>
+    <div class="divisions-grid">
+      <div class="division-card">
+        <div class="division-icon">&#9881;</div>
+        <h3>Koch Ag &amp; Energy Solutions</h3>
+        <p>Integrated energy, agriculture, and commodity trading serving global supply chains with refined products, fertilizers, and feedstocks.</p>
+      </div>
+      <div class="division-card">
+        <div class="division-icon">&#9881;</div>
+        <h3>Koch Engineered Solutions</h3>
+        <p>Industrial equipment, emission-control systems, and process technologies that improve efficiency and environmental performance.</p>
+      </div>
+      <div class="division-card">
+        <div class="division-icon">&#9881;</div>
+        <h3>Koch Minerals</h3>
+        <p>Global trading, marketing, and logistics of petroleum coke, coal, and other bulk commodities for industrial consumers.</p>
+      </div>
+      <div class="division-card">
+        <div class="division-icon">&#9881;</div>
+        <h3>Koch Chemical Technology</h3>
+        <p>Specialty chemical processing equipment, mass-transfer technologies, and engineered systems for refining and petrochemicals.</p>
+      </div>
+      <div class="division-card">
+        <div class="division-icon">&#9881;</div>
+        <h3>INVISTA</h3>
+        <p>World-class producer of fiber intermediates, specialty polymers, and performance materials including Lycra&reg; and Stainmaster&reg;.</p>
+      </div>
+      <div class="division-card">
+        <div class="division-icon">&#9881;</div>
+        <h3>Molex</h3>
+        <p>Leading electronic connectors, antennas, and interconnect solutions powering data communications, automotive, and consumer devices.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section principles">
+  <div class="section-inner">
+    <span class="section-label">Our Philosophy</span>
+    <h2 class="section-title">Market-Based Management</h2>
+    <p class="section-sub">Developed by Charles Koch, MBM is the unique management framework that guides how we create value, empower employees, and drive innovation across all our enterprises.</p>
+    <div class="principles-grid">
+      <div class="principle-item">
+        <h3>Vision</h3>
+        <p>Understanding where and how the greatest long-term value can be created, then aligning resources to achieve that vision.</p>
+      </div>
+      <div class="principle-item">
+        <h3>Virtue &amp; Talents</h3>
+        <p>Attracting and developing people of integrity who have the skills and desire to contribute their best work.</p>
+      </div>
+      <div class="principle-item">
+        <h3>Knowledge Processes</h3>
+        <p>Systematically discovering, creating, and applying the best available knowledge to make superior decisions.</p>
+      </div>
+      <div class="principle-item">
+        <h3>Decision Rights</h3>
+        <p>Ensuring the right people are empowered to make the right decisions, with clear accountability for results.</p>
+      </div>
+      <div class="principle-item">
+        <h3>Incentives</h3>
+        <p>Aligning compensation and recognition with the long-term value people create for the organization.</p>
+      </div>
+      <div class="principle-item">
+        <h3>Continuous Improvement</h3>
+        <p>Applying rigorous self-assessment, benchmarking, and experimentation to drive ongoing transformation.</p>
+      </div>
+    </div>
+    <div class="mbm-quote">
+      <blockquote>"Market-Based Management is not a set of business tactics. It is a framework for human flourishing — enabling people to create value by discovering and applying better ways to help others improve their lives."</blockquote>
+      <cite>— Charles Koch, Chairman &amp; CEO</cite>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <div class="nav-logo-mark">K</div>
+          <span class="nav-logo-text">Koch Industries</span>
+        </a>
+        <p>A privately-held industrial organization headquartered in Wichita, Kansas — building long-term value through principled entrepreneurship since 1940.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Divisions</h4>
+        <ul>
+          <li><a href="#">Koch Ag &amp; Energy</a></li>
+          <li><a href="#">Koch Engineered</a></li>
+          <li><a href="#">Koch Minerals</a></li>
+          <li><a href="#">Koch Chemical Tech</a></li>
+          <li><a href="#">INVISTA</a></li>
+          <li><a href="#">Molex</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">History</a></li>
+          <li><a href="#">Leadership</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">News</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Media Inquiries</a></li>
+          <li><a href="#">Supplier Portal</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Legal</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Koch Industries, Inc. All rights reserved. Wichita, KS</p>
+      <ul class="footer-bottom-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+        <li><a href="#">Accessibility</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

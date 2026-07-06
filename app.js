@@ -2615,6 +2615,13 @@
   var SMOKE_RESULTS = null;
 
   function renderSmokeTest() {
+    var btn = document.getElementById('smoke-run-btn');
+    if (btn && !btn._bound) {
+      btn._bound = true;
+      btn.addEventListener('click', function () {
+        try { runSmokeTest(); } catch (e) { console.error('Smoke test error:', e); showToast('❌ Error: ' + e.message); }
+      });
+    }
     if (SMOKE_RESULTS) showSmokeResults(SMOKE_RESULTS);
   }
 

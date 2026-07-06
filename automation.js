@@ -71,8 +71,8 @@ window.Automation = (function () {
       steps: [
         { action: 'lead-update', field: 'proposalSent', value: true, label: 'Mark proposal sent' },
         { action: 'lead-update', field: 'proposalSentAt', value: 'now', label: 'Timestamp' },
-        { action: 'delayed-action', delay: 3 * 86400000, action: 'notification', message: '⏰ Proposal follow-up due for {lead.name}', label: '3-day follow-up' },
-        { action: 'delayed-action', delay: 7 * 86400000, action: 'notification', message: '⏰ Second proposal follow-up for {lead.name}', label: '7-day follow-up' }
+        { action: 'notification', delay: 3 * 86400000, message: '⏰ Proposal follow-up due for {lead.name}', label: '3-day follow-up' },
+        { action: 'notification', delay: 7 * 86400000, message: '⏰ Second proposal follow-up for {lead.name}', label: '7-day follow-up' }
       ],
       runs: 0, lastRun: null, lastTriggered: null
     },
@@ -85,7 +85,7 @@ window.Automation = (function () {
       steps: [
         { action: 'lead-update', field: 'status', value: 'Closed', label: 'Mark closed' },
         { action: 'lead-update', field: 'clientSince', value: 'now', label: 'Client timestamp' },
-        { action: 'notification', message: '🎉 DEAL WON: {lead.name} — $' + (lead.value || 0) + 'M', delay: 0, label: 'Celebrate' },
+        { action: 'notification', message: '🎉 DEAL WON: {lead.name}', delay: 0, label: 'Celebrate' },
         { action: 'agent-start', agent: 'watcher', delay: 60000, label: 'Start monitoring' }
       ],
       runs: 0, lastRun: null, lastTriggered: null
@@ -99,7 +99,7 @@ window.Automation = (function () {
       steps: [
         { action: 'lead-update', field: 'status', value: 'Closed', label: 'Mark closed' },
         { action: 'notification', message: '❌ Deal lost: {lead.name} — logged for review', delay: 0, label: 'Alert' },
-        { action: 'delayed-action', delay: 90 * 86400000, action: 'lead-update', field: 'pipelineStage', value: 'prospect', label: 'Re-engage in 90 days' }
+        { action: 'lead-update', delay: 90 * 86400000, field: 'pipelineStage', value: 'prospect', label: 'Re-engage in 90 days' }
       ],
       runs: 0, lastRun: null, lastTriggered: null
     },

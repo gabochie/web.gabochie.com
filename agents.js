@@ -501,7 +501,7 @@ window.Agents = (function () {
 
         log('qualifier', 'scored', lead.name + ': ' + score + '/100 → ' + segment + ' (' + stage + ')',
           segment === 'hot' ? 'success' : 'info');
-        completeTask(task.id || 'q_' + completed, { score: score, segment: segment });
+        completeTask('q_' + completed, { score: score, segment: segment });
 
         if (completed >= leads.length) {
           resolve('Qualified ' + leads.length + ' prospects');

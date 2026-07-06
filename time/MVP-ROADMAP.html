@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVP Roadmap — Time Intelligence Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0f172a;--surface:#1e293b;--surface2:#334155;--primary:#6366f1;--primary-dark:#4f46e5;--cyan:#22d3ee;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;--border:#334155;--radius:12px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:1000px;margin:0 auto;padding:40px 24px}
+    h1{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+    .subtitle{color:var(--text2);font-size:1.1rem;margin-bottom:40px}
+    .phase{margin-bottom:32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .phase-header{padding:20px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border)}
+    .phase-num{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
+    .phase-title{font-size:1.2rem;font-weight:700}
+    .phase-meta{font-size:.8rem;color:var(--text3);margin-top:2px}
+    .phase-body{padding:20px 24px}
+    .task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+    .task:last-child{border-bottom:none}
+    .task-check{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+    .task-text{flex:1}
+    .task-tag{font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:600}
+    .tag-fe{background:rgba(99,102,241,.15);color:var(--primary)}
+    .tag-be{background:rgba(34,211,238,.15);color:var(--cyan)}
+    .tag-ai{background:rgba(16,185,129,.15);color:var(--green)}
+    .tag-design{background:rgba(245,158,11,.15);color:var(--yellow)}
+    .tag-devops{background:rgba(239,68,68,.15);color:var(--red)}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+    .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+    .summary-val{font-size:2rem;font-weight:800}
+    .summary-label{font-size:.8rem;color:var(--text3);margin-top:4px}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>MVP Roadmap</h1>
+  <p class="subtitle">Time Intelligence Platform — 5 phases to launch</p>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(99,102,241,.15);color:var(--primary)">1</div>
+      <div><div class="phase-title">Foundation</div><div class="phase-meta">Week 1-2 • Setup & Auth</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Initialize mono repo structure under /time/</div><span class="task-tag tag-devops">devops</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Set up Firebase project (Auth + Firestore)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Build landing page with waiting list signup</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Create login/signup flow (Firebase Auth)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Set up CF Pages deployment + custom domain</div><span class="task-tag tag-devops">devops</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Design color scheme & component library</div><span class="task-tag tag-design">design</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(34,211,238,.15);color:var(--cyan)">2</div>
+      <div><div class="phase-title">Data Engine</div><div class="phase-meta">Week 3-4 • Upload & Parse</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Build CSV upload interface (drag & drop)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Create CF Pages Function for CSV parsing</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Design Firestore schema (businesses, sales, forecasts)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Build data validation & cleaning pipeline</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Create sample dataset for testing</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Build data preview/confirmation UI</div><span class="task-tag tag-fe">frontend</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(16,185,129,.15);color:var(--green)">3</div>
+      <div><div class="phase-title">Forecasting Engine</div><div class="phase-meta">Week 5-6 • AI & Predictions</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Build seasonality detection algorithm</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Implement demand forecasting (30-day, 90-day)</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Create trend analysis (weekly, monthly patterns)</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Build CF Pages Function for forecast computation</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Add OpenAI integration for natural language insights</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Generate confidence scores for predictions</div><span class="task-tag tag-ai">ai</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(245,158,11,.15);color:var(--yellow)">4</div>
+      <div><div class="phase-title">Dashboard</div><div class="phase-meta">Week 7-8 • UI & Charts</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Build forecast dashboard layout</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Implement interactive charts (demand, revenue, trends)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Build "Ask AI" natural language query interface</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Create promotion recommendations panel</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Build inventory & staffing recommendation cards</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Add cash flow alerts & slow period warnings</div><span class="task-tag tag-fe">frontend</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(239,68,68,.15);color:var(--red)">5</div>
+      <div><div class="phase-title">Launch</div><div class="phase-meta">Week 9-10 • Beta & Go Live</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Build pricing page (Starter $29, Growth $79, Pro $199)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Set up Stripe checkout (or manual for MVP)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Onboarding flow for first beta users</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Set up Sentry error tracking</div><span class="task-tag tag-devops">devops</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Invite 10 restaurants for beta testing</div><span class="task-tag tag-design">design</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Launch waiting list page + social media</div><span class="task-tag tag-fe">frontend</span></div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="summary-card"><div class="summary-val" style="color:var(--primary)">5</div><div class="summary-label">Phases</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--cyan)">10</div><div class="summary-label">Weeks</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--green)">30</div><div class="summary-label">Tasks</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--yellow)">$29+</div><div class="summary-label">Starting Price</div></div>
+  </div>
+</div>
+</body>
+</html>

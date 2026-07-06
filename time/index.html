@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time — AI Seasonality Intelligence for Restaurants</title>
+  <meta name="description" content="Predict demand, optimize staffing, and boost revenue with AI-powered seasonality forecasting. Built for restaurants.">
+  <meta property="og:title" content="Time — AI Seasonality Intelligence">
+  <meta property="og:description" content="Know what's coming before it happens. AI forecasts for restaurants.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://time.gideonabochie.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0f172a;--surface:#1e293b;--surface2:#334155;--primary:#6366f1;--primary-dark:#4f46e5;--cyan:#22d3ee;--green:#10b981;--yellow:#f59e0b;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;--border:#334155;--radius:12px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+    .container{max-width:800px;margin:0 auto;padding:0 24px}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:60px 0}
+    .hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;background:rgba(99,102,241,.15);color:var(--primary);margin-bottom:24px;border:1px solid rgba(99,102,241,.3)}
+    h1{font-size:3.5rem;font-weight:900;line-height:1.1;margin-bottom:20px}
+    h1 .gradient{background:linear-gradient(135deg,var(--primary),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero-sub{font-size:1.25rem;color:var(--text2);max-width:550px;margin:0 auto 40px}
+    .hero-form{display:flex;gap:8px;max-width:480px;margin:0 auto}
+    .hero-input{flex:1;padding:14px 18px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:1rem;outline:none;transition:border-color .2s}
+    .hero-input:focus{border-color:var(--primary)}
+    .hero-input::placeholder{color:var(--text3)}
+    .hero-btn{padding:14px 28px;border-radius:var(--radius);border:none;background:var(--primary);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .hero-btn:hover{background:var(--primary-dark);transform:translateY(-2px)}
+    .hero-note{font-size:.8rem;color:var(--text3);margin-top:12px}
+    .hero-note span{color:var(--green)}
+
+    /* PROOF */
+    .proof{display:flex;justify-content:center;gap:40px;padding:40px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:60px 0}
+    .proof-item{text-align:center}
+    .proof-val{font-size:2rem;font-weight:800;color:var(--cyan)}
+    .proof-label{font-size:.8rem;color:var(--text3)}
+
+    /* FEATURES */
+    .features{padding:60px 0}
+    .features h2{font-size:2rem;font-weight:800;text-align:center;margin-bottom:40px}
+    .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+    .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;transition:all .3s}
+    .feature-card:hover{border-color:var(--primary);transform:translateY(-4px)}
+    .feature-icon{font-size:2rem;margin-bottom:12px}
+    .feature-title{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+    .feature-desc{font-size:.9rem;color:var(--text2)}
+
+    /* HOW IT WORKS */
+    .how{padding:60px 0}
+    .how h2{font-size:2rem;font-weight:800;text-align:center;margin-bottom:40px}
+    .steps{display:flex;flex-direction:column;gap:20px}
+    .step{display:flex;align-items:flex-start;gap:20px;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+    .step-num{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;flex-shrink:0;background:rgba(99,102,241,.15);color:var(--primary)}
+    .step-title{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+    .step-desc{font-size:.9rem;color:var(--text2)}
+
+    /* PRICING */
+    .pricing{padding:60px 0}
+    .pricing h2{font-size:2rem;font-weight:800;text-align:center;margin-bottom:8px}
+    .pricing .sub{color:var(--text2);text-align:center;margin-bottom:40px}
+    .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .price-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:center}
+    .price-card.featured{border-color:var(--primary);position:relative}
+    .price-card.featured::before{content:'MOST POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:4px 16px;border-radius:12px;font-size:.7rem;font-weight:700}
+    .price-name{font-size:1rem;font-weight:600;color:var(--text2);margin-bottom:8px}
+    .price-val{font-size:2.5rem;font-weight:900;margin-bottom:4px}
+    .price-period{font-size:.8rem;color:var(--text3);margin-bottom:20px}
+    .price-features{text-align:left;margin-bottom:20px}
+    .price-features li{font-size:.85rem;color:var(--text2);padding:6px 0;border-bottom:1px solid var(--border);list-style:none}
+    .price-features li::before{content:'✓ ';color:var(--green);font-weight:700}
+    .price-btn{width:100%;padding:12px;border-radius:var(--radius);border:1.5px solid var(--border);background:transparent;color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .price-card.featured .price-btn{background:var(--primary);border-color:var(--primary);color:#fff}
+    .price-btn:hover{transform:translateY(-2px)}
+
+    /* BOTTOM CTA */
+    .cta{padding:80px 0;text-align:center}
+    .cta h2{font-size:2rem;font-weight:800;margin-bottom:12px}
+    .cta p{color:var(--text2);margin-bottom:24px}
+
+    /* FOOTER */
+    footer{padding:40px 0;text-align:center;border-top:1px solid var(--border);color:var(--text3);font-size:.8rem}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:12px 24px;border-radius:var(--radius);font-size:.9rem;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
+    .toast.show{opacity:1}
+
+    @media(max-width:640px){
+      h1{font-size:2.2rem}
+      .hero-form{flex-direction:column}
+      .feature-grid{grid-template-columns:1fr}
+      .price-grid{grid-template-columns:1fr}
+      .proof{flex-direction:column;gap:20px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-badge">Coming Soon — Join the Waitlist</div>
+    <h1>Know what's coming <br><span class="gradient">before it happens</span></h1>
+    <p class="hero-sub">AI-powered seasonality intelligence for restaurants. Predict demand, optimize staffing, and never get caught off guard.</p>
+    <div class="hero-form">
+      <input type="email" class="hero-input" id="waitlist-email" placeholder="Enter your email">
+      <button class="hero-btn" id="waitlist-btn">Join Waitlist</button>
+    </div>
+    <p class="hero-note">Free for early adopters. <span>Only 100 spots available.</span></p>
+  </div>
+
+  <div class="proof">
+    <div class="proof-item"><div class="proof-val">87%</div><div class="proof-label">Forecast Accuracy</div></div>
+    <div class="proof-item"><div class="proof-val">23%</div><div class="proof-label">Less Food Waste</div></div>
+    <div class="proof-item"><div class="proof-val">$4.2K</div><div class="proof-label">Avg Monthly Savings</div></div>
+    <div class="proof-item"><div class="proof-val">2 min</div><div class="proof-label">Setup Time</div></div>
+  </div>
+
+  <div class="features">
+    <h2>What Time Does For You</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Demand Forecasting</div>
+        <div class="feature-desc">See exactly how many customers to expect for the next 30-90 days, broken down by day and hour.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <div class="feature-title">Staffing Recommendations</div>
+        <div class="feature-desc">Know exactly when to hire extra staff and when to cut hours — based on predicted demand.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <div class="feature-title">Inventory Planning</div>
+        <div class="feature-desc">Get reorder alerts before you run out. Reduce waste by knowing what to stock and when.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Revenue Alerts</div>
+        <div class="feature-desc">Get warned about slow periods weeks in advance. Plan promotions before revenue drops.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Promotion Engine</div>
+        <div class="feature-desc">AI suggests the best time to run promotions based on your historical patterns and local events.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">Ask Anything</div>
+        <div class="feature-desc">"Why were sales low in May?" "What should I order for Christmas?" Just ask in plain English.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="how">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div><div class="step-title">Upload your sales data</div><div class="step-desc">Connect your POS or upload a CSV. Takes 2 minutes. We support Square, Toast, Clover, and any spreadsheet.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div><div class="step-title">AI learns your patterns</div><div class="step-desc">Our engine detects weekly cycles, seasonal trends, holiday effects, and local event impacts automatically.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div><div class="step-title">Get your forecast</div><div class="step-desc">See demand predictions, staffing needs, inventory alerts, and revenue projections — all in one dashboard.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div><div class="step-title">Make smarter decisions</div><div class="step-desc">Act on AI recommendations. Save money on labor, reduce waste, and never miss a revenue opportunity.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pricing">
+    <h2>Simple, Transparent Pricing</h2>
+    <p class="sub">Start free. Upgrade when you're ready.</p>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-val">$29</div>
+        <div class="price-period">/month</div>
+        <ul class="price-features">
+          <li>1 location</li>
+          <li>30-day forecasting</li>
+          <li>Demand predictions</li>
+          <li>Basic reports</li>
+        </ul>
+        <button class="price-btn">Join Waitlist</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-name">Growth</div>
+        <div class="price-val">$79</div>
+        <div class="price-period">/month</div>
+        <ul class="price-features">
+          <li>Up to 3 locations</li>
+          <li>90-day forecasting</li>
+          <li>AI recommendations</li>
+          <li>Inventory & staffing</li>
+          <li>Email alerts</li>
+        </ul>
+        <button class="price-btn">Join Waitlist</button>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Pro</div>
+        <div class="price-val">$199</div>
+        <div class="price-period">/month</div>
+        <ul class="price-features">
+          <li>Unlimited locations</li>
+          <li>12-month forecasting</li>
+          <li>Conversational AI</li>
+          <li>API access</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="price-btn">Join Waitlist</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>Ready to stop guessing?</h2>
+    <p>Join the waitlist. Be the first to know when we launch.</p>
+    <div class="hero-form" style="max-width:480px;margin:0 auto">
+      <input type="email" class="hero-input" id="waitlist-email-2" placeholder="Enter your email">
+      <button class="hero-btn" id="waitlist-btn-2">Join Waitlist</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2026 Time Intelligence. Built by <a href="https://gideonabochie.com" style="color:var(--primary);text-decoration:none">Gideon Abochie</a></p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+function handleSignup(emailEl) {
+  var email = emailEl.value.trim();
+  if (!email || !email.includes('@')) {
+    showToast('Please enter a valid email');
+    return;
+  }
+
+  // Save to localStorage for now (will use Firestore in production)
+  var list = JSON.parse(localStorage.getItem('time_waitlist') || '[]');
+  if (list.indexOf(email) !== -1) {
+    showToast('You\'re already on the list!');
+    return;
+  }
+  list.push(email);
+  localStorage.setItem('time_waitlist', JSON.stringify(list));
+
+  // Save to Firestore if available
+  if (window.firebase && window.firebase.firestore) {
+    window.firebase.firestore().collection('waitlist').add({
+      email: email,
+      source: 'landing',
+      createdAt: new Date().toISOString()
+    }).catch(function() {});
+  }
+
+  emailEl.value = '';
+  showToast('🎉 You\'re on the list! Spot #' + list.length + ' of 100');
+}
+
+document.getElementById('waitlist-btn').addEventListener('click', function() {
+  handleSignup(document.getElementById('waitlist-email'));
+});
+document.getElementById('waitlist-email').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') handleSignup(this);
+});
+document.getElementById('waitlist-btn-2').addEventListener('click', function() {
+  handleSignup(document.getElementById('waitlist-email-2'));
+});
+document.getElementById('waitlist-email-2').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') handleSignup(this);
+});
+
+// Animate proof numbers on scroll
+var animated = false;
+function animateProof() {
+  if (animated) return;
+  var proof = document.querySelector('.proof');
+  if (!proof) return;
+  var rect = proof.getBoundingClientRect();
+  if (rect.top < window.innerHeight * 0.8) {
+    animated = true;
+    document.querySelectorAll('.proof-val').forEach(function(el) {
+      var final = el.textContent;
+      el.textContent = '0';
+      var num = parseFloat(final);
+      var suffix = final.replace(/[0-9.]/g, '');
+      var start = 0;
+      var duration = 1500;
+      var startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var current = Math.round(progress * num);
+        el.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = final;
+      }
+      requestAnimationFrame(step);
+    });
+  }
+}
+window.addEventListener('scroll', animateProof);
+animateProof();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulation — Time Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0f172a;--surface:#1e293b;--surface2:#334155;--primary:#6366f1;--cyan:#22d3ee;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;--border:#334155;--radius:12px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:24px}
+    .logo{font-size:1.2rem;font-weight:800;color:var(--primary)}
+    .back{color:var(--text2);text-decoration:none;font-size:.9rem}
+    h1{font-size:1.8rem;font-weight:800;margin-bottom:4px}
+    .sub{color:var(--text2);font-size:.9rem;margin-bottom:24px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+    .stat-label{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .stat-val{font-size:1.8rem;font-weight:800}
+    .stat-sub{font-size:.75rem;color:var(--text3);margin-top:2px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+    .card-title{font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .chart{width:100%;height:200px}
+    .row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .insight{padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;font-size:.85rem}
+    .insight-icon{margin-right:8px}
+    .forecast-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+    .forecast-item:last-child{border-bottom:none}
+    .bar-wrap{width:120px;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin:0 12px}
+    .bar-fill{height:100%;border-radius:4px;transition:width 1s}
+    .badge{padding:3px 10px;border-radius:12px;font-size:.7rem;font-weight:600}
+    .badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+    .badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+    .badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+    .ask-box{display:flex;gap:8px;margin-top:16px}
+    .ask-input{flex:1;padding:12px 16px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:.9rem;outline:none}
+    .ask-input:focus{border-color:var(--primary)}
+    .ask-btn{padding:12px 20px;border-radius:var(--radius);border:none;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    .ask-response{margin-top:12px;padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:.85rem;color:var(--text2);display:none}
+    .pulse{animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">⏱ Time</div>
+    <a href="index.html" class="back">← Back to Waitlist</a>
+  </div>
+
+  <h1>📊 Simulation Dashboard</h1>
+  <p class="sub">Demo data for "Mario's Italian Restaurant" — This is what you'll see after uploading sales data</p>
+
+  <div class="grid">
+    <div class="stat"><div class="stat-label">Forecasted Revenue (Next 30 Days)</div><div class="stat-val" style="color:var(--green)">$48,200</div><div class="stat-sub">↑ 12% vs last month</div></div>
+    <div class="stat"><div class="stat-label">Predicted Customers</div><div class="stat-val" style="color:var(--cyan)">2,340</div><div class="stat-sub">Peak: Friday & Saturday</div></div>
+    <div class="stat"><div class="stat-label">Staff Needed</div><div class="stat-val" style="color:var(--yellow)">8.2</div><div class="stat-sub">Avg per shift (up from 6)</div></div>
+    <div class="stat"><div class="stat-label">Waste Reduction</div><div class="stat-val" style="color:var(--primary)">23%</div><div class="stat-sub">Saves ~$1,800/month</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 30-Day Demand Forecast</div>
+    <canvas id="forecastChart" class="chart"></canvas>
+  </div>
+
+  <div class="row-2">
+    <div class="card">
+      <div class="card-title">🔥 Peak Days This Week</div>
+      <div class="forecast-item"><span>Friday, Jul 11</span><div class="bar-wrap"><div class="bar-fill" style="width:95%;background:var(--red)"></div></div><span class="badge badge-red">Very Busy</span></div>
+      <div class="forecast-item"><span>Saturday, Jul 12</span><div class="bar-wrap"><div class="bar-fill" style="width:90%;background:var(--red)"></div></div><span class="badge badge-red">Very Busy</span></div>
+      <div class="forecast-item"><span>Thursday, Jul 10</span><div class="bar-wrap"><div class="bar-fill" style="width:70%;background:var(--yellow)"></div></div><span class="badge badge-yellow">Busy</span></div>
+      <div class="forecast-item"><span>Sunday, Jul 13</span><div class="bar-wrap"><div class="bar-fill" style="width:65%;background:var(--yellow)"></div></div><span class="badge badge-yellow">Busy</span></div>
+      <div class="forecast-item"><span>Tuesday, Jul 8</span><div class="bar-wrap"><div class="bar-fill" style="width:30%;background:var(--green)"></div></div><span class="badge badge-green">Quiet</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 AI Insights</div>
+      <div class="insight"><span class="insight-icon">📊</span> Your busiest weeks are in July & December. Staff up 2 weeks before.</div>
+      <div class="insight"><span class="insight-icon">🌧️</span> Rainy days drop traffic by 18%. Consider indoor promotions.</div>
+      <div class="insight"><span class="insight-icon">🎉</span> July 4th weekend historically boosts sales by 34%. Stock up on BBQ items.</div>
+      <div class="insight"><span class="insight-icon">📉</span> January is your slowest month. Plan a "New Year, New Menu" promo.</div>
+      <div class="insight"><span class="insight-icon">👥</span> You need 2 extra servers for Friday/Saturday evenings.</div>
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div class="card">
+      <div class="card-title">📦 Inventory Alerts</div>
+      <div class="forecast-item"><span>Pasta (order 200 lbs)</span><span class="badge badge-red">Order by Jul 15</span></div>
+      <div class="forecast-item"><span>Olive Oil (order 50L)</span><span class="badge badge-yellow">Order by Jul 18</span></div>
+      <div class="forecast-item"><span>Mozzarella (order 80lbs)</span><span class="badge badge-red">Order by Jul 14</span></div>
+      <div class="forecast-item"><span>Wine (order 120 bottles)</span><span class="badge badge-green">Order by Jul 20</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 Promotion Calendar</div>
+      <div class="forecast-item"><span>Jul 4th BBQ Special</span><span class="badge badge-green">+$4,200 est.</span></div>
+      <div class="forecast-item"><span>Tuesday Pasta Night</span><span class="badge badge-green">+$1,800/mo</span></div>
+      <div class="forecast-item"><span>Summer Happy Hour</span><span class="badge badge-yellow">+$2,400 est.</span></div>
+      <div class="forecast-item"><span>Back-to-School Family Deal</span><span class="badge badge-green">+$3,100 est.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🤖 Ask AI Anything</div>
+    <div class="ask-box">
+      <input type="text" class="ask-input" id="askInput" placeholder="e.g. Why were sales low in May?">
+      <button class="ask-btn" id="askBtn">Ask</button>
+    </div>
+    <div class="ask-response" id="askResponse"></div>
+  </div>
+
+  <div style="text-align:center;padding:40px 0">
+    <a href="index.html" style="display:inline-block;padding:14px 32px;border-radius:var(--radius);background:var(--primary);color:#fff;font-weight:700;text-decoration:none">Join Waitlist — Get Early Access</a>
+  </div>
+</div>
+
+<script>
+// Draw forecast chart
+var canvas = document.getElementById('forecastChart');
+var ctx = canvas.getContext('2d');
+var w = canvas.width = canvas.parentElement.offsetWidth - 48;
+var h = canvas.height = 200;
+var padding = { top: 20, right: 20, bottom: 30, left: 50 };
+var chartW = w - padding.left - padding.right;
+var chartH = h - padding.top - padding.bottom;
+
+// Simulated 30-day data
+var data = [];
+var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+for (var i = 0; i < 30; i++) {
+  var dayOfWeek = i % 7;
+  var base = 120;
+  // Weekend boost
+  if (dayOfWeek === 4 || dayOfWeek === 5) base = 220;
+  else if (dayOfWeek === 6) base = 180;
+  else if (dayOfWeek === 1 || dayOfWeek === 2) base = 80;
+  // Add noise
+  base += Math.round((Math.random() - 0.5) * 40);
+  data.push({ label: (i + 1).toString(), value: base });
+}
+
+var maxVal = Math.max.apply(null, data.map(function(d) { return d.value; }));
+var stepX = chartW / (data.length - 1);
+
+// Grid
+ctx.strokeStyle = '#334155';
+ctx.lineWidth = 1;
+for (var g = 0; g <= 4; g++) {
+  var gy = padding.top + (chartH * g / 4);
+  ctx.beginPath();
+  ctx.moveTo(padding.left, gy);
+  ctx.lineTo(w - padding.right, gy);
+  ctx.stroke();
+  ctx.fillStyle = '#64748b';
+  ctx.font = '10px Inter, system-ui';
+  ctx.textAlign = 'right';
+  ctx.fillText(Math.round(maxVal * (4 - g) / 4), padding.left - 8, gy + 4);
+}
+
+// Area
+ctx.beginPath();
+ctx.moveTo(padding.left, padding.top + chartH);
+data.forEach(function(d, idx) {
+  var x = padding.left + (idx * stepX);
+  var y = padding.top + chartH - (d.value / maxVal * chartH);
+  ctx.lineTo(x, y);
+});
+ctx.lineTo(padding.left + ((data.length - 1) * stepX), padding.top + chartH);
+ctx.closePath();
+var gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+gradient.addColorStop(0, 'rgba(99,102,241,0.3)');
+gradient.addColorStop(1, 'rgba(99,102,241,0.02)');
+ctx.fillStyle = gradient;
+ctx.fill();
+
+// Line
+ctx.beginPath();
+ctx.strokeStyle = '#6366f1';
+ctx.lineWidth = 2;
+data.forEach(function(d, idx) {
+  var x = padding.left + (idx * stepX);
+  var y = padding.top + chartH - (d.value / maxVal * chartH);
+  if (idx === 0) ctx.moveTo(x, y);
+  else ctx.lineTo(x, y);
+});
+ctx.stroke();
+
+// Dots
+data.forEach(function(d, idx) {
+  if (idx % 5 === 0 || d.value > 200) {
+    var x = padding.left + (idx * stepX);
+    var y = padding.top + chartH - (d.value / maxVal * chartH);
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = d.value > 200 ? '#ef4444' : '#6366f1';
+    ctx.fill();
+  }
+});
+
+// X labels
+ctx.fillStyle = '#64748b';
+ctx.textAlign = 'center';
+for (var li = 0; li < data.length; li += 5) {
+  ctx.fillText('Day ' + data[li].label, padding.left + (li * stepX), h - 8);
+}
+
+// AI Q&A simulation
+var qa = {
+  'why were sales low in may': 'In May 2025, your sales dropped 22% compared to April. Analysis shows: (1) Memorial Day weekend had unusual rain, reducing foot traffic by 18%. (2) Two competing Italian restaurants opened nearby. (3) School exams period — families dine out less. Recommendation: Run a "Family Study Break" promo in late May next year.',
+  'what should i order for christmas': 'Based on last 3 years of December data: Order 40% more pasta, 60% more wine (holidays = more wine), 30% more desserts. Stock up on gift cards — they accounted for 15% of December revenue. Order by Dec 1 to avoid supplier shortages.',
+  'when should i hire extra staff': 'Your data shows you need extra staff when: (1) Daily customers > 180 (currently averaging 140). (2) Fridays & Saturdays in summer. (3) Holiday weekends. For July: hire 2 extra servers for Jul 4th week, 1 extra cook Jul 1-7. Budget: ~$2,400 for the month.',
+  'what promotions worked best': 'Top 5 promotions by revenue lift: (1) Tuesday Pasta Night: +$1,800/mo. (2) July 4th BBQ Special: +$4,200 one-time. (3) Valentine\'s Prix Fixe: +$3,800. (4) Summer Happy Hour: +$2,400/mo. (5) Back-to-School Family Deal: +$3,100. Run Pasta Night every week.',
+  'forecast december revenue': 'December forecast: $62,400 (±8% confidence). Breakdown: Regular sales: $38,000. Holiday boost: +$18,000 (+47%). Gift cards: +$6,400. Peak days: Dec 23-24, Dec 31. Expected customers: 3,100. Recommendation: Staff up from Dec 15, order inventory by Dec 1.'
+};
+
+document.getElementById('askBtn').addEventListener('click', function() {
+  var q = document.getElementById('askInput').value.trim().toLowerCase();
+  var resp = document.getElementById('askResponse');
+  if (!q) return;
+
+  resp.style.display = 'block';
+  resp.innerHTML = '<span class="pulse">🤖 Analyzing your data...</span>';
+
+  setTimeout(function() {
+    var answer = null;
+    Object.keys(qa).forEach(function(key) {
+      if (q.indexOf(key) !== -1 || key.indexOf(q) !== -1) answer = qa[key];
+    });
+    if (!answer) {
+      answer = 'Great question! Based on your data patterns, I can see several factors at play. Upload your sales history and I\'ll give you a detailed, data-driven answer. Try asking about: "sales in May", "Christmas orders", "hiring", "promotions", or "December forecast".';
+    }
+    resp.innerHTML = '🤖 ' + answer;
+  }, 1500);
+});
+
+document.getElementById('askInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') document.getElementById('askBtn').click();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Product Roadmap — Time Intelligence Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0f172a;--surface:#1e293b;--surface2:#334155;--primary:#6366f1;--primary-dark:#4f46e5;--cyan:#22d3ee;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--pink:#ec4899;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;--border:#334155;--radius:12px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .container{max-width:1000px;margin:0 auto;padding:40px 24px}
+    h1{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+    .subtitle{color:var(--text2);font-size:1.1rem;margin-bottom:16px}
+    .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;background:rgba(99,102,241,.15);color:var(--primary);margin-bottom:40px}
+    .phase{margin-bottom:32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .phase-header{padding:20px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border)}
+    .phase-num{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
+    .phase-title{font-size:1.2rem;font-weight:700}
+    .phase-meta{font-size:.8rem;color:var(--text3);margin-top:2px}
+    .phase-body{padding:20px 24px}
+    .task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+    .task:last-child{border-bottom:none}
+    .task-check{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+    .task-text{flex:1}
+    .task-tag{font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:600}
+    .tag-fe{background:rgba(99,102,241,.15);color:var(--primary)}
+    .tag-be{background:rgba(34,211,238,.15);color:var(--cyan)}
+    .tag-ai{background:rgba(16,185,129,.15);color:var(--green)}
+    .tag-design{background:rgba(245,158,11,.15);color:var(--yellow)}
+    .tag-devops{background:rgba(239,68,68,.15);color:var(--red)}
+    .tag-biz{background:rgba(236,72,153,.15);color:var(--pink)}
+    .mvp-badge{background:rgba(16,185,129,.15);color:var(--green);padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700;margin-left:8px}
+    .growth-badge{background:rgba(245,158,11,.15);color:var(--yellow);padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700;margin-left:8px}
+    .scale-badge{background:rgba(239,68,68,.15);color:var(--red);padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:700;margin-left:8px}
+    .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px}
+    .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+    .summary-val{font-size:2rem;font-weight:800}
+    .summary-label{font-size:.8rem;color:var(--text3);margin-top:4px}
+    .timeline{margin-top:40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+    .timeline h3{font-size:1.1rem;font-weight:700;margin-bottom:16px}
+    .tl-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+    .tl-row:last-child{border-bottom:none}
+    .tl-q{width:60px;font-weight:700;color:var(--primary);flex-shrink:0}
+    .tl-bar{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+    .tl-fill{height:100%;border-radius:4px}
+    .tl-label{width:120px;color:var(--text2);text-align:right}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Full Product Roadmap</h1>
+  <p class="subtitle">Time Intelligence Platform — From MVP to Scale</p>
+  <div class="badge">10 Phases • 6 Months • Full SaaS</div>
+
+  <!-- PHASE 1-5: MVP -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(99,102,241,.15);color:var(--primary)">1</div>
+      <div><div class="phase-title">Foundation<span class="mvp-badge">MVP</span></div><div class="phase-meta">Week 1-2 • Auth, Setup, Landing</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Mono repo structure + CF Pages deployment</div><span class="task-tag tag-devops">devops</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Firebase Auth (email/password + Google)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Landing page + waiting list email capture</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Design system (indigo/cyan theme)</div><span class="task-tag tag-design">design</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(34,211,238,.15);color:var(--cyan)">2</div>
+      <div><div class="phase-title">Data Engine<span class="mvp-badge">MVP</span></div><div class="phase-meta">Week 3-4 • CSV Upload & Parse</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">CSV upload with drag & drop</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">CF Pages Function for CSV parsing + validation</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Firestore schema (businesses, sales, forecasts)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Sample restaurant dataset for testing</div><span class="task-tag tag-be">backend</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(16,185,129,.15);color:var(--green)">3</div>
+      <div><div class="phase-title">Forecasting Engine<span class="mvp-badge">MVP</span></div><div class="phase-meta">Week 5-6 • AI Predictions</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Seasonality detection (weekly, monthly, holiday patterns)</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">30-day & 90-day demand forecasting</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">OpenAI integration for natural language insights</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Confidence scoring for predictions</div><span class="task-tag tag-ai">ai</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(245,158,11,.15);color:var(--yellow)">4</div>
+      <div><div class="phase-title">Dashboard<span class="mvp-badge">MVP</span></div><div class="phase-meta">Week 7-8 • Charts & Insights</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Forecast dashboard with interactive charts</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">"Ask AI" natural language query bar</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Promotion & inventory recommendation cards</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Cash flow alerts & slow period warnings</div><span class="task-tag tag-fe">frontend</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(239,68,68,.15);color:var(--red)">5</div>
+      <div><div class="phase-title">Launch<span class="mvp-badge">MVP</span></div><div class="phase-meta">Week 9-10 • Beta & Go Live</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Pricing page ($29/$79/$199)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Manual payment flow (Stripe for MVP)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Onboarding wizard for beta users</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Invite 10 restaurants for beta</div><span class="task-tag tag-biz">business</span></div>
+    </div>
+  </div>
+
+  <!-- PHASE 6-8: GROWTH -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(99,102,241,.15);color:var(--primary)">6</div>
+      <div><div class="phase-title">Billing & Subscriptions<span class="growth-badge">GROWTH</span></div><div class="phase-meta">Month 3 • Stripe Integration</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Full Stripe integration (subscriptions, invoices)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Usage-based billing (API calls, data storage)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Customer portal (manage subscription, billing)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Trial period & upgrade flow</div><span class="task-tag tag-fe">frontend</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(34,211,238,.15);color:var(--cyan)">7</div>
+      <div><div class="phase-title">POS Integration<span class="growth-badge">GROWTH</span></div><div class="phase-meta">Month 3-4 • Connect Real Data</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Square API integration (transactions, catalog)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Toast API integration (restaurant POS)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Clover API integration</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">OAuth flow for POS connection</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Real-time data sync (webhooks)</div><span class="task-tag tag-be">backend</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(16,185,129,.15);color:var(--green)">8</div>
+      <div><div class="phase-title">AI Intelligence<span class="growth-badge">GROWTH</span></div><div class="phase-meta">Month 4-5 • Advanced AI</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Conversational AI (chat with your data)</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Auto-generated weekly reports (email)</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Anomaly detection (unusual sales patterns)</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Weather impact analysis</div><span class="task-tag tag-ai">ai</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Competitor pricing insights (web scraping)</div><span class="task-tag tag-ai">ai</span></div>
+    </div>
+  </div>
+
+  <!-- PHASE 9-10: SCALE -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(245,158,11,.15);color:var(--yellow)">9</div>
+      <div><div class="phase-title">Multi-Location & Team<span class="scale-badge">SCALE</span></div><div class="phase-meta">Month 5-6 • Enterprise Features</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Multi-location dashboard (franchise view)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Team roles & permissions (owner, manager, viewer)</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Cross-location comparison analytics</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">API access for Pro/Enterprise tier</div><span class="task-tag tag-be">backend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">White-label option for franchises</div><span class="task-tag tag-design">design</span></div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num" style="background:rgba(239,68,68,.15);color:var(--red)">10</div>
+      <div><div class="phase-title">Industry Expansion<span class="scale-badge">SCALE</span></div><div class="phase-meta">Month 6+ • Vertical Templates</div></div>
+    </div>
+    <div class="phase-body">
+      <div class="task"><div class="task-check"></div><div class="task-text">Salon/spa vertical (appointment forecasting)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Retail vertical (inventory seasonality)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Auto repair vertical (seasonal demand)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Clinic vertical (flu season, appointment patterns)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Gym vertical (January rush, summer slowdown)</div><span class="task-tag tag-fe">frontend</span></div>
+      <div class="task"><div class="task-check"></div><div class="task-text">Partner program (accountants, consultants)</div><span class="task-tag tag-biz">business</span></div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="summary-card"><div class="summary-val" style="color:var(--primary)">10</div><div class="summary-label">Phases</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--cyan)">6</div><div class="summary-label">Months</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--green)">55+</div><div class="summary-label">Tasks</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--yellow)">6</div><div class="summary-label">Verticals</div></div>
+    <div class="summary-card"><div class="summary-val" style="color:var(--red)">$2M+</div><div class="summary-label">Revenue Target</div></div>
+  </div>
+
+  <div class="timeline">
+    <h3>📊 Growth Timeline</h3>
+    <div class="tl-row"><div class="tl-q">Q1</div><div class="tl-bar"><div class="tl-fill" style="width:30%;background:var(--primary)"></div></div><div class="tl-label">MVP Launch</div></div>
+    <div class="tl-row"><div class="tl-q">Q2</div><div class="tl-bar"><div class="tl-fill" style="width:55%;background:var(--cyan)"></div></div><div class="tl-label">Billing + POS</div></div>
+    <div class="tl-row"><div class="tl-q">Q3</div><div class="tl-bar"><div class="tl-fill" style="width:80%;background:var(--green)"></div></div><div class="tl-label">AI + Scale</div></div>
+    <div class="tl-row"><div class="tl-q">Q4</div><div class="tl-bar"><div class="tl-fill" style="width:100%;background:var(--yellow)"></div></div><div class="tl-label">Enterprise + Expansion</div></div>
+  </div>
+</div>
+</body>
+</html>

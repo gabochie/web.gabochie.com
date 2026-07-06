@@ -1318,59 +1318,56 @@
   var ROADMAP_KEY = 'ga_roadmap';
 
   var ROADMAP_PHASES = [
-    { id: 'discovery', name: 'Discovery & Strategy', color: 'phase-1', order: 1 },
-    { id: 'design', name: 'Design & Wireframes', color: 'phase-2', order: 2 },
-    { id: 'development', name: 'Development & Build', color: 'phase-3', order: 3 },
-    { id: 'content', name: 'Content & Copy', color: 'phase-4', order: 4 },
-    { id: 'testing', name: 'QA & Testing', color: 'phase-5', order: 5 },
-    { id: 'launch', name: 'Launch & Deploy', color: 'phase-6', order: 6 }
+    { id: 'discovery', name: 'Core Platform', color: 'phase-1', order: 1 },
+    { id: 'design', name: 'Migration & Auth', color: 'phase-2', order: 2 },
+    { id: 'development', name: 'Wire Scaffold', color: 'phase-3', order: 3 },
+    { id: 'content', name: 'Config & Secrets', color: 'phase-4', order: 4 },
+    { id: 'testing', name: 'QA & Verification', color: 'phase-5', order: 5 },
+    { id: 'launch', name: 'Launch', color: 'phase-6', order: 6 }
   ];
 
   var DEFAULT_ROADMAP = [
-    // Discovery & Strategy
-    { id: 'rm_1', phase: 'discovery', name: 'Client discovery call', desc: 'Initial consultation — goals, audience, competitors', status: 'Done', priority: 'critical', due: '2026-07-07' },
-    { id: 'rm_2', phase: 'discovery', name: 'Competitor analysis', desc: 'Audit top 5 competitors — design, messaging, conversion flows', status: 'Done', priority: 'high', due: '2026-07-09' },
-    { id: 'rm_3', phase: 'discovery', name: 'Analytics baseline', desc: 'Pull current traffic, CVR, bounce rate, top pages', status: 'Done', priority: 'high', due: '2026-07-10' },
-    { id: 'rm_4', phase: 'discovery', name: 'Growth-intent scoring', desc: 'Score lead priority using scoring engine', status: 'Done', priority: 'medium', due: '2026-07-10' },
-    { id: 'rm_5', phase: 'discovery', name: 'Strategy doc delivery', desc: 'Conversion strategy, IA, and sitemap to client', status: 'In Progress', priority: 'critical', due: '2026-07-12' },
+    // Phase 1: Core Platform (Done)
+    { id: 'rm_1', phase: 'discovery', name: 'Firebase Auth + Firestore', desc: 'Auth service, Firestore data layer with localStorage fallback', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_2', phase: 'discovery', name: 'Admin dashboard UI', desc: '8-tab sidebar, command center, pipeline, finder, outreach, strategy, automation, roadmap', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_3', phase: 'discovery', name: 'Lead database (161 leads)', desc: '116 enterprise + 45 main street leads with scoring engine', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_4', phase: 'discovery', name: 'Growth-intent scoring engine', desc: '22+ signals, opportunity calculator, industry issue library', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_5', phase: 'discovery', name: 'Website analyzer + score tool', desc: 'Client-side via allorigins + server-side via CF Function', status: 'Done', priority: 'critical', due: '2026-07-06' },
 
-    // Design & Wireframes
-    { id: 'rm_6', phase: 'design', name: 'Low-fidelity wireframes', desc: 'Homepage, service pages, landing page wireframes', status: 'In Progress', priority: 'critical', due: '2026-07-15' },
-    { id: 'rm_7', phase: 'design', name: 'Mobile wireframes', desc: 'Responsive breakpoints — mobile, tablet, desktop', status: 'Todo', priority: 'high', due: '2026-07-17' },
-    { id: 'rm_8', phase: 'design', name: 'Visual design concepts', desc: '3 design directions with palette, typography, layout', status: 'Todo', priority: 'critical', due: '2026-07-20' },
-    { id: 'rm_9', phase: 'design', name: 'Client design review', desc: 'Present concepts, gather feedback, select direction', status: 'Todo', priority: 'high', due: '2026-07-22' },
-    { id: 'rm_10', phase: 'design', name: 'Final design approval', desc: 'Refined mockups for all pages, client sign-off', status: 'Todo', priority: 'critical', due: '2026-07-25' },
+    // Phase 2: CF Pages Migration (Done)
+    { id: 'rm_6', phase: 'design', name: 'Migrate Netlify → Cloudflare Pages', desc: 'Convert 6 functions, update URLs, _headers, CI/CD', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_7', phase: 'design', name: 'Login page + auth flow', desc: 'Firebase Auth login, password toggle, CSP fix', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_8', phase: 'design', name: 'Portfolio Manager + Site Audit', desc: '6 sites, audit engine (10 categories), detail view', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_9', phase: 'design', name: 'Sentry + ESLint + CI/CD', desc: 'Error tracking, linting, GitHub Actions deploy', status: 'Done', priority: 'high', due: '2026-07-06' },
+    { id: 'rm_10', phase: 'design', name: 'Logo + branding', desc: 'GA SVG logo, favicon, color system', status: 'Done', priority: 'high', due: '2026-07-06' },
 
-    // Development & Build
-    { id: 'rm_11', phase: 'development', name: 'Project scaffolding', desc: 'Repo setup, build tools, CSS framework, folder structure', status: 'Todo', priority: 'high', due: '2026-07-28' },
-    { id: 'rm_12', phase: 'development', name: 'Homepage build', desc: 'Hero, social proof, CTA sections — pixel-perfect from design', status: 'Todo', priority: 'critical', due: '2026-08-01' },
-    { id: 'rm_13', phase: 'development', name: 'Inner pages build', desc: 'Service pages, about, contact, landing pages', status: 'Todo', priority: 'high', due: '2026-08-06' },
-    { id: 'rm_14', phase: 'development', name: 'Form integration', desc: 'Contact forms, lead capture, CRM/webhook wiring', status: 'Todo', priority: 'critical', due: '2026-08-08' },
-    { id: 'rm_15', phase: 'development', name: 'CMS integration', desc: 'Headless CMS or traditional CMS setup for content editing', status: 'Todo', priority: 'medium', due: '2026-08-10' },
-    { id: 'rm_16', phase: 'development', name: 'SEO implementation', desc: 'Meta tags, schema markup, sitemap, robots.txt, redirects', status: 'Todo', priority: 'high', due: '2026-08-12' },
-    { id: 'rm_17', phase: 'development', name: 'Analytics & tracking', desc: 'GA4, conversion events, heatmap, A/B test framework', status: 'Todo', priority: 'high', due: '2026-08-12' },
+    // Phase 3: Wiring Scaffold Features
+    { id: 'rm_11', phase: 'development', name: 'Wire Bulk Outreach Engine', desc: 'Connect outreach-engine.js to /api/send-email + /api/track, add Brevo env var', status: 'Todo', priority: 'critical', due: '2026-07-08' },
+    { id: 'rm_12', phase: 'development', name: 'Wire Automation Workflows', desc: 'Connect automation.js triggers to real actions (email, status updates, notifications)', status: 'Todo', priority: 'high', due: '2026-07-09' },
+    { id: 'rm_13', phase: 'development', name: 'Wire Command Center', desc: 'Replace mock agent data with real pipeline stats from Firestore', status: 'Todo', priority: 'high', due: '2026-07-10' },
+    { id: 'rm_14', phase: 'development', name: 'Wire Autonomous Agents', desc: 'Make agents.js actually execute — Scout discovers, Qualifier scores, Sales outreach', status: 'Todo', priority: 'high', due: '2026-07-11' },
+    { id: 'rm_15', phase: 'development', name: 'Wire Portfolio Auto-Audit', desc: 'Schedule periodic audits, persist history in Firestore, trend charts', status: 'Todo', priority: 'medium', due: '2026-07-12' },
+    { id: 'rm_16', phase: 'development', name: 'Wire Client Portal Roadmap', desc: 'Load roadmap data from Firestore, show milestones per company', status: 'Todo', priority: 'medium', due: '2026-07-13' },
+    { id: 'rm_17', phase: 'development', name: 'Wire Settings Persistence', desc: 'Save/load settings from Firestore instead of localStorage only', status: 'Todo', priority: 'low', due: '2026-07-14' },
 
-    // Content & Copy
-    { id: 'rm_18', phase: 'content', name: 'Brand voice guide', desc: 'Tone, messaging pillars, value prop hierarchy', status: 'Done', priority: 'medium', due: '2026-07-12' },
-    { id: 'rm_19', phase: 'content', name: 'Homepage copy', desc: 'Hero headline, subheads, CTA text, proof points', status: 'In Progress', priority: 'critical', due: '2026-07-14' },
-    { id: 'rm_20', phase: 'content', name: 'Service page copy', desc: 'All service/product pages with keyword targeting', status: 'Todo', priority: 'high', due: '2026-07-20' },
-    { id: 'rm_21', phase: 'content', name: 'SEO content', desc: 'Meta titles, descriptions, alt tags, schema', status: 'Todo', priority: 'high', due: '2026-08-05' },
-    { id: 'rm_22', phase: 'content', name: 'Email sequences', desc: 'Welcome, nurture, and re-engagement flows', status: 'Todo', priority: 'medium', due: '2026-08-10' },
+    // Phase 4: Production Hardening
+    { id: 'rm_18', phase: 'content', name: 'Brevo API key setup', desc: 'Create Brevo account, generate API key, add to CF Pages env vars', status: 'Todo', priority: 'critical', due: '2026-07-08' },
+    { id: 'rm_19', phase: 'content', name: 'Cloudflare API token', desc: 'Create CF API token for CI/CD, add to GitHub secrets', status: 'Todo', priority: 'critical', due: '2026-07-08' },
+    { id: 'rm_20', phase: 'content', name: 'Clean up Netlify references', desc: 'Remove netlify/ directory, old netlify.toml, update PRD.md', status: 'Todo', priority: 'medium', due: '2026-07-09' },
 
-    // QA & Testing
-    { id: 'rm_23', phase: 'testing', name: 'Cross-browser testing', desc: 'Chrome, Firefox, Safari, Edge — latest 2 versions', status: 'Todo', priority: 'high', due: '2026-08-14' },
-    { id: 'rm_24', phase: 'testing', name: 'Mobile responsive testing', desc: 'iOS Safari, Android Chrome, tablet — real devices', status: 'Todo', priority: 'critical', due: '2026-08-14' },
-    { id: 'rm_25', phase: 'testing', name: 'Performance audit', desc: 'Lighthouse 90+ score, Core Web Vitals pass', status: 'Todo', priority: 'high', due: '2026-08-15' },
-    { id: 'rm_26', phase: 'testing', name: 'Accessibility audit', desc: 'WCAG 2.1 AA compliance, screen reader testing', status: 'Todo', priority: 'medium', due: '2026-08-15' },
-    { id: 'rm_27', phase: 'testing', name: 'Form & CTA testing', desc: 'All forms submit correctly, CTAs track conversions', status: 'Todo', priority: 'critical', due: '2026-08-16' },
-    { id: 'rm_28', phase: 'testing', name: 'Client QA review', desc: 'Client reviews staging, submits final feedback', status: 'Todo', priority: 'high', due: '2026-08-17' },
+    // Phase 5: Testing
+    { id: 'rm_21', phase: 'testing', name: 'Test login → admin → portfolio → audit', desc: 'Full flow test on production', status: 'Todo', priority: 'critical', due: '2026-07-08' },
+    { id: 'rm_22', phase: 'testing', name: 'Test outreach engine end-to-end', desc: 'Send test email via Brevo, verify tracking pixel + click redirect', status: 'Todo', priority: 'high', due: '2026-07-09' },
+    { id: 'rm_23', phase: 'testing', name: 'Test all CF Pages Functions', desc: 'Verify /api/analyze, /api/site-audit, /api/bulk-analyze, /api/send-email, /api/track', status: 'Todo', priority: 'high', due: '2026-07-09' },
+    { id: 'rm_24', phase: 'testing', name: 'Run ESLint + fix errors', desc: 'Fix the 22 errors found in initial lint run', status: 'Todo', priority: 'medium', due: '2026-07-10' },
+    { id: 'rm_25', phase: 'testing', name: 'Sentry verification', desc: 'Trigger test error, verify it shows in Sentry dashboard', status: 'Todo', priority: 'medium', due: '2026-07-10' },
 
-    // Launch & Deploy
-    { id: 'rm_29', phase: 'launch', name: 'DNS & hosting setup', desc: 'Domain, SSL, CDN, hosting configuration', status: 'Todo', priority: 'critical', due: '2026-08-18' },
-    { id: 'rm_30', phase: 'launch', name: 'Production deploy', desc: 'Push to production, verify all redirects', status: 'Todo', priority: 'critical', due: '2026-08-19' },
-    { id: 'rm_31', phase: 'launch', name: 'Post-launch monitoring', desc: '48hr monitoring — errors, performance, uptime', status: 'Todo', priority: 'high', due: '2026-08-21' },
-    { id: 'rm_32', phase: 'launch', name: 'Client handoff', desc: 'Training, documentation, CMS walkthrough', status: 'Todo', priority: 'high', due: '2026-08-22' },
-    { id: 'rm_33', phase: 'launch', name: '30-day support begins', desc: 'Bug fixes, minor updates, performance monitoring', status: 'Todo', priority: 'medium', due: '2026-08-22' }
+    // Phase 6: Launch
+    { id: 'rm_26', phase: 'launch', name: 'Delete Netlify site', desc: 'Remove old Netlify site, cancel if on paid plan', status: 'Todo', priority: 'high', due: '2026-07-10' },
+    { id: 'rm_27', phase: 'launch', name: 'DNS final verification', desc: 'Verify gideonabochie.com + www both resolve to CF Pages', status: 'Todo', priority: 'critical', due: '2026-07-10' },
+    { id: 'rm_28', phase: 'launch', name: 'Performance audit', desc: 'Lighthouse 90+ on all pages, Core Web Vitals pass', status: 'Todo', priority: 'high', due: '2026-07-11' },
+    { id: 'rm_29', phase: 'launch', name: 'Security audit', desc: 'Verify CSP, HSTS, X-Frame-Options, no mixed content', status: 'Todo', priority: 'high', due: '2026-07-11' },
+    { id: 'rm_30', phase: 'launch', name: 'Ship it 🚀', desc: 'Everything wired, tested, and live on Cloudflare Pages', status: 'Todo', priority: 'critical', due: '2026-07-12' }
   ];
 
   function loadRoadmap() {

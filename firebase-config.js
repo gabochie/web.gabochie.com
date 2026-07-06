@@ -49,6 +49,23 @@ var FirebaseService = (function () {
       .catch(function () { return JSON.parse(localStorage.getItem('ga_leads') || '[]'); });
   }
 
+  function onLeadsChanged(callback) {
+    if (!useFirebase) {
+      var stored = JSON.parse(localStorage.getItem('ga_leads') || '[]');
+      callback(stored);
+      return function () {};
+    }
+    return db.collection('leads').orderBy('score', 'desc')
+      .onSnapshot(function (snap) {
+        var leads = [];
+        snap.forEach(function (doc) { leads.push(Object.assign({ id: doc.id }, doc.data())); });
+        callback(leads);
+      }, function (err) {
+        console.warn('[Firebase] Leads listener error:', err.message);
+        callback(JSON.parse(localStorage.getItem('ga_leads') || '[]'));
+      });
+  }
+
   function saveLeads(leads) {
     if (!useFirebase) { localStorage.setItem('ga_leads', JSON.stringify(leads)); return Promise.resolve(); }
     var batch = db.batch();
@@ -79,6 +96,19 @@ var FirebaseService = (function () {
         return items;
       })
       .catch(function () { return JSON.parse(localStorage.getItem('ga_portal_feedback_' + companyId) || '[]'); });
+  }
+
+  function onFeedbackChanged(companyId, callback) {
+    if (!useFirebase) {
+      callback(JSON.parse(localStorage.getItem('ga_portal_feedback_' + companyId) || '[]'));
+      return function () {};
+    }
+    return db.collection('feedback').where('companyId', '==', companyId).orderBy('createdAt', 'desc')
+      .onSnapshot(function (snap) {
+        var items = [];
+        snap.forEach(function (doc) { items.push(Object.assign({ id: doc.id }, doc.data())); });
+        callback(items);
+      }, function () { callback([]); });
   }
 
   function addFeedback(item) {
@@ -121,6 +151,17 @@ var FirebaseService = (function () {
       .catch(function () { return JSON.parse(localStorage.getItem('ga_roadmap') || 'null'); });
   }
 
+  function onRoadmapChanged(callback) {
+    if (!useFirebase) {
+      callback(JSON.parse(localStorage.getItem('ga_roadmap') || 'null'));
+      return function () {};
+    }
+    return db.collection('settings').doc('roadmap')
+      .onSnapshot(function (doc) {
+        callback(doc.exists ? doc.data() : null);
+      }, function () { callback(null); });
+  }
+
   function saveRoadmap(data) {
     if (!useFirebase) { localStorage.setItem('ga_roadmap', JSON.stringify(data)); return Promise.resolve(); }
     return db.collection('settings').doc('roadmap').set(data, { merge: true });
@@ -138,6 +179,19 @@ var FirebaseService = (function () {
       .catch(function () { return JSON.parse(localStorage.getItem('ga_portal_milestones_' + companyId) || '[]'); });
   }
 
+  function onTimelineChanged(companyId, callback) {
+    if (!useFirebase) {
+      callback(JSON.parse(localStorage.getItem('ga_portal_milestones_' + companyId) || '[]'));
+      return function () {};
+    }
+    return db.collection('timeline').where('companyId', '==', companyId).orderBy('date', 'desc')
+      .onSnapshot(function (snap) {
+        var items = [];
+        snap.forEach(function (doc) { items.push(Object.assign({ id: doc.id }, doc.data())); });
+        callback(items);
+      }, function () { callback([]); });
+  }
+
   function addTimelineEvent(event) {
     if (!useFirebase) {
       var items = JSON.parse(localStorage.getItem('ga_portal_milestones_' + event.companyId) || '[]');
@@ -148,14 +202,65 @@ var FirebaseService = (function () {
     return db.collection('timeline').add(Object.assign({}, event, { createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
   }
 
+  /* ---------- NOTES ---------- */
+  function getNotes(leadId) {
+    if (!useFirebase) return Promise.resolve(JSON.parse(localStorage.getItem('ga_notes_' + leadId) || '[]'));
+    return db.collection('leads').doc(leadId).collection('notes').orderBy('createdAt', 'desc').get()
+      .then(function (snap) {
+        var items = [];
+        snap.forEach(function (doc) { items.push(Object.assign({ id: doc.id }, doc.data())); });
+        return items;
+      })
+      .catch(function () { return JSON.parse(localStorage.getItem('ga_notes_' + leadId) || '[]'); });
+  }
+
+  function onNotesChanged(leadId, callback) {
+    if (!useFirebase) {
+      callback(JSON.parse(localStorage.getItem('ga_notes_' + leadId) || '[]'));
+      return function () {};
+    }
+    return db.collection('leads').doc(leadId).collection('notes').orderBy('createdAt', 'desc')
+      .onSnapshot(function (snap) {
+        var items = [];
+        snap.forEach(function (doc) { items.push(Object.assign({ id: doc.id }, doc.data())); });
+        callback(items);
+      }, function () { callback([]); });
+  }
+
+  function addNote(leadId, text, author) {
+    if (!useFirebase) {
+      var items = JSON.parse(localStorage.getItem('ga_notes_' + leadId) || '[]');
+      var note = { id: 'note_' + Date.now(), text: text, author: author || 'Admin', createdAt: new Date().toISOString() };
+      items.unshift(note);
+      localStorage.setItem('ga_notes_' + leadId, JSON.stringify(items));
+      return Promise.resolve(note);
+    }
+    return db.collection('leads').doc(leadId).collection('notes').add({
+      text: text,
+      author: author || 'Admin',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+
+  function deleteNote(leadId, noteId) {
+    if (!useFirebase) {
+      var items = JSON.parse(localStorage.getItem('ga_notes_' + leadId) || '[]');
+      items = items.filter(function (n) { return n.id !== noteId; });
+      localStorage.setItem('ga_notes_' + leadId, JSON.stringify(items));
+      return Promise.resolve();
+    }
+    return db.collection('leads').doc(leadId).collection('notes').doc(noteId).delete();
+  }
+
   return {
     init: init,
     isFirebase: function () { return useFirebase; },
-    leads: { get: getLeads, save: saveLeads, update: updateLead },
-    feedback: { get: getFeedback, add: addFeedback },
+    leads: { get: getLeads, save: saveLeads, update: updateLead, onChanged: onLeadsChanged },
+    feedback: { get: getFeedback, add: addFeedback, onChanged: onFeedbackChanged },
     files: { get: getFiles, add: addFile },
-    roadmap: { get: getRoadmap, save: saveRoadmap },
-    timeline: { get: getTimeline, add: addTimelineEvent }
+    notes: { get: getNotes, add: addNote, delete: deleteNote, onChanged: onNotesChanged },
+    roadmap: { get: getRoadmap, save: saveRoadmap, onChanged: onRoadmapChanged },
+    timeline: { get: getTimeline, add: addTimelineEvent, onChanged: onTimelineChanged }
   };
 })();
 

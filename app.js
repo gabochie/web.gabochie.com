@@ -60,19 +60,22 @@
   }
 
   /* ----------------------------------------
-     LEAD PERSISTENCE (localStorage)
+     LEAD PERSISTENCE — REAL-TIME
      ---------------------------------------- */
+  var unsubLeads = null;
+
   function loadLeads() {
-    FirebaseService.leads.get().then(function (stored) {
-      if (stored && stored.length) {
-        allLeads = stored;
+    // Unsubscribe previous listener if any
+    if (unsubLeads) unsubLeads();
+
+    unsubLeads = FirebaseService.leads.onChanged(function (leads) {
+      if (leads && leads.length) {
+        allLeads = leads;
       } else {
         allLeads = buildDefaultLeads();
         saveLeads();
       }
-      initApp();
-    }).catch(function () {
-      allLeads = buildDefaultLeads();
+      // Re-render active tab
       initApp();
     });
   }
@@ -1220,44 +1223,74 @@
 
     if (closeBtn) closeBtn.addEventListener('click', closeNotesModal);
     if (cancelBtn) cancelBtn.addEventListener('click', closeNotesModal);
-    if (saveBtn) saveBtn.addEventListener('click', saveNotes);
+    if (saveBtn) saveBtn.addEventListener('click', saveNote);
   }
+
+  var unsubNotes = null;
 
   function openNotes(leadId) {
     var lead = findLead(leadId);
     if (!lead) return;
 
     editingNotesId = leadId;
-
     var nameEl = document.getElementById('notes-lead-name');
-    var textEl = document.getElementById('notes-text');
-
     if (nameEl) nameEl.textContent = lead.name;
-    if (textEl) textEl.value = lead.notes || '';
 
     var modal = document.getElementById('notes-modal');
     if (modal) modal.classList.add('show');
+
+    // Subscribe to real-time notes
+    if (unsubNotes) unsubNotes();
+    unsubNotes = FirebaseService.notes.onChanged(leadId, function (notes) {
+      renderNotesList(notes);
+    });
   }
 
-  function saveNotes() {
+  function renderNotesList(notes) {
+    var container = document.getElementById('notes-list');
+    if (!container) return;
+
+    if (!notes || !notes.length) {
+      container.innerHTML = '<p style="color:var(--text3);font-size:.85rem;padding:12px 0">No notes yet.</p>';
+      return;
+    }
+
+    var html = '';
+    notes.forEach(function (note) {
+      var date = note.createdAt ? new Date(note.createdAt.seconds ? note.createdAt.seconds * 1000 : note.createdAt) : new Date();
+      var timeStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      html += '<div class="note-item" style="padding:10px 0;border-bottom:1px solid var(--border)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+        '<span style="font-size:.75rem;color:var(--text3)">' + (note.author || 'Admin') + ' · ' + timeStr + '</span>' +
+        '<button onclick="GAAdmin.deleteNote(\'' + editingNotesId + '\',\'' + note.id + '\')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.75rem">Delete</button>' +
+        '</div>' +
+        '<p style="font-size:.88rem;color:var(--text);margin:0;white-space:pre-wrap">' + (note.text || '') + '</p>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function saveNote() {
     if (!editingNotesId) return;
-    var lead = findLead(editingNotesId);
-    if (!lead) return;
-
     var textEl = document.getElementById('notes-text');
-    if (textEl) lead.notes = textEl.value;
+    if (!textEl || !textEl.value.trim()) return;
 
-    saveLeads();
-    showToast('Notes saved for ' + lead.name, 'success');
-    closeNotesModal();
+    FirebaseService.notes.add(editingNotesId, textEl.value.trim()).then(function () {
+      textEl.value = '';
+      showToast('Note added', 'success');
+    });
+  }
 
-    if (currentTab === 'dashboard') renderDashboard();
+  function deleteNoteFromModal(leadId, noteId) {
+    FirebaseService.notes.delete(leadId, noteId);
   }
 
   function closeNotesModal() {
     editingNotesId = null;
     var modal = document.getElementById('notes-modal');
     if (modal) modal.classList.remove('show');
+    // Unsubscribe from real-time notes
+    if (unsubNotes) { unsubNotes(); unsubNotes = null; }
   }
 
   /* ----------------------------------------
@@ -1624,7 +1657,8 @@
     getLeads: getLeads,
     saveLeads: saveLeads,
     getRoadmapTasks: getRoadmapTasks,
-    saveRoadmap: saveRoadmap
+    saveRoadmap: saveRoadmap,
+    deleteNote: deleteNoteFromModal
   };
 
 })();

@@ -265,9 +265,17 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .contact-form .btn{width:100%;justify-content:center}
 
 /* FOOTER */
-footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;color:var(--text-muted);font-size:.85rem}
-footer .footer-logo{font-size:1.2rem;font-weight:800;margin-bottom:8px}
+footer{border-top:1px solid var(--border);padding:48px 0;color:var(--text-muted);font-size:.85rem}
+footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+footer h4{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em}
+footer a{display:block;color:var(--text-dim);margin-bottom:8px;transition:color .2s}
+footer a:hover{color:var(--accent)}
+footer .footer-logo{font-size:1.2rem;font-weight:800;margin-bottom:8px;color:var(--text)}
 footer .footer-logo span{color:var(--accent)}
+footer .footer-desc{color:var(--text-dim);margin-bottom:20px;font-size:.85rem;line-height:1.6}
+footer .social{display:flex;gap:12px;margin-top:16px}
+footer .social a{font-size:1.3rem;margin:0}
+footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top:1px solid var(--border);margin-top:16px}
 
 /* STICKY BAR */
 .sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(18,18,22,.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:14px 0;transform:translateY(100%);transition:transform .4s ease;display:flex;align-items:center}
@@ -299,6 +307,7 @@ footer .footer-logo span{color:var(--accent)}
   .proof-bar .container{grid-template-columns:repeat(2,1fr)}
   .ps-grid,.contact-grid{grid-template-columns:1fr}
   .steps,.portfolio-grid,.pricing-grid,.testimonials-grid{grid-template-columns:1fr 1fr}
+  footer .container{grid-template-columns:1fr 1fr}
 }
 @media(max-width:640px){
   .hero h1{font-size:2rem}
@@ -313,6 +322,7 @@ footer .footer-logo span{color:var(--accent)}
   .sticky-bar .bar-text{font-size:.8rem}
   nav .container{gap:12px}
   .btn-sm{padding:10px 16px;font-size:.82rem}
+  footer .container{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -329,6 +339,7 @@ footer .footer-logo span{color:var(--accent)}
       </svg>
       <span class="logo-text">Gideon <span>Abochie</span></span>
     </a>
+    <a href="services.html" style="color:var(--text-dim);margin-right:16px;font-weight:500;font-size:.9rem;transition:color .2s">Services</a>
     <a href="#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
   </div>
 </nav>
@@ -404,6 +415,28 @@ footer .footer-logo span{color:var(--accent)}
         </div>
         <div id="heroIssuesList" style="margin-bottom:12px"></div>
         <div id="heroWinsList"></div>
+        <!-- Post-Score Package CTA -->
+        <div id="postScoreCTA" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+          <div style="font-size:.95rem;font-weight:700;margin-bottom:12px;color:var(--accent)">🎯 Fix these issues with a focused package:</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <a href="services.html#pricing" style="padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;text-align:center;transition:all .3s">
+              <div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Starter</div>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--accent);margin:4px 0">$2,999</div>
+              <div style="font-size:.7rem;color:var(--text2)">Design + SEO</div>
+            </a>
+            <a href="services.html#pricing" style="padding:14px;background:var(--bg);border:1.5px solid var(--accent);border-radius:8px;text-align:center;transition:all .3s;position:relative">
+              <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:.6rem;background:var(--accent);color:#fff;padding:2px 10px;border-radius:8px;font-weight:700">POPULAR</div>
+              <div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Growth</div>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--accent);margin:4px 0">$5,999</div>
+              <div style="font-size:.7rem;color:var(--text2)">Design + CRO</div>
+            </a>
+            <a href="services.html#pricing" style="padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;text-align:center;transition:all .3s">
+              <div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Enterprise</div>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--accent);margin:4px 0">$9,999</div>
+              <div style="font-size:.7rem;color:var(--text2)">Full Stack</div>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -460,7 +493,7 @@ footer .footer-logo span{color:var(--accent)}
     </div>
     <div class="steps">
       <div class="step"><h4>Free Audit</h4><p>Enter your URL. We analyze design, mobile, performance. Get your score instantly.</p></div>
-      <div class="step"><h4>Strategy Call</h4><p>We review findings, discuss goals, and propose the right tier.</p></div>
+      <div class="step"><h4>Pick a Package</h4><p>Choose from Starter, Growth, or Enterprise. Fixed prices, no guesswork.</p></div>
       <div class="step"><h4>Design & Build</h4><p>Our team creates your modern redesign. You review in your client portal.</p></div>
       <div class="step"><h4>Launch & Grow</h4><p>We deploy, monitor, optimize. You watch conversions climb.</p></div>
     </div>
@@ -485,40 +518,40 @@ footer .footer-logo span{color:var(--accent)}
 <section class="section" style="background:var(--surface)" id="pricing">
   <div class="container">
     <div style="text-align:center">
-      <h2 class="section-title">Results-Based Pricing</h2>
-      <p class="section-sub" style="margin:0 auto 16px">We charge a % of the revenue your redesign generates. The bigger your growth, the more we both win.</p>
+      <h2 class="section-title">Simple, Fixed Pricing</h2>
+      <p class="section-sub" style="margin:0 auto 16px">One price per package. No percentage of revenue, no hidden fees, no surprises. You own the final result 100%.</p>
     </div>
     <div class="pricing-grid">
       <div class="price-card">
-        <h3>Growth</h3>
-        <div class="price">10% of Revenue Lift</div>
-        <div class="price-desc">For businesses targeting up to $500K in new revenue</div>
+        <h3>Starter</h3>
+        <div class="price">$2,999</div>
+        <div class="price-desc">A clean, modern website that works on every device.</div>
         <ul>
-          <li>Full website redesign</li><li>Conversion optimization</li><li>Mobile-first responsive</li><li>SEO migration & setup</li><li>Analytics dashboard</li><li>60-day post-launch support</li>
+          <li>Custom responsive design</li><li>Mobile-first development</li><li>Basic on-page SEO</li><li>Contact form & analytics</li><li>2 revision rounds</li><li>30-day post-launch support</li>
         </ul>
-        <a href="#audit" class="btn btn-secondary">Get Your Quote →</a>
+        <a href="#audit" class="btn btn-secondary">Get Started →</a>
       </div>
       <div class="price-card featured">
-        <h3>Scale</h3>
-        <div class="price">12% of Revenue Lift</div>
-        <div class="price-desc">For companies targeting $500K–$5M in new revenue</div>
+        <h3>Growth</h3>
+        <div class="price">$5,999</div>
+        <div class="price-desc">Serious conversion optimization to turn visitors into customers.</div>
         <ul>
-          <li>Everything in Growth</li><li>Custom UX/UI design system</li><li>Content strategy & copywriting</li><li>A/B testing framework</li><li>Lead funnel optimization</li><li>90-day post-launch support</li><li>Quarterly performance review</li>
+          <li>Everything in Starter</li><li>Conversion rate optimization</li><li>A/B testing framework</li><li>Exit-intent & lead capture</li><li>Heatmap analytics</li><li>4 revision rounds</li><li>60-day post-launch support</li>
         </ul>
-        <a href="#audit" class="btn btn-primary">Get Your Quote →</a>
+        <a href="#audit" class="btn btn-primary">Get Started →</a>
       </div>
       <div class="price-card">
         <h3>Enterprise</h3>
-        <div class="price">15% of Revenue Lift</div>
-        <div class="price-desc">For enterprises targeting $5M+ in new revenue</div>
+        <div class="price">$9,999</div>
+        <div class="price-desc">Complete growth system with integrations and dedicated support.</div>
         <ul>
-          <li>Everything in Scale</li><li>Custom web applications</li><li>CRM/ERP integration</li><li>Dedicated project manager</li><li>Unlimited revisions</li><li>12-month post-launch support</li><li>Revenue tracking dashboard</li>
+          <li>Everything in Growth</li><li>Custom web applications</li><li>CRM/ERP integration</li><li>Automated lead nurturing</li><li>Monthly CRO reviews</li><li>Unlimited revisions</li><li>12-month post-launch support</li>
         </ul>
-        <a href="#audit" class="btn btn-secondary">Get Your Quote →</a>
+        <a href="#audit" class="btn btn-secondary">Get Started →</a>
       </div>
     </div>
     <div style="text-align:center;margin-top:32px;color:var(--text-dim);font-size:.9rem;max-width:700px;margin-left:auto;margin-right:auto">
-      <p><strong>How it works:</strong> We analyze your business model, estimate the revenue lift from a modern redesign, and quote a percentage of that lift. <strong style="color:var(--accent)">You only pay when we deliver results.</strong></p>
+      <p><strong>Financing available:</strong> Starter from $1,000 + $175/mo · Growth from $2,000 + $350/mo · Enterprise from $3,000 + $600/mo. <a href="services.html" style="color:var(--accent);text-decoration:underline">Full comparison →</a></p>
     </div>
   </div>
 </section>
@@ -564,15 +597,15 @@ footer .footer-logo span{color:var(--accent)}
     <div class="faq-list">
       <div class="faq-item">
         <div class="faq-q">How long does a redesign take?<span class="arrow">+</span></div>
-        <div class="faq-a"><p>Most projects are completed in 6-9 weeks depending on the tier and complexity. Essentials projects typically finish in 6 weeks, Professional in 7-8, and Enterprise in 8-12 weeks. You'll have full visibility through your client portal throughout the process.</p></div>
+        <div class="faq-a"><p>Most projects are completed in 6-9 weeks depending on the tier and complexity. Starter projects typically finish in 6 weeks, Growth in 7-8, and Enterprise in 8-12 weeks. You'll have full visibility through your client portal throughout the process.</p></div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Do I need to provide content?<span class="arrow">+</span></div>
-        <div class="faq-a"><p>For Professional and Enterprise tiers, we handle content strategy, copywriting, and optimization as part of the package. Essentials tier clients provide their own content, but we offer add-on content services if needed.</p></div>
+        <div class="faq-a"><p>For Growth and Enterprise tiers, we handle content strategy, copywriting, and optimization as part of the package. Starter tier clients provide their own content, but we offer add-on content services if needed.</p></div>
       </div>
       <div class="faq-item">
         <div class="faq-q">What if I don't like the design?<span class="arrow">+</span></div>
-        <div class="faq-a"><p>Every tier includes revision rounds — 2 for Essentials, 4 for Professional, unlimited for Enterprise. You'll also preview your redesign in your client portal before launch. Our process ensures we're aligned before any code is written.</p></div>
+        <div class="faq-a"><p>Every tier includes revision rounds — 2 for Starter, 4 for Growth, unlimited for Enterprise. You'll also preview your redesign in your client portal before launch. Our process ensures we're aligned before any code is written.</p></div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Will my SEO rankings be affected?<span class="arrow">+</span></div>
@@ -661,13 +694,36 @@ footer .footer-logo span{color:var(--accent)}
 <!-- FOOTER -->
 <footer>
   <div class="container">
-    <div class="footer-logo">Gideon <span>Abochie</span></div>
-    <div style="margin:12px 0">
-      <a href="privacy.html" style="color:var(--text-dim);margin:0 10px;font-size:.85rem">Privacy Policy</a>
-      <a href="terms.html" style="color:var(--text-dim);margin:0 10px;font-size:.85rem">Terms of Service</a>
-      <a href="cookies.html" style="color:var(--text-dim);margin:0 10px;font-size:.85rem">Cookie Policy</a>
+    <div>
+      <div class="footer-logo">Gideon <span>Abochie</span></div>
+      <p class="footer-desc">Revenue-driven website redesign and conversion optimization. We build modern, high-performance websites that turn visitors into customers.</p>
+      <div class="social">
+        <a href="https://wa.me/233243262019" target="_blank" rel="noopener" title="WhatsApp">💬</a>
+        <a href="mailto:info@gideonabochie.com" title="Email">📧</a>
+      </div>
     </div>
-    <p>&copy; 2026 Gideon Abochie. All rights reserved.</p>
+    <div>
+      <h4>Services</h4>
+      <a href="services.html">All Packages</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#audit">Free Audit</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="#contact">Contact</a>
+      <a href="#faq">FAQ</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="mailto:info@gideonabochie.com">info@gideonabochie.com</a>
+      <a href="https://wa.me/233243262019" target="_blank" rel="noopener">+233 243 262 019</a>
+      <a href="#audit" style="color:var(--accent);font-weight:600">Get Free Audit →</a>
+    </div>
+    <div class="copyright">&copy; 2026 Gideon Abochie. All rights reserved.</div>
   </div>
 </footer>
 
@@ -853,6 +909,9 @@ function submitForm(name,email,company,url,source){
         });
       }
       document.getElementById('heroWinsList').innerHTML = winsHtml;
+
+      // Show post-score package CTA
+      document.getElementById('postScoreCTA').style.display = 'block';
 
       showToast('Score: ' + total + '/100 — ' + issues.length + ' issues found');
     }).catch(function () {

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Services — Website Redesign & CRO | Gideon Abochie</title>
+<meta name="description" content="Fixed-price website redesign and conversion optimization packages. Starter $2,999, Growth $5,999, Enterprise $9,999. 40-60% more engagement guaranteed.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://gideonabochie.com/services.html">
+<meta property="og:title" content="Website Redesign & CRO Services — Fixed-Price Packages">
+<meta property="og:description" content="Fixed-price redesign packages starting at $2,999. Mobile-first, conversion-optimized, performance-guaranteed.">
+<meta property="og:image" content="https://gideonabochie.com/og-image.svg">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='40' height='40' rx='10' fill='%23e63946'/%3E%3Ccircle cx='20' cy='20' r='13' fill='%23000'/%3E%3Ctext x='20' y='25' text-anchor='middle' fill='%23fff' font-family='Inter,system-ui,sans-serif' font-size='14' font-weight='800' transform='rotate(-45 20 20)'%3EGA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0b0f;--surface:#121216;--surface2:#1a1a20;--accent:#e63946;--accent-dark:#c33040;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--text:#f0f0f0;--text-dim:#8a8a95;--text2:#a0a0b0;--text3:#6b6b78;--text-muted:#55555f;--border:#1f1f28;--radius:12px;--radius-sm:8px;--radius-xs:6px;--shadow:0 8px 32px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--radius-sm);font-weight:600;font-size:1rem;border:none;cursor:pointer;transition:all .25s ease;text-align:center}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-2px);box-shadow:0 6px 24px rgba(230,57,70,.35)}
+.btn-secondary{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:10px 20px;font-size:.9rem}
+.btn-lg{padding:18px 36px;font-size:1.1rem}
+.section{padding:100px 0}
+.section-title{font-size:2.8rem;font-weight:800;margin-bottom:16px;line-height:1.15}
+.section-sub{color:var(--text-dim);font-size:1.1rem;max-width:600px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:all .3s ease}
+input,select,textarea{width:100%;padding:13px 16px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-xs);color:var(--text);outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a8a95' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(11,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.logo-text span{color:var(--accent)}
+
+/* HERO */
+.hero{padding:160px 0 100px;text-align:center}
+.hero h1{font-size:3.4rem;font-weight:900;line-height:1.1;margin-bottom:20px}
+.hero h1 .accent{color:var(--accent)}
+.hero p{color:var(--text-dim);font-size:1.1rem;max-width:600px;margin:0 auto 32px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.25);border-radius:100px;font-size:.85rem;font-weight:500;color:var(--accent);margin-bottom:24px}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.price-card{padding:40px 32px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column}
+.price-card.featured{border-color:var(--accent);position:relative}
+.price-card.featured::before{content:'MOST POPULAR';position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:4px 18px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.08em}
+.price-card h3{font-size:1.3rem;font-weight:700;margin-bottom:4px}
+.price-card .price{font-size:2.8rem;font-weight:900;margin:16px 0 4px;color:var(--accent)}
+.price-card .price-sub{font-size:.9rem;color:var(--text-dim);margin-bottom:8px}
+.price-card .price-desc{color:var(--text-dim);font-size:.85rem;margin-bottom:28px}
+.price-card .features{list-style:none;margin-bottom:32px;flex:1}
+.price-card .features li{padding:8px 0;font-size:.9rem;color:var(--text-dim);display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(31,31,40,.5)}
+.price-card .features li:last-child{border-bottom:none}
+.price-card .features li.yes::before{content:'✓';color:var(--green);font-weight:700}
+.price-card .features li.no::before{content:'—';color:var(--text-muted)}
+.price-card .btn{width:100%;justify-content:center}
+
+/* PROCESS */
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px}
+.process-step{text-align:center;padding:32px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.process-step .num{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-weight:800;font-size:1.2rem}
+.process-step h4{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.process-step p{color:var(--text-dim);font-size:.85rem}
+
+/* INDUSTRIES */
+.ind-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:32px}
+.ind-item{padding:16px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.85rem;font-weight:500;transition:all .3s}
+.ind-item:hover{border-color:var(--accent);transform:translateY(-2px)}
+
+/* COMPARE */
+.compare-table{width:100%;border-collapse:collapse;margin-top:32px}
+.compare-table th{text-align:left;padding:14px 16px;font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);font-weight:600}
+.compare-table td{padding:14px 16px;font-size:.9rem;border-bottom:1px solid var(--border)}
+.compare-table .price{font-weight:800;color:var(--accent);font-size:1.1rem}
+.compare-table .yes{color:var(--green)}
+.compare-table .no{color:var(--text-muted)}
+.compare-table tr:hover{background:rgba(230,57,70,.03)}
+
+/* FAQ */
+.faq-list{max-width:780px;margin:48px auto 0}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:22px 0;cursor:pointer;font-weight:600;font-size:1.05rem;transition:color .2s}
+.faq-q:hover{color:var(--accent)}
+.faq-q .arrow{font-size:1.4rem;transition:transform .3s;color:var(--text-muted)}
+.faq-item.open .faq-q .arrow{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:22px}
+.faq-a p{color:var(--text-dim);font-size:.95rem}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:48px 0;color:var(--text-muted);font-size:.85rem}
+footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+footer h4{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em}
+footer a{display:block;color:var(--text-dim);margin-bottom:8px;transition:color .2s}
+footer a:hover{color:var(--accent)}
+footer .footer-logo{font-size:1.2rem;font-weight:800;margin-bottom:8px;color:var(--text)}
+footer .footer-logo span{color:var(--accent)}
+footer .footer-desc{color:var(--text-dim);margin-bottom:20px;font-size:.85rem;line-height:1.6}
+footer .social{display:flex;gap:12px;margin-top:16px}
+footer .social a{font-size:1.3rem;margin:0}
+footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top:1px solid var(--border);margin-top:16px}
+
+@media(max-width:968px){
+  .pricing-grid,.process-grid{grid-template-columns:1fr 1fr}
+  .ind-grid{grid-template-columns:repeat(3,1fr)}
+  footer .container{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .hero h1{font-size:2.2rem}
+  .section-title{font-size:2rem}
+  .pricing-grid,.process-grid{grid-template-columns:1fr}
+  .ind-grid{grid-template-columns:repeat(2,1fr)}
+  footer .container{grid-template-columns:1fr}
+  .compare-table{font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a href="/" class="logo">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="10" fill="#e63946"/>
+        <circle cx="20" cy="20" r="13" fill="#000"/>
+        <text x="20" y="25" text-anchor="middle" fill="#fff" font-family="Inter,system-ui,sans-serif" font-size="14" font-weight="800" transform="rotate(-45 20 20)">GA</text>
+      </svg>
+      <span class="logo-text">Gideon <span>Abochie</span></span>
+    </a>
+    <a href="/#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">Fixed-Price Packages — Starting at $2,999</div>
+    <h1>Website Redesign &amp; <span class="accent">Growth Services</span></h1>
+    <p>Pick a package that fits your budget. Every tier includes mobile-first design, performance optimization, and conversion-focused development. No hidden fees, no revenue share.</p>
+    <a href="#pricing" class="btn btn-primary btn-lg">View Packages →</a>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:8px">
+      <h2 class="section-title">Industries We Serve</h2>
+      <p class="section-sub" style="margin:0 auto">15+ industries across North America — same process, tailored results.</p>
+    </div>
+    <div class="ind-grid">
+      <div class="ind-item">🏥 Medical</div>
+      <div class="ind-item">🦷 Dental</div>
+      <div class="ind-item">🔧 Home Services</div>
+      <div class="ind-item">🏭 Manufacturing</div>
+      <div class="ind-item">⚖️ Legal</div>
+      <div class="ind-item">💰 Financial</div>
+      <div class="ind-item">🚗 Automotive</div>
+      <div class="ind-item">🛍️ Retail</div>
+      <div class="ind-item">💻 Technology</div>
+      <div class="ind-item">⚡ Energy</div>
+      <div class="ind-item">🍽️ Food</div>
+      <div class="ind-item">📋 Insurance</div>
+      <div class="ind-item">🏠 Real Estate</div>
+      <div class="ind-item">🏨 Hospitality</div>
+      <div class="ind-item">📦 Other</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section" style="background:var(--surface)">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:8px">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-sub" style="margin:0 auto">From audit to launch in 6-9 weeks. You'll have full visibility at every step.</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-step">
+        <div class="num">1</div>
+        <h4>Free Audit</h4>
+        <p>Enter your URL, get your website score in 60 seconds. We identify every issue holding your site back.</p>
+      </div>
+      <div class="process-step">
+        <div class="num">2</div>
+        <h4>Pick a Package</h4>
+        <p>Choose the tier that matches your goals. No discovery call required unless you want one.</p>
+      </div>
+      <div class="process-step">
+        <div class="num">3</div>
+        <h4>Design & Build</h4>
+        <p>We design and build your new site with your chosen package. Review progress in your client portal.</p>
+      </div>
+      <div class="process-step">
+        <div class="num">4</div>
+        <h4>Launch & Grow</h4>
+        <p>We deploy, monitor performance, and optimize. Watch your conversions climb.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Simple, Fixed Pricing</h2>
+      <p class="section-sub" style="margin:0 auto 16px">One price per package. No percentage of revenue, no hidden fees, no surprises. You own the final result 100%.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Starter</h3>
+        <div class="price">$2,999</div>
+        <div class="price-sub">or $1,000 + $175/mo for 12 months</div>
+        <div class="price-desc">For businesses that need a clean, modern website that works on every device.</div>
+        <ul class="features">
+          <li class="yes">Custom responsive design</li>
+          <li class="yes">Mobile-first development</li>
+          <li class="yes">Basic on-page SEO</li>
+          <li class="yes">Contact form & Google Analytics</li>
+          <li class="yes">2 revision rounds</li>
+          <li class="no">Conversion optimization</li>
+          <li class="no">A/B testing</li>
+          <li class="no">Lead capture automation</li>
+          <li class="no">CRM integration</li>
+          <li class="yes">30-day post-launch support</li>
+        </ul>
+        <a href="/#audit" class="btn btn-secondary">Get Started →</a>
+      </div>
+      <div class="price-card featured">
+        <h3>Growth</h3>
+        <div class="price">$5,999</div>
+        <div class="price-sub">or $2,000 + $350/mo for 12 months</div>
+        <div class="price-desc">For companies serious about converting more visitors into customers.</div>
+        <ul class="features">
+          <li class="yes">Everything in Starter</li>
+          <li class="yes">Conversion rate optimization</li>
+          <li class="yes">A/B testing framework</li>
+          <li class="yes">Exit-intent popups & lead forms</li>
+          <li class="yes">Heatmap analytics</li>
+          <li class="yes">4 revision rounds</li>
+          <li class="no">CRM/ERP integration</li>
+          <li class="no">Automated lead nurturing</li>
+          <li class="yes">60-day post-launch support</li>
+        </ul>
+        <a href="/#audit" class="btn btn-primary">Get Started →</a>
+      </div>
+      <div class="price-card">
+        <h3>Enterprise</h3>
+        <div class="price">$9,999</div>
+        <div class="price-sub">or $3,000 + $600/mo for 12 months</div>
+        <div class="price-desc">For enterprises needing a complete growth system with integrations.</div>
+        <ul class="features">
+          <li class="yes">Everything in Growth</li>
+          <li class="yes">Custom web applications</li>
+          <li class="yes">CRM/ERP integration</li>
+          <li class="yes">Automated lead nurturing</li>
+          <li class="yes">Monthly CRO reviews</li>
+          <li class="yes">Unlimited revisions</li>
+          <li class="yes">Dedicated project manager</li>
+          <li class="yes">Revenue tracking dashboard</li>
+          <li class="yes">12-month post-launch support</li>
+        </ul>
+        <a href="/#audit" class="btn btn-secondary">Get Started →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="section" style="background:var(--surface)">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:8px">
+      <h2 class="section-title">Full Comparison</h2>
+      <p class="section-sub" style="margin:0 auto">See exactly what's included in each tier.</p>
+    </div>
+    <div class="table-wrap" style="overflow-x:auto">
+      <table class="compare-table">
+        <thead><tr><th>Feature</th><th>Starter</th><th>Growth</th><th>Enterprise</th></tr></thead>
+        <tbody>
+          <tr><td>Price</td><td class="price">$2,999</td><td class="price">$5,999</td><td class="price">$9,999</td></tr>
+          <tr><td>Custom responsive design</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Mobile-first development</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Basic on-page SEO</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Google Analytics setup</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Contact forms</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Conversion rate optimization</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>A/B testing framework</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Exit-intent & lead popups</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Heatmap analytics</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Custom web applications</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>CRM/ERP integration</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>Automated lead nurturing</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>Monthly CRO reviews</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>Revision rounds</td><td>2</td><td>4</td><td>Unlimited</td></tr>
+          <tr><td>Post-launch support</td><td>30 days</td><td>60 days</td><td>12 months</td></tr>
+          <tr><td>SEO migration</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>SSL & hosting guidance</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Project timeline</td><td>6-7 weeks</td><td>7-8 weeks</td><td>8-12 weeks</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">What's included in the audit?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>You get a full website score (0-100) across design, mobile, and performance categories. Plus a detailed issues list showing exactly what's broken and what's working. It's free and takes 60 seconds.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does a redesign take?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>Starter packages finish in 6-7 weeks, Growth in 7-8, and Enterprise in 8-12 weeks. Timelines vary based on complexity and revision cycles.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I pay monthly instead of upfront?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>Yes. Starter: $1,000 + $175/mo. Growth: $2,000 + $350/mo. Enterprise: $3,000 + $600/mo. All 12-month terms. No interest.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do I own the final website?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>100%. You own everything — the code, the design, the content. No platform lock-in, no recurring license fees. We hand over full ownership at launch.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I need a custom feature not listed?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>Enterprise tier covers custom development. For anything beyond, we'll quote it as an add-on. We're transparent about pricing — no surprises.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Will my rankings drop?<span class="arrow">+</span></div>
+        <div class="faq-a"><p>No. We perform full SEO migration on every project. Most clients see improved rankings within 60-90 days due to better performance, structure, and mobile optimization.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="section" style="text-align:center;background:linear-gradient(180deg,var(--bg),var(--surface),var(--bg))">
+  <div class="container">
+    <h2 class="section-title">See What Your Site Scores</h2>
+    <p style="color:var(--text-dim);font-size:1.1rem;max-width:500px;margin:0 auto 32px">Free audit in 60 seconds. No credit card required.</p>
+    <a href="/#audit" class="btn btn-primary btn-lg" style="font-size:1.1rem;padding:18px 36px">Get My Free Audit →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div>
+      <div class="footer-logo">Gideon <span>Abochie</span></div>
+      <p class="footer-desc">Revenue-driven website redesign and conversion optimization. We build modern, high-performance websites that turn visitors into customers.</p>
+      <div class="social">
+        <a href="https://wa.me/233243262019" target="_blank" rel="noopener" title="WhatsApp">💬</a>
+        <a href="mailto:info@gideonabochie.com" title="Email">📧</a>
+      </div>
+    </div>
+    <div>
+      <h4>Services</h4>
+      <a href="services.html">All Packages</a>
+      <a href="/#portfolio">Portfolio</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#audit">Free Audit</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="/#contact">Contact</a>
+      <a href="/#faq">FAQ</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="mailto:info@gideonabochie.com">info@gideonabochie.com</a>
+      <a href="https://wa.me/233243262019" target="_blank" rel="noopener">+233 243 262 019</a>
+      <a href="/#audit" style="color:var(--accent);font-weight:600">Get Free Audit →</a>
+    </div>
+    <div class="copyright">&copy; 2026 Gideon Abochie. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){this.parentElement.classList.toggle('open')});
+});
+</script>
+</body>
+</html>

@@ -1646,6 +1646,53 @@
     });
     html += '</tbody></table>';
     sitesContainer.innerHTML = html;
+
+    // Load saved settings from Firestore
+    loadSettings();
+
+    // Wire save buttons
+    var saveEmailBtn = document.getElementById('settings-save-email');
+    var saveNotifBtn = document.getElementById('settings-save-notifs');
+    if (saveEmailBtn) saveEmailBtn.addEventListener('click', function () { saveSettings('email'); });
+    if (saveNotifBtn) saveNotifBtn.addEventListener('click', function () { saveSettings('notifications'); });
+  }
+
+  function loadSettings() {
+    if (!window.FirebaseService) return;
+    FirebaseService.settings.get().then(function (data) {
+      if (!data) return;
+      var brevoKey = document.getElementById('settings-brevo-key');
+      var brevoSender = document.getElementById('settings-brevo-sender');
+      var brevoSenderName = document.getElementById('settings-brevo-sender-name');
+      var notifyLeads = document.getElementById('settings-notify-leads');
+      var notifyAudit = document.getElementById('settings-notify-audit');
+      var notifyOutreach = document.getElementById('settings-notify-outreach');
+      if (brevoKey) brevoKey.value = data.brevoApiKey || '';
+      if (brevoSender) brevoSender.value = data.brevoSenderEmail || '';
+      if (brevoSenderName) brevoSenderName.value = data.brevoSenderName || '';
+      if (notifyLeads) notifyLeads.checked = data.notifyLeads !== false;
+      if (notifyAudit) notifyAudit.checked = data.notifyAudit !== false;
+      if (notifyOutreach) notifyOutreach.checked = data.notifyOutreach === true;
+    }).catch(function () {});
+  }
+
+  function saveSettings(section) {
+    if (!window.FirebaseService) return;
+    var data = {};
+    if (section === 'email') {
+      data.brevoApiKey = document.getElementById('settings-brevo-key').value;
+      data.brevoSenderEmail = document.getElementById('settings-brevo-sender').value;
+      data.brevoSenderName = document.getElementById('settings-brevo-sender-name').value;
+    } else if (section === 'notifications') {
+      data.notifyLeads = document.getElementById('settings-notify-leads').checked;
+      data.notifyAudit = document.getElementById('settings-notify-audit').checked;
+      data.notifyOutreach = document.getElementById('settings-notify-outreach').checked;
+    }
+    FirebaseService.settings.save(data).then(function () {
+      showToast('Settings saved');
+    }).catch(function () {
+      showToast('Failed to save settings');
+    });
   }
 
   /* ----------------------------------------

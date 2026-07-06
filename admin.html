@@ -335,6 +335,29 @@
     <button class="btn btn-sm btn-outline" id="settings-logout-btn" style="margin-top:8px">🚪 Sign Out</button>
   </div>
   <div class="card" style="max-width:600px;margin-top:16px">
+    <div class="card-title">📧 Email Settings (Brevo)</div>
+    <div class="form-group"><label for="settings-brevo-key">Brevo API Key</label><input type="password" id="settings-brevo-key" placeholder="xkeysib-..." style="font-family:monospace"></div>
+    <div class="form-group"><label for="settings-brevo-sender">Sender Email</label><input type="email" id="settings-brevo-sender" placeholder="gabochie@gmail.com"></div>
+    <div class="form-group"><label for="settings-brevo-sender-name">Sender Name</label><input type="text" id="settings-brevo-sender-name" placeholder="Gideon Abochie"></div>
+    <button class="btn btn-sm btn-accent" id="settings-save-email">Save Email Settings</button>
+  </div>
+  <div class="card" style="max-width:600px;margin-top:16px">
+    <div class="card-title">🔔 Notifications</div>
+    <div class="form-group" style="display:flex;align-items:center;gap:12px">
+      <input type="checkbox" id="settings-notify-leads" checked>
+      <label for="settings-notify-leads">New lead submissions</label>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:12px">
+      <input type="checkbox" id="settings-notify-audit" checked>
+      <label for="settings-notify-audit">Site audit completions</label>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:12px">
+      <input type="checkbox" id="settings-notify-outreach">
+      <label for="settings-notify-outreach">Outreach campaign updates</label>
+    </div>
+    <button class="btn btn-sm btn-accent" id="settings-save-notifs">Save Notifications</button>
+  </div>
+  <div class="card" style="max-width:600px;margin-top:16px">
     <div class="card-title">🌐 Portfolio Sites</div>
     <div id="settings-sites"></div>
   </div>

@@ -252,6 +252,28 @@ var FirebaseService = (function () {
     return db.collection('leads').doc(leadId).collection('notes').doc(noteId).delete();
   }
 
+  /* ----------------------------------------
+     SETTINGS
+     ---------------------------------------- */
+  function getSettings() {
+    if (!useFirebase) {
+      return Promise.resolve(JSON.parse(localStorage.getItem('ga_settings') || '{}'));
+    }
+    return db.collection('settings').doc('admin').get().then(function (doc) {
+      return doc.exists ? doc.data() : {};
+    });
+  }
+
+  function saveSettings(data) {
+    if (!useFirebase) {
+      var existing = JSON.parse(localStorage.getItem('ga_settings') || '{}');
+      Object.assign(existing, data);
+      localStorage.setItem('ga_settings', JSON.stringify(existing));
+      return Promise.resolve();
+    }
+    return db.collection('settings').doc('admin').set(data, { merge: true });
+  }
+
   return {
     init: init,
     isFirebase: function () { return useFirebase; },
@@ -260,7 +282,8 @@ var FirebaseService = (function () {
     files: { get: getFiles, add: addFile },
     notes: { get: getNotes, add: addNote, delete: deleteNote, onChanged: onNotesChanged },
     roadmap: { get: getRoadmap, save: saveRoadmap, onChanged: onRoadmapChanged },
-    timeline: { get: getTimeline, add: addTimelineEvent, onChanged: onTimelineChanged }
+    timeline: { get: getTimeline, add: addTimelineEvent, onChanged: onTimelineChanged },
+    settings: { get: getSettings, save: saveSettings }
   };
 })();
 

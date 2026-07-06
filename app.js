@@ -185,6 +185,7 @@
     if (tabName === 'automation') renderAutomation();
     if (tabName === 'roadmap') renderRoadmap();
     if (tabName === 'visitors') renderVisitors();
+    if (tabName === 'reports') renderReports();
   }
 
   /* ----------------------------------------
@@ -1856,6 +1857,165 @@
         recentEl.innerHTML = rHtml;
       }
     }
+  }
+
+  /* ----------------------------------------
+     REPORTS TAB — Dynamic Charts & Comparisons
+     ---------------------------------------- */
+  function renderReports() {
+    if (!window.Reporting) return;
+    var period = document.getElementById('report-period').value;
+    var report = Reporting.generateReport(period);
+    var m = report.metrics;
+    var c = report.comparison;
+
+    // Comparison stats
+    var compEl = document.getElementById('report-comparison');
+    if (compEl) {
+      function statCard(label, val, change, color) {
+        var arrow = parseInt(change) >= 0 ? '↑' : '↓';
+        var chgColor = parseInt(change) >= 0 ? 'var(--green)' : 'var(--red)';
+        return '<div class="stat-card" style="border-top:3px solid ' + color + '">' +
+          '<div class="stat-label">' + label + '</div>' +
+          '<div class="stat-value">' + val + '</div>' +
+          '<div class="stat-sub" style="color:' + chgColor + '">' + arrow + ' ' + change + '% vs previous</div></div>';
+      }
+      compEl.innerHTML =
+        statCard('Total Leads', m.total, c.total.change, '#3b82f6') +
+        statCard('Deals Won', m.won, c.won.change, '#22c55e') +
+        statCard('Conv. Rate', m.convRate + '%', c.convRate.change, '#e63946') +
+        statCard('Avg Score', m.avgScore + '/100', c.avgScore.change, '#8b5cf6') +
+        statCard('Pipeline Value', '$' + m.totalValue.toFixed(0) + 'K', c.totalValue.change, '#06b6d4') +
+        statCard('Win Rate', m.winRate + '%', c.winRate.change, '#f59e0b');
+    }
+
+    // Timeline chart
+    var timelineCanvas = document.getElementById('report-timeline');
+    if (timelineCanvas && report.timeline.length > 0) {
+      Reporting.drawLineChart(timelineCanvas, report.timeline, { height: 220 });
+    }
+
+    // Segments donut
+    var segCanvas = document.getElementById('report-segments');
+    if (segCanvas) {
+      var segData = [
+        { label: 'Hot', value: m.bySegment.hot || 0, color: '#ef4444' },
+        { label: 'Warm', value: m.bySegment.warm || 0, color: '#f59e0b' },
+        { label: 'Cold', value: m.bySegment.cold || 0, color: '#3b82f6' }
+      ];
+      Reporting.drawDonut(segCanvas, segData, { height: 180 });
+    }
+
+    // Source bar chart
+    var srcCanvas = document.getElementById('report-sources');
+    if (srcCanvas && report.sources.length > 0) {
+      var srcColors = ['#e63946', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899'];
+      var srcData = report.sources.slice(0, 7).map(function (s, i) {
+        return { label: s.name, value: s.count, color: srcColors[i % srcColors.length] };
+      });
+      Reporting.drawBarChart(srcCanvas, srcData, { height: 200 });
+    }
+
+    // Source table
+    var srcTable = document.getElementById('report-sources-table');
+    if (srcTable && report.sources.length > 0) {
+      var tHtml = '<table style="width:100%;border-collapse:collapse">';
+      tHtml += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">SOURCE</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">LEADS</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">WON</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">CONV</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">VALUE</th></tr></thead><tbody>';
+      report.sources.forEach(function (s) {
+        tHtml += '<tr><td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem">' + s.name + '</td>';
+        tHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right">' + s.count + '</td>';
+        tHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;color:var(--green)">' + s.won + '</td>';
+        tHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right">' + s.convRate + '%</td>';
+        tHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;color:var(--green)">$' + (s.value || 0) + 'K</td></tr>';
+      });
+      tHtml += '</tbody></table>';
+      srcTable.innerHTML = tHtml;
+    }
+
+    // Pipeline funnel
+    var pipeEl = document.getElementById('report-pipeline');
+    if (pipeEl) {
+      var stages = [
+        { key: 'New', label: 'New', color: '#3b82f6' },
+        { key: 'Qualified', label: 'Qualified', color: '#06b6d4' },
+        { key: 'Contacted', label: 'Contacted', color: '#f59e0b' },
+        { key: 'Engaged', label: 'Engaged', color: '#8b5cf6' },
+        { key: 'Meeting', label: 'Meeting', color: '#ec4899' },
+        { key: 'Proposal', label: 'Proposal', color: '#e63946' },
+        { key: 'closed-won', label: 'Won', color: '#22c55e' }
+      ];
+      var maxStage = Math.max.apply(null, stages.map(function (s) { return m.byStage[s.key] || 0; }).concat([1]));
+      var pHtml = '<div style="display:flex;flex-direction:column;gap:4px">';
+      stages.forEach(function (s) {
+        var count = m.byStage[s.key] || 0;
+        var pct = Math.round((count / maxStage) * 100);
+        pHtml += '<div style="display:flex;align-items:center;gap:8px">';
+        pHtml += '<div style="width:100px;font-size:12px;color:var(--text2);text-align:right">' + s.label + '</div>';
+        pHtml += '<div style="flex:1;height:24px;background:var(--surface2);border-radius:6px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + s.color + ';border-radius:6px;transition:width .5s"></div></div>';
+        pHtml += '<div style="width:40px;font-size:12px;font-weight:700">' + count + '</div>';
+        pHtml += '</div>';
+      });
+      pHtml += '</div>';
+      pipeEl.innerHTML = pHtml;
+    }
+
+    // AI Insights
+    var insightsEl = document.getElementById('report-insights');
+    if (insightsEl) {
+      var insights = [];
+      if (m.total === 0) {
+        insights.push({ type: 'info', text: 'No leads yet. Start the Scout agent to find businesses or share your score tool to generate inbound leads.' });
+      } else {
+        if (m.convRate < 5) insights.push({ type: 'warning', text: 'Conversion rate is below 5%. Consider improving follow-up sequences or tightening lead qualification.' });
+        if (m.bySegment.hot > m.total * 0.3) insights.push({ type: 'success', text: 'Strong pipeline — ' + Math.round((m.bySegment.hot / m.total) * 100) + '% of leads are hot. Focus on closing.' });
+        if (m.winRate > 30) insights.push({ type: 'success', text: 'Win rate of ' + m.winRate + '% is above industry average (20-25%). Great job.' });
+        if (m.winRate < 15 && m.total > 10) insights.push({ type: 'warning', text: 'Win rate is low at ' + m.winRate + '%. Review lost deals for patterns.' });
+
+        // Best source
+        if (report.sources.length > 0) {
+          var best = report.sources[0];
+          insights.push({ type: 'info', text: 'Top source: ' + best.name + ' with ' + best.count + ' leads (' + best.convRate + '% conversion). Double down on this channel.' });
+        }
+
+        // Stale leads
+        var staleCount = m.byStage['Contacted'] || 0;
+        if (staleCount > 5) insights.push({ type: 'warning', text: staleCount + ' leads stuck in Contacted stage. Run the Follow-Up agent to re-engage.' });
+      }
+
+      if (insights.length === 0) insights.push({ type: 'info', text: 'Run the Reporter agent to generate insights from your data.' });
+
+      var icons = { success: '✅', warning: '⚠️', info: '💡' };
+      var colors = { success: 'var(--green)', warning: 'var(--yellow)', info: 'var(--accent)' };
+      insightsEl.innerHTML = insights.map(function (ins) {
+        return '<div style="display:flex;gap:10px;padding:10px;margin-bottom:8px;background:var(--bg);border-left:3px solid ' + colors[ins.type] + ';border-radius:0 8px 8px 0;font-size:13px">' +
+          '<span>' + icons[ins.type] + '</span><span>' + ins.text + '</span></div>';
+      }).join('');
+    }
+  }
+
+  function refreshReport() { renderReports(); }
+
+  function sendReportEmail() {
+    var period = document.getElementById('report-period').value;
+    showToast('📧 Sending report...');
+    Reporting.sendScheduledReport(period).then(function () {
+      showToast('✅ Report sent to info@gideonabochie.com');
+    }).catch(function () {
+      showToast('❌ Failed — check Brevo API key in Settings');
+    });
+  }
+
+  function exportReport() {
+    var period = document.getElementById('report-period').value;
+    var report = Reporting.generateReport(period);
+    var blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'ga-report-' + period + '-' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📥 Report exported');
   }
 
   /* ----------------------------------------

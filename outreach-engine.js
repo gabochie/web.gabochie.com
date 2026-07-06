@@ -103,7 +103,7 @@ window.OutreachEngine = (function () {
             tags: ['outreach', campaignName || 'bulk'],
             apiKey: settings.brevoApiKey || '',
             senderName: settings.brevoSenderName || 'Gideon Abochie',
-            senderEmail: settings.brevoSenderEmail || 'gideon@gideonabochie.com'
+            senderEmail: settings.brevoSenderEmail || 'info@gideonabochie.com'
           })
         });
       })

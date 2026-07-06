@@ -30,7 +30,7 @@ export async function onRequestPost(context) {
     const results = [];
     const sender = {
       name: senderName || 'Gideon Abochie',
-      email: senderEmail || 'gideon@gideonabochie.com'
+      email: senderEmail || 'info@gideonabochie.com'
     };
 
     for (let i = 0; i < recipients.length; i += batchSize) {
@@ -41,7 +41,7 @@ export async function onRequestPost(context) {
         subject: subject,
         htmlContent: htmlContent,
         textContent: textContent || htmlContent.replace(/<[^>]+>/g, ''),
-        replyTo: replyTo ? { email: replyTo } : { email: 'gideon@gideonabochie.com' },
+        replyTo: replyTo ? { email: replyTo } : { email: 'info@gideonabochie.com' },
         tags: tags || ['outreach']
       };
 

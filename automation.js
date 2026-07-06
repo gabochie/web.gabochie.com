@@ -334,7 +334,7 @@ window.Automation = (function () {
           htmlContent: htmlBody,
           apiKey: settings.brevoApiKey || '',
           senderName: settings.brevoSenderName || 'Gideon Abochie',
-          senderEmail: settings.brevoSenderEmail || 'gideon@gideonabochie.com'
+          senderEmail: settings.brevoSenderEmail || 'info@gideonabochie.com'
         })
       });
     }).then(function (r) { return r.json(); });

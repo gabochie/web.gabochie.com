@@ -122,6 +122,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://browser.sentry-cdn.com/7.120.0/bundle.min.js" crossorigin="anonymous"></script>
   <script>Sentry.init({ dsn: 'https://74bcc636abae3754072458ca7badb8aa@o4511673351077888.ingest.de.sentry.io/4511686654689360' });</script>
+  <!-- Microsoft Clarity — Heatmaps & Session Recordings -->
+  <script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","k5b8t9y7vj");</script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <style>
@@ -711,6 +713,26 @@ footer .footer-logo span{color:var(--accent)}
 
   <script src="scoring.js"></script>
   <script src="firebase-config.js"></script>
+  <script src="cookie-consent.js"></script>
+  <script src="visitor-tracker.js"></script>
+  <script src="analytics.js"></script>
+  <script>
+    // Init cookie consent first — blocks tracking until accepted
+    CookieConsent.init();
+    CookieConsent.showManageButton();
+    // Visitor tracking only runs if consent given
+    if (CookieConsent.allowsAnalytics()) {
+      VisitorTracker.init();
+      VisitorTracker.fetchGeo();
+    }
+    // Listen for consent changes
+    CookieConsent.subscribe(function (event) {
+      if (event === 'accepted' || (event === 'updated' && CookieConsent.allowsAnalytics())) {
+        VisitorTracker.init();
+        VisitorTracker.fetchGeo();
+      }
+    });
+  </script>
 <script>
 FirebaseService.init();
 // PORTFOLIO DATA
@@ -743,7 +765,7 @@ function submitForm(name,email,company,url,source){
   // Save lead to Firestore
   if (window.FirebaseService) {
     var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    FirebaseService.leads.update(leadId, {
+    var leadData = {
       id: leadId,
       name: name || 'Unknown',
       email: email,
@@ -754,7 +776,34 @@ function submitForm(name,email,company,url,source){
       status: 'New',
       score: 0,
       createdAt: new Date().toISOString()
-    }).catch(function () {});
+    };
+
+    // Merge visitor session data
+    if (window.VisitorTracker && VisitorTracker.getSession()) {
+      var session = VisitorTracker.getSession();
+      leadData.visitorSession = {
+        sessionId: session.id,
+        pages: (session.pages || []).slice(-10),
+        referrer: session.referrer || '',
+        referrerType: session.referrerType || '',
+        referrerDomain: session.referrerDomain || '',
+        utm: session.utm || {},
+        device: session.device || {},
+        geo: session.geo || {},
+        pageViews: session.pageCount || 0,
+        firstVisit: session.started,
+        convertedAt: Date.now()
+      };
+      // Mark session as converted
+      VisitorTracker.onFormSubmit(leadId);
+    }
+
+    // Log funnel conversion
+    if (window.Analytics) {
+      Analytics.logFunnel('lead_created', { leadId: leadId, source: source });
+    }
+
+    FirebaseService.leads.update(leadId, leadData).catch(function () {});
   }
 
   // Send lead via WhatsApp/email
@@ -849,10 +898,17 @@ document.getElementById('contactForm').addEventListener('submit',function(e){
   // Save lead to Firestore
   if (window.FirebaseService) {
     var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    FirebaseService.leads.update(leadId, {
+    var leadData = {
       id: leadId, name: n, email: em, company: co || '', message: m,
       source: 'Contact Form', status: 'New', score: 0, createdAt: new Date().toISOString()
-    }).catch(function () {});
+    };
+    if (window.VisitorTracker && VisitorTracker.getSession()) {
+      var s = VisitorTracker.getSession();
+      leadData.visitorSession = { sessionId: s.id, pages: (s.pages||[]).slice(-10), referrer: s.referrer||'', referrerType: s.referrerType||'', utm: s.utm||{}, device: s.device||{}, geo: s.geo||{} };
+      VisitorTracker.onFormSubmit(leadId);
+    }
+    if (window.Analytics) Analytics.logFunnel('lead_created', { leadId: leadId, source: 'Contact Form' });
+    FirebaseService.leads.update(leadId, leadData).catch(function () {});
   }
 
   var msg='New contact message:\n\nName: '+n+'\nEmail: '+em+'\nCompany: '+(co||'N/A')+'\nMessage: '+m;

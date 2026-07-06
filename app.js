@@ -184,6 +184,7 @@
     if (tabName === 'strategy') renderStrategy();
     if (tabName === 'automation') renderAutomation();
     if (tabName === 'roadmap') renderRoadmap();
+    if (tabName === 'visitors') renderVisitors();
   }
 
   /* ----------------------------------------
@@ -396,6 +397,7 @@
 
   function getFilteredLeads() {
     var leads = getModeLeads();
+    var sourceVal = document.getElementById('f-source') ? document.getElementById('f-source').value : '';
     var stageVal = document.getElementById('f-stage') ? document.getElementById('f-stage').value : '';
     var stateVal = document.getElementById('f-state') ? document.getElementById('f-state').value : '';
     var segmentVal = document.getElementById('f-segment') ? document.getElementById('f-segment').value : '';
@@ -405,6 +407,7 @@
     var searchVal = document.getElementById('f-search') ? (document.getElementById('f-search').value || '').toLowerCase() : '';
 
     var filtered = leads.filter(function (l) {
+      if (sourceVal && (l.source || '') !== sourceVal) return false;
       if (stageVal && (l.pipelineStage || 'prospect') !== stageVal) return false;
       if (stateVal && l.state !== stateVal) return false;
       if (segmentVal && l.segment !== segmentVal) return false;
@@ -1744,6 +1747,115 @@
     }).catch(function () {
       showToast('Failed to save settings');
     });
+  }
+
+  /* ----------------------------------------
+     VISITORS TAB — Analytics Dashboard
+     ---------------------------------------- */
+  function renderVisitors() {
+    if (!window.Analytics) return;
+
+    // Funnel
+    var funnelEl = document.getElementById('visitor-funnel');
+    if (funnelEl) {
+      var funnel = Analytics.getFunnelData();
+      var maxCount = Math.max.apply(null, funnel.steps.map(function (s) { return s.count; }).concat([1]));
+      var html = '<div style="display:flex;flex-direction:column;gap:4px">';
+      funnel.steps.forEach(function (step, i) {
+        var pct = Math.round((step.count / maxCount) * 100);
+        var barColor = i === funnel.steps.length - 1 ? 'var(--green)' : 'var(--accent)';
+        html += '<div style="display:flex;align-items:center;gap:12px">';
+        html += '<div style="width:130px;font-size:13px;color:var(--text2);text-align:right">' + step.label + '</div>';
+        html += '<div style="flex:1;height:28px;background:var(--surface2);border-radius:6px;overflow:hidden">';
+        html += '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:6px;transition:width .5s"></div>';
+        html += '</div>';
+        html += '<div style="width:60px;font-size:13px;font-weight:700">' + step.count + '</div>';
+        html += '<div style="width:50px;font-size:12px;color:var(--text3)">' + step.convRate + '%</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<div style="margin-top:12px;font-size:12px;color:var(--text3)">Overall: ' + funnel.totalVisitors + ' visitors → ' + funnel.totalDeals + ' deals (' + funnel.overallConversion + '% conversion)</div>';
+      funnelEl.innerHTML = html;
+    }
+
+    // Stats
+    var statsEl = document.getElementById('visitor-stats');
+    if (statsEl) {
+      var vStats = window.VisitorTracker ? VisitorTracker.getVisitorStats() : {};
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-label">Page Views</div><div class="stat-value">' + (vStats.totalPageviews || 0) + '</div></div>' +
+        '<div class="stat-card green"><div class="stat-label">Unique Visitors</div><div class="stat-value">' + (vStats.uniqueVisitors || 0) + '</div></div>' +
+        '<div class="stat-card accent"><div class="stat-label">Conversions</div><div class="stat-value">' + (vStats.conversions || 0) + '</div></div>' +
+        '<div class="stat-card purple"><div class="stat-label">Conv. Rate</div><div class="stat-value">' + (vStats.conversionRate || 0) + '%</div></div>';
+    }
+
+    // Channels
+    var channelsEl = document.getElementById('visitor-channels');
+    if (channelsEl) {
+      var channels = Analytics.getChannelPerformance();
+      var chHtml = '<table style="width:100%;border-collapse:collapse">';
+      chHtml += '<thead><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">CHANNEL</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">VISITORS</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">LEADS</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">REVENUE</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text3)">ROI</th></tr></thead><tbody>';
+      channels.forEach(function (ch) {
+        chHtml += '<tr><td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem">' + ch.icon + ' ' + ch.name + '</td>';
+        chHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem;text-align:right">' + ch.visitors + '</td>';
+        chHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem;text-align:right">' + ch.leads + '</td>';
+        chHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem;text-align:right;color:var(--green)">$' + ch.revenue + '</td>';
+        chHtml += '<td style="padding:8px;border-bottom:1px solid var(--border);font-size:.85rem;text-align:right">' + ch.roi + '%</td></tr>';
+      });
+      chHtml += '</tbody></table>';
+      channelsEl.innerHTML = chHtml;
+    }
+
+    // Attribution
+    var attrEl = document.getElementById('visitor-attribution');
+    if (attrEl) {
+      var attr = Analytics.getAttributionData();
+      if (attr.bySource.length === 0) {
+        attrEl.innerHTML = '<div style="color:var(--text2);padding:16px;font-size:13px">No revenue attributed yet. Revenue will appear here as deals close.</div>';
+      } else {
+        var aHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">';
+        aHtml += '<div style="padding:12px;background:var(--bg);border-radius:8px;text-align:center"><div style="font-size:1.2rem;font-weight:800;color:var(--green)">$' + attr.totalRevenue + '</div><div style="font-size:.75rem;color:var(--text3)">Total Revenue</div></div>';
+        aHtml += '<div style="padding:12px;background:var(--bg);border-radius:8px;text-align:center"><div style="font-size:1.2rem;font-weight:800">' + attr.totalDeals + '</div><div style="font-size:.75rem;color:var(--text3)">Total Deals</div></div>';
+        aHtml += '<div style="padding:12px;background:var(--bg);border-radius:8px;text-align:center"><div style="font-size:1.2rem;font-weight:800">$' + attr.avgDealSize + '</div><div style="font-size:.75rem;color:var(--text3)">Avg Deal Size</div></div>';
+        aHtml += '</div>';
+        aHtml += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">Revenue by Source</div>';
+        attr.bySource.forEach(function (s) {
+          var pct = attr.totalRevenue > 0 ? Math.round((s.revenue / attr.totalRevenue) * 100) : 0;
+          aHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+          aHtml += '<div style="width:120px;font-size:13px">' + s.name + '</div>';
+          aHtml += '<div style="flex:1;height:8px;background:var(--surface2);border-radius:4px"><div style="height:100%;width:' + pct + '%;background:var(--green);border-radius:4px"></div></div>';
+          aHtml += '<div style="width:80px;font-size:13px;text-align:right">$' + s.revenue + ' (' + s.deals + ')</div>';
+          aHtml += '</div>';
+        });
+        attrEl.innerHTML = aHtml;
+      }
+    }
+
+    // Recent Visitors
+    var recentEl = document.getElementById('visitor-recent');
+    if (recentEl) {
+      var vStats2 = window.VisitorTracker ? VisitorTracker.getVisitorStats() : {};
+      var recent = vStats2.recentVisits || [];
+      if (recent.length === 0) {
+        recentEl.innerHTML = '<div style="color:var(--text2);padding:16px;font-size:13px">No visitors yet. Data appears once the cookie consent banner is accepted.</div>';
+      } else {
+        var rHtml = '';
+        recent.slice(0, 15).forEach(function (v) {
+          var time = new Date(v.ts).toLocaleTimeString();
+          var type = v.type === 'pageview' ? '📄' : v.type === 'conversion' ? '🎯' : '📍';
+          var page = v.page || v.data?.page || '';
+          var device = v.device ? (v.device.type === 'mobile' ? '📱' : v.device.type === 'tablet' ? '📱' : '💻') : '';
+          rHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">';
+          rHtml += '<span style="color:var(--text3);width:70px">' + time + '</span>';
+          rHtml += '<span>' + type + '</span>';
+          rHtml += '<span style="flex:1;color:var(--text2)">' + page + '</span>';
+          rHtml += '<span>' + device + '</span>';
+          rHtml += '<span style="color:var(--text3)">' + (v.geo ? v.geo.city + ', ' + v.geo.country : '') + '</span>';
+          rHtml += '</div>';
+        });
+        recentEl.innerHTML = rHtml;
+      }
+    }
   }
 
   /* ----------------------------------------

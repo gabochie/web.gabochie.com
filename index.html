@@ -39,8 +39,9 @@ label{display:block;font-size:.85rem;font-weight:500;color:var(--text-dim);margi
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(11,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
 nav .container{display:flex;align-items:center;justify-content:space-between}
-.logo{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
-.logo span{color:var(--accent)}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:800;letter-spacing:-.02em;text-decoration:none}
+.logo svg{flex-shrink:0}
+.logo-text span{color:var(--accent)}
 
 /* HERO */
 .hero{padding:160px 0 100px;position:relative}
@@ -204,7 +205,14 @@ footer .footer-logo span{color:var(--accent)}
 <!-- NAVIGATION -->
 <nav>
   <div class="container">
-    <a href="#" class="logo">Gideon <span>Abochie</span></a>
+    <a href="#" class="logo">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="10" fill="#e63946"/>
+        <circle cx="20" cy="20" r="13" fill="none" stroke="#fff" stroke-width="2"/>
+        <text x="20" y="25" text-anchor="middle" fill="#fff" font-family="Inter,system-ui,sans-serif" font-size="14" font-weight="800">GA</text>
+      </svg>
+      <span class="logo-text">Gideon <span>Abochie</span></span>
+    </a>
     <a href="#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
   </div>
 </nav>

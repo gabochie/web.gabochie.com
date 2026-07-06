@@ -272,6 +272,44 @@ window.CommandCenter = (function () {
     html += ccStatCard('Needs Attention', pipeline.needsAttention.length, pipeline.needsAttention.length > 3 ? '#ef4444' : '#22c55e');
     html += '</div>';
 
+    // Visitor Conversion Funnel
+    if (window.Analytics) {
+      var funnel = Analytics.getFunnelData();
+      html += '<div class="cc-section"><h3 class="cc-section-title">Visitor Conversion Funnel</h3>';
+      html += '<div class="cc-funnel">';
+      var maxFunnel = Math.max.apply(null, funnel.steps.map(function (s) { return s.count; }).concat([1]));
+      funnel.steps.forEach(function (step, i) {
+        var pct = Math.round((step.count / maxFunnel) * 100);
+        var color = i === funnel.steps.length - 1 ? '#22c55e' : '#3b82f6';
+        html += '<div class="cc-funnel-row">';
+        html += '<div class="cc-funnel-label">' + step.label + '</div>';
+        html += '<div class="cc-funnel-bar"><div class="cc-funnel-fill" style="width:' + pct + '%;background:' + color + '"></div></div>';
+        html += '<div class="cc-funnel-count">' + step.count + ' <span style="font-size:11px;color:var(--text3)">' + step.convRate + '%</span></div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<div style="margin-top:8px;font-size:12px;color:var(--text3)">' + funnel.totalVisitors + ' visitors → ' + funnel.totalDeals + ' deals (' + funnel.overallConversion + '% overall)</div>';
+      html += '</div>';
+    }
+
+    // Channel Performance
+    if (window.Analytics) {
+      var channels = Analytics.getChannelPerformance();
+      var activeChannels = channels.filter(function (c) { return c.visitors > 0 || c.leads > 0; });
+      if (activeChannels.length > 0) {
+        html += '<div class="cc-section"><h3 class="cc-section-title">Channel Performance</h3>';
+        html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">';
+        activeChannels.forEach(function (ch) {
+          html += '<div style="padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px">';
+          html += '<div style="font-size:13px;font-weight:600;margin-bottom:6px">' + ch.icon + ' ' + ch.name + '</div>';
+          html += '<div style="font-size:12px;color:var(--text3)">' + ch.visitors + ' visitors • ' + ch.leads + ' leads</div>';
+          html += '<div style="font-size:12px;color:var(--green)">$' + ch.revenue + ' revenue</div>';
+          html += '</div>';
+        });
+        html += '</div></div>';
+      }
+    }
+
     // Agent Status
     html += '<div class="cc-section"><h3 class="cc-section-title">Agent Status</h3>';
     html += '<div class="cc-agents-grid">';

@@ -276,7 +276,7 @@ footer .footer-logo span{color:var(--accent)}
 <section class="proof-bar">
   <div class="container">
     <div><div class="stat-num">$4T+</div><div class="stat-label">Client Revenue</div></div>
-    <div><div class="stat-num">11</div><div class="stat-label">Redesigns Delivered</div></div>
+    <div><div class="stat-num">4</div><div class="stat-label">Redesigns Delivered</div></div>
     <div><div class="stat-num">4</div><div class="stat-label">Canadian Provinces</div></div>
     <div><div class="stat-num">4.9★</div><div class="stat-label">Client Rating</div></div>
   </div>
@@ -581,12 +581,10 @@ footer .footer-logo span{color:var(--accent)}
 FirebaseService.init();
 // PORTFOLIO DATA
 var portfolio=[
-  {name:'Berkshire Hathaway',tag:'Finance',color:'#1a3a5c',file:'berkshire',result:'Full redesign — modernized trillion-dollar brand presence'},
-  {name:'Verizon',tag:'Telecom',color:'#1a1a2a',file:'verizon',result:'Mobile-first redesign for 135M+ customer base'},
-  {name:'McDonald\'s',tag:'Food',color:'#8b0000',file:'mcdonalds',result:'Global brand refresh — conversion-focused ordering flow'},
-  {name:'Fidelity',tag:'Finance',color:'#1a2a4a',file:'fidelity',result:'Trust-focused redesign for 35B financial services'},
-  {name:'Hearst',tag:'Media',color:'#2a1a2a',file:'hearst',result:'Digital-first media platform redesign'},
-  {name:'Publix',tag:'Retail',color:'#1a4a1a',file:'publix',result:'E-commerce ready grocery experience'}
+  {name:'TrustInfraOS',tag:'SaaS',color:'#0f172a',file:'trustinfraos',result:'Modern SaaS platform redesign — clean UI, clear messaging',url:'https://trustinfraos.com'},
+  {name:'SporaFind',tag:'Healthcare',color:'#1a3a2a',file:'sporafind',result:'Healthcare discovery platform — mobile-first redesign',url:'https://sporafind.com'},
+  {name:'Lutterodt',tag:'Consulting',color:'#2a1a2a',file:'lutterodt',result:'Consulting brand refresh — premium positioning redesign',url:'https://lutterodt.org'},
+  {name:'BuildCost GH',tag:'Construction',color:'#3d2b1f',file:'buildcostgh',result:'Construction cost platform — conversion-focused redesign',url:'https://buildcostgh.com'}
 ];
 
 var WHATSAPP='233243262019';
@@ -619,7 +617,9 @@ function submitForm(name,email,company,url,source){
   var grid=document.getElementById('portfolioGrid');
   portfolio.forEach(function(p){
     var card=document.createElement('a');
-    card.href='redesigns/'+p.file+'.html';
+    card.href=p.url||'redesigns/'+p.file+'.html';
+    card.target=p.url?'_blank':'';
+    card.rel=p.url?'noopener':'';
     card.className='portfolio-card';
     card.innerHTML='<div class="portfolio-thumb" style="background:'+p.color+'">'+p.name.charAt(0)+'</div><div class="portfolio-info"><span class="tag">'+p.tag+'</span><h4>'+p.name+'</h4><p>'+p.result+'</p></div>';
     grid.appendChild(card);

@@ -13,7 +13,7 @@ export async function onRequestPost(context) {
   try {
     const { recipients, subject, htmlContent, textContent, replyTo, tags, apiKey, senderName, senderEmail } = await context.request.json();
 
-    const API_KEY = context.env.BREVO_API_KEY || apiKey;
+    const API_KEY = context.env.BREVO_API_KEY || apiKey || 'xsmtpsib-cdf3900547e2d44cbc2d438a0633ea14d56c8a6b91e8261b565bcf19ad7412cf-o7jBGFwH9d0hz0jA';
     if (!API_KEY) {
       return new Response(JSON.stringify({ error: 'BREVO_API_KEY not configured. Add it in admin Settings → Email Settings, or set it in Cloudflare Pages → Settings → Environment Variables.' }), { status: 500, headers });
     }

@@ -13,7 +13,7 @@ export async function onRequestPost(context) {
   try {
     const { lead, messageType, tone, apiKey } = await context.request.json();
 
-    const API_KEY = context.env.OPENAI_API_KEY || apiKey;
+    const API_KEY = context.env.OPENAI_API_KEY || apiKey || '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';
     if (!API_KEY) {
       return new Response(JSON.stringify({
         error: 'OPENAI_API_KEY not configured. Add it in admin Settings or Cloudflare Pages env vars.',

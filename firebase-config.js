@@ -167,15 +167,18 @@ var AuthService = (function () {
   var auth = null;
 
   function init() {
-    if (typeof firebase === 'undefined') return;
+    if (typeof firebase === 'undefined') {
+      console.warn('[Auth] Firebase SDK not loaded');
+      return;
+    }
     try {
-      // Ensure Firebase app is initialized (login.html may not call FirebaseService.init first)
       if (!firebase.apps.length) {
         firebase.initializeApp(FIREBASE_CONFIG);
       }
       auth = firebase.auth();
+      console.log('[Auth] Initialized OK, current user:', auth.currentUser);
     } catch (e) {
-      console.warn('[Auth] Init failed:', e.message);
+      console.error('[Auth] Init failed:', e.message);
     }
   }
 

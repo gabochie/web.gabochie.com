@@ -90,8 +90,7 @@
   var btn = document.getElementById('loginBtn');
   var error = document.getElementById('loginError');
 
-  // Init Firebase
-  FirebaseService.init();
+  // Init Firebase Auth only (no Firestore needed for login)
   AuthService.init();
 
   // If already logged in, redirect to admin

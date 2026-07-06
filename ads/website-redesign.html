@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Redesign Services | Gideon Abochie — Conversion-Focused Web Design</title>
+  <meta name="description" content="Professional website redesign services that convert visitors into customers. Get 40-60% more leads with our conversion-focused approach. Free audit included.">
+  <meta name="keywords" content="website redesign, website redesign services, web design company, conversion rate optimization, website redesign cost">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Ads Conversion Tracking -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-CONVERSION_ID');
+  </script>
+
+  <!-- Facebook Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero { min-height: 100vh; display: flex; align-items: center; padding: 60px 0; }
+    .hero-content { max-width: 680px; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 9999px; padding: 6px 16px; font-size: 13px; font-weight: 600; color: #ef4444; margin-bottom: 24px; }
+    .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+    .hero h1 span { color: #ef4444; }
+    .hero p { font-size: 1.2rem; color: #94a3b8; margin-bottom: 32px; max-width: 560px; }
+    .hero-cta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 12px; font-size: 1rem; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: #ef4444; color: #fff; box-shadow: 0 4px 24px rgba(239,68,68,0.3); }
+    .btn-primary:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(239,68,68,0.4); }
+    .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    .social-proof { display: flex; gap: 40px; }
+    .social-proof > div { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 900; color: #ef4444; }
+    .stat-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Score Form */
+    .score-section { padding: 80px 0; background: #111; }
+    .score-form { max-width: 600px; margin: 0 auto; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 20px; padding: 40px; }
+    .score-form h2 { font-size: 1.5rem; margin-bottom: 8px; }
+    .score-form .sub { color: #64748b; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #94a3b8; }
+    .form-group input, .form-group select { width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid #2a2a2a; background: #0a0a0a; color: #fff; font-size: 1rem; font-family: inherit; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+    .form-group input::placeholder { color: #475569; }
+
+    /* Results */
+    .results { display: none; margin-top: 24px; padding: 24px; background: #0a0a0a; border-radius: 12px; border: 1px solid #2a2a2a; }
+    .results.show { display: block; animation: fadeIn 0.5s; }
+    .score-display { text-align: center; margin-bottom: 24px; }
+    .score-circle { width: 120px; height: 120px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; border: 4px solid; }
+    .score-bad { border-color: #ef4444; color: #ef4444; }
+    .score-ok { border-color: #f59e0b; color: #f59e0b; }
+    .score-good { border-color: #22c55e; color: #22c55e; }
+    .results h3 { font-size: 1.2rem; margin-bottom: 12px; }
+    .issue-list { list-style: none; }
+    .issue-list li { padding: 8px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.9rem; color: #94a3b8; }
+    .issue-list li::before { content: '✗ '; color: #ef4444; font-weight: 700; }
+
+    /* Benefits */
+    .benefits { padding: 80px 0; }
+    .benefits h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; }
+    .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .benefit-card { background: #111; border: 1px solid #1a1a1a; border-radius: 16px; padding: 32px; }
+    .benefit-icon { font-size: 2rem; margin-bottom: 16px; }
+    .benefit-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .benefit-card p { color: #64748b; font-size: 0.9rem; }
+
+    /* Process */
+    .process { padding: 80px 0; background: #111; }
+    .process h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; }
+    .process-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; max-width: 900px; margin: 0 auto; }
+    .step { text-align: center; }
+    .step-num { width: 48px; height: 48px; border-radius: 50%; background: #ef4444; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; margin-bottom: 16px; }
+    .step h3 { font-size: 1rem; margin-bottom: 8px; }
+    .step p { color: #64748b; font-size: 0.85rem; }
+
+    /* Testimonials */
+    .testimonials { padding: 80px 0; }
+    .testimonials h2 { text-align: center; font-size: 2rem; margin-bottom: 48px; }
+    .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .testimonial { background: #111; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; }
+    .testimonial p { color: #94a3b8; font-style: italic; margin-bottom: 16px; }
+    .testimonial .author { font-weight: 700; }
+    .testimonial .role { color: #64748b; font-size: 0.85rem; }
+
+    /* Final CTA */
+    .final-cta { padding: 80px 0; background: linear-gradient(135deg, #1a1a1a, #0a0a0a); text-align: center; }
+    .final-cta h2 { font-size: 2rem; margin-bottom: 16px; }
+    .final-cta p { color: #64748b; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .hero { padding: 40px 0; }
+      .hero h1 { font-size: 2rem; }
+      .social-proof { gap: 20px; flex-wrap: wrap; }
+      .stat-num { font-size: 1.5rem; }
+      .score-form { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">🔴 Limited — Free Website Audit for First 50 Companies</div>
+        <h1>Your Website Is <span>Losing Customers</span> Every Day</h1>
+        <p>73% of visitors leave within 10 seconds if your site doesn't look professional. We fix that — our clients see 40-60% more leads in 90 days.</p>
+        <div class="hero-cta">
+          <a href="#audit" class="btn btn-primary">Get Your Free Score →</a>
+          <a href="#process" class="btn btn-secondary">See How It Works</a>
+        </div>
+        <div class="social-proof">
+          <div><div class="stat-num">161+</div><div class="stat-label">Sites Analyzed</div></div>
+          <div><div class="stat-num">40-60%</div><div class="stat-label">Avg Improvement</div></div>
+          <div><div class="stat-num">9</div><div class="stat-label">Week Delivery</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Score Tool -->
+  <section class="score-section" id="audit">
+    <div class="container">
+      <div class="score-form">
+        <h2>🔍 Get Your Free Website Audit</h2>
+        <p class="sub">Enter your URL. Get your score in 30 seconds. No obligation.</p>
+        <form id="scoreForm">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="name" placeholder="John Smith" required>
+          </div>
+          <div class="form-group">
+            <label>Work Email</label>
+            <input type="email" id="email" placeholder="john@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Company Website</label>
+            <input type="url" id="url" placeholder="https://yourcompany.com" required>
+          </div>
+          <div class="form-group">
+            <label>Industry</label>
+            <select id="industry" required>
+              <option value="" disabled selected>Select your industry</option>
+              <option>Medical</option><option>Dental</option><option>Home Services</option>
+              <option>Manufacturing</option><option>Legal</option><option>Financial</option>
+              <option>Automotive</option><option>Retail</option><option>Technology</option>
+              <option>Energy</option><option>Food</option><option>Insurance</option>
+              <option>Real Estate</option><option>Hospitality</option><option>Other</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%" id="submitBtn">🔍 Analyze My Website — Free</button>
+        </form>
+
+        <div class="results" id="results">
+          <div class="score-display">
+            <div class="score-circle" id="scoreCircle">—</div>
+            <h3 id="scoreLabel">Your Website Score</h3>
+          </div>
+          <h3>Issues Found</h3>
+          <ul class="issue-list" id="issueList"></ul>
+          <div style="margin-top:24px">
+            <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">📞 Book Free Consultation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="benefits">
+    <div class="container">
+      <h2>Why Businesses Choose Us</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">📈</div>
+          <h3>Conversion-Focused Design</h3>
+          <p>Every element is designed to turn visitors into leads. We A/B test everything to maximize your conversion rate.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">⚡</div>
+          <h3>Lightning Fast</h3>
+          <p>Under 2-second load times. 90+ PageSpeed scores. Because every second of delay costs you 7% in conversions.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">📱</div>
+          <h3>Mobile-First</h3>
+          <p>60% of your traffic is mobile. We design for thumbs first, then scale up to desktop.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🤖</div>
+          <h3>AI-Powered Lead Capture</h3>
+          <p>Chatbots, exit popups, and smart forms that work 24/7 to capture leads while you sleep.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">📊</div>
+          <h3>Analytics & Tracking</h3>
+          <p>Know exactly where your leads come from. Full funnel visibility from first click to closed deal.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🔄</div>
+          <h3>Ongoing Optimization</h3>
+          <p>We don't just launch and leave. Monthly CRO improvements keep your conversion rate climbing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process" id="process">
+    <div class="container">
+      <h2>How It Works — 9 Weeks to a High-Converting Website</h2>
+      <div class="process-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Audit & Strategy</h3>
+          <p>We analyze your site, competitors, and audience to build a conversion strategy.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Design & Build</h3>
+          <p>Custom design focused on conversion. No templates. No cookie-cutter.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Launch & Optimize</h3>
+          <p>We launch, monitor, and continuously optimize for maximum conversions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>What Our Clients Say</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial">
+          <p>"Our leads increased 47% in the first month. The ROI was insane — we should have done this years ago."</p>
+          <div class="author">Dr. Sarah Mensah</div>
+          <div class="role">City Medical Group</div>
+        </div>
+        <div class="testimonial">
+          <p>"The old site was embarrassing. Now patients compliment our website. Bookings are up 52%."</p>
+          <div class="author">Dr. Kwame Asante</div>
+          <div class="role">Smile Dental Care</div>
+        </div>
+        <div class="testimonial">
+          <p>"Best investment we've made. The site pays for itself 10x over in new client revenue."</p>
+          <div class="author">Nana Agyeman</div>
+          <div class="role">BuildCost GH</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Ready to Stop Losing Customers?</h2>
+      <p>Get your free website audit. See exactly what's costing you leads — and how to fix it.</p>
+      <a href="#audit" class="btn btn-primary">Get My Free Score →</a>
+    </div>
+  </section>
+
+  <!-- Score Tool Script -->
+  <script src="scoring.js"></script>
+  <script>
+    document.getElementById('scoreForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var url = document.getElementById('url').value;
+      var btn = document.getElementById('submitBtn');
+      var results = document.getElementById('results');
+
+      btn.textContent = '⏳ Analyzing...';
+      btn.disabled = true;
+      results.classList.add('show');
+
+      // Save lead to Firestore
+      if (typeof FirebaseService !== 'undefined') {
+        var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        FirebaseService.leads.update(leadId, {
+          id: leadId,
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          url: url,
+          industry: document.getElementById('industry').value,
+          source: 'Google Ads Landing',
+          status: 'New',
+          score: 0,
+          createdAt: new Date().toISOString()
+        }).catch(function() {});
+      }
+
+      if (typeof Scoring !== 'undefined') {
+        Scoring.analyzeWebsite(url).then(function(result) {
+          btn.textContent = '🔍 Analyze My Website — Free';
+          btn.disabled = false;
+
+          if (!result) return;
+          var total = result.total || result.scores?.total || 0;
+          var issues = result.issues || [];
+
+          var circle = document.getElementById('scoreCircle');
+          circle.textContent = total + '/100';
+          circle.className = 'score-circle ' + (total >= 70 ? 'score-good' : total >= 50 ? 'score-ok' : 'score-bad');
+          document.getElementById('scoreLabel').textContent = total >= 70 ? 'Great — but could be better' : total >= 50 ? 'Needs Improvement' : 'Critical — You\'re losing customers';
+
+          var issueList = document.getElementById('issueList');
+          issueList.innerHTML = '';
+          issues.slice(0, 8).forEach(function(issue) {
+            var li = document.createElement('li');
+            li.textContent = issue;
+            issueList.appendChild(li);
+          });
+
+          // Facebook pixel conversion
+          if (typeof fbq !== 'undefined') fbq('track', 'Lead');
+          // Google Ads conversion
+          if (typeof gtag !== 'undefined') gtag('event', 'conversion', {'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL'});
+        });
+      } else {
+        document.getElementById('scoreCircle').textContent = '—';
+        document.getElementById('scoreLabel').textContent = 'Analysis unavailable';
+        btn.textContent = '🔍 Analyze My Website — Free';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

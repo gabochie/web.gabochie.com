@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Invited | Gideon Abochie — Website Conversion Specialist</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .container { max-width: 600px; padding: 40px; text-align: center; }
+    .badge { display: inline-block; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
+    h1 { font-size: 2rem; font-weight: 900; margin-bottom: 16px; }
+    h1 span { color: #22c55e; }
+    p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 32px; line-height: 1.6; }
+    .benefits { text-align: left; margin: 32px 0; background: #111; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; }
+    .benefit { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
+    .benefit:last-child { border: none; }
+    .benefit-icon { font-size: 1.2rem; }
+    .benefit-text { font-size: 0.95rem; }
+    .benefit-text strong { color: #fff; }
+    .cta { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 32px; border-radius: 12px; font-size: 1rem; font-weight: 700; text-decoration: none; border: none; cursor: pointer; }
+    .btn-primary { background: #22c55e; color: #fff; }
+    .btn-primary:hover { background: #16a34a; }
+    .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .footer { margin-top: 32px; color: #475569; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">🎯 Exclusive Referral</div>
+    <h1>You've Been <span>Personally Invited</span></h1>
+    <p>A friend thought you could benefit from a website that actually converts visitors into customers.</p>
+
+    <div class="benefits">
+      <div class="benefit">
+        <span class="benefit-icon">✓</span>
+        <div class="benefit-text"><strong>Free website audit</strong> — See your score and exactly what needs fixing</div>
+      </div>
+      <div class="benefit">
+        <span class="benefit-icon">✓</span>
+        <div class="benefit-text"><strong>40-60% more leads</strong> — Our clients typically see this improvement in 90 days</div>
+      </div>
+      <div class="benefit">
+        <span class="benefit-icon">✓</span>
+        <div class="benefit-text"><strong>10% referral discount</strong> — You get 10% off setup as a referred client</div>
+      </div>
+      <div class="benefit">
+        <span class="benefit-icon">✓</span>
+        <div class="benefit-text"><strong>No risk</strong> — Money-back guarantee if you don't see results in 90 days</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <a href="/#audit" class="btn btn-primary">Get My Free Website Audit →</a>
+      <a href="mailto:gabochie@gmail.com?subject=Referred%20Client" class="btn btn-secondary">Or Email Us Directly</a>
+    </div>
+
+    <div class="footer">
+      <p>Referred by a current client. Valid for 30 days.</p>
+    </div>
+  </div>
+
+  <script>
+    // Track referral click
+    (function() {
+      var path = window.location.pathname;
+      var code = path.split('/ref/')[1];
+      if (code && typeof OutreachEngine !== 'undefined') {
+        OutreachEngine.trackReferralClick(code);
+        // Store code for conversion tracking
+        sessionStorage.setItem('ga_referral_code', code);
+      }
+    })();
+  </script>
+</body>
+</html>

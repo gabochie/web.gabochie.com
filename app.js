@@ -57,7 +57,7 @@
     renderAutomation();
     initRoadmapSync();
     // Pre-load Canada Jobs data silently
-    setTimeout(function () { searchCanadaJobs(); }, 1000);
+    setTimeout(function () { searchRemoteJobs(); }, 1000);
     // Auto-run agents on first load
     if (window.Agents) window.Agents.checkAutoRun();
   }
@@ -201,7 +201,7 @@
     if (tabName === 'pipeline-auto') { renderPipeline(); startPipelineRefresh(); renderOrchestrator(); }
     if (tabName === 'smoke-test') renderSmokeTest();
     if (tabName === 'offers') renderOffers();
-    if (tabName === 'canada-jobs') renderCanadaJobs();
+    if (tabName === 'remote-jobs') renderRemoteJobs();
   }
 
   /* ----------------------------------------

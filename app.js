@@ -2679,11 +2679,16 @@
     var sections = document.querySelectorAll('.section');
     addCheck('Admin', 'Section Panels', sections.length >= 13 ? 'pass' : 'warn', sections.length + ' sections');
 
-    // 4. Forms
+    // 4. Forms (main site only)
     var forms = ['heroForm', 'contactForm', 'popupForm'];
+    var isAdmin = document.querySelector('.sidebar') !== null;
     forms.forEach(function (f) {
       var el = document.getElementById(f);
-      addCheck('Forms', f, el ? 'pass' : 'fail', el ? 'Present' : 'MISSING');
+      if (isAdmin) {
+        addCheck('Forms', f, 'warn', 'Not on this page');
+      } else {
+        addCheck('Forms', f, el ? 'pass' : 'fail', el ? 'Present' : 'MISSING');
+      }
     });
 
     // 5. CF Pages Functions

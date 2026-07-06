@@ -177,17 +177,22 @@
     document.querySelectorAll('.section').forEach(function (s) {
       s.classList.toggle('active', s.id === tabName);
     });
+    // Stop intervals
+    stopPipelineRefresh();
+    stopFinderRefresh();
+    stopStrategyRefresh();
+    stopAuditRefresh();
     if (tabName === 'command-center') renderCommandCenter();
-    if (tabName === 'pipeline') renderPipeline();
+    if (tabName === 'pipeline') { renderPipeline(); startPipelineRefresh(); }
     if (tabName === 'outreach') renderOutreach();
-    if (tabName === 'finder') initFinder();
-    if (tabName === 'strategy') renderStrategy();
+    if (tabName === 'finder') { initFinder(); startFinderRefresh(); }
+    if (tabName === 'strategy') { renderStrategy(); startStrategyRefresh(); }
     if (tabName === 'automation') renderAutomation();
     if (tabName === 'roadmap') renderRoadmap();
     if (tabName === 'visitors') renderVisitors();
     if (tabName === 'reports') renderReports();
-    if (tabName === 'audit') renderAudit();
-    if (tabName === 'pipeline-auto') { renderPipeline(); renderOrchestrator(); }
+    if (tabName === 'audit') { renderAudit(); startAuditRefresh(); }
+    if (tabName === 'pipeline-auto') { renderPipeline(); startPipelineRefresh(); renderOrchestrator(); }
     if (tabName === 'smoke-test') renderSmokeTest();
   }
 
@@ -562,14 +567,20 @@
             if (window.Automation) window.Automation.trigger('lead-scored', p);
             analyzed++;
             updateFinderProgress(analyzed, prospects.length);
-            if (analyzed >= prospects.length) showFinderResults(prospects);
+            if (analyzed >= prospects.length) {
+              showFinderResults(prospects);
+              trackFinderScan(prospects.length);
+            }
           }).catch(function () {
             p.qualScore = 30 + Math.floor(Math.random() * 40);
             p.segment = p.qualScore >= 60 ? 'warm' : 'cold';
             if (window.Automation) window.Automation.trigger('lead-scored', p);
             analyzed++;
             updateFinderProgress(analyzed, prospects.length);
-            if (analyzed >= prospects.length) showFinderResults(prospects);
+            if (analyzed >= prospects.length) {
+              showFinderResults(prospects);
+              trackFinderScan(prospects.length);
+            }
           });
         } else {
           p.qualScore = 30 + Math.floor(Math.random() * 40);
@@ -577,7 +588,10 @@
           if (window.Automation) window.Automation.trigger('lead-scored', p);
           analyzed++;
           updateFinderProgress(analyzed, prospects.length);
-          if (analyzed >= prospects.length) showFinderResults(prospects);
+          if (analyzed >= prospects.length) {
+            showFinderResults(prospects);
+            trackFinderScan(prospects.length);
+          }
         }
       }, 200 + i * 300);
     });
@@ -785,6 +799,65 @@
     document.getElementById('finder-form').style.display = 'none';
     document.getElementById('finder-selected').style.display = 'none';
     document.getElementById('finder-outreach').style.display = 'none';
+  }
+
+  /* Finder auto-refresh + reporting */
+  var FINDER_INTERVAL = null;
+  var FINDER_SCAN_HISTORY = [];
+
+  function startFinderRefresh() {
+    if (FINDER_INTERVAL) clearInterval(FINDER_INTERVAL);
+    // Track scan history from localStorage
+    try {
+      var raw = localStorage.getItem('ga_finder_scans');
+      if (raw) FINDER_SCAN_HISTORY = JSON.parse(raw);
+    } catch (e) {}
+    // Show scan report if exists
+    renderFinderReport();
+    FINDER_INTERVAL = setInterval(function () {
+      renderFinderReport();
+    }, 15000);
+  }
+
+  function stopFinderRefresh() {
+    if (FINDER_INTERVAL) { clearInterval(FINDER_INTERVAL); FINDER_INTERVAL = null; }
+  }
+
+  function trackFinderScan(count) {
+    FINDER_SCAN_HISTORY.push({ time: Date.now(), count: count });
+    if (FINDER_SCAN_HISTORY.length > 30) FINDER_SCAN_HISTORY.shift();
+    try { localStorage.setItem('ga_finder_scans', JSON.stringify(FINDER_SCAN_HISTORY)); } catch (e) {}
+  }
+
+  function renderFinderReport() {
+    var container = document.getElementById('finder-report');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'finder-report';
+      container.style.cssText = 'margin-bottom:16px';
+      var insertAfter = document.querySelector('#finder .section-header');
+      if (insertAfter && insertAfter.parentNode) {
+        insertAfter.parentNode.insertBefore(container, insertAfter.nextSibling);
+      }
+    }
+    if (!container) return;
+    if (!FINDER_SCAN_HISTORY.length) {
+      container.style.display = 'none';
+      return;
+    }
+    container.style.display = '';
+    var totalScanned = FINDER_SCAN_HISTORY.reduce(function (s, h) { return s + h.count; }, 0);
+    var barHtml = '<div style="display:flex;gap:3px;align-items:end;height:32px;padding:4px 0">';
+    FINDER_SCAN_HISTORY.slice(-15).forEach(function (h, i) {
+      var maxCount = Math.max.apply(null, FINDER_SCAN_HISTORY.slice(-15).map(function (x) { return x.count; })) || 1;
+      var barH = Math.max(3, (h.count / maxCount) * 28);
+      barHtml += '<div style="width:10px;height:' + barH + 'px;background:var(--accent);border-radius:2px;opacity:' + (0.4 + 0.6 * (h.count / maxCount)) + ';transition:height .3s" title="' + h.count + ' leads at ' + new Date(h.time).toLocaleTimeString() + '"></div>';
+    });
+    barHtml += '</div>';
+    container.innerHTML = '<div class="card" style="padding:10px 16px">' +
+      '<div class="card-title" style="font-size:12px;margin-bottom:2px">📈 Scan Activity <span style="font-weight:400;color:var(--text3)">' + FINDER_SCAN_HISTORY.length + ' scans • ' + totalScanned + ' leads found</span></div>' +
+      barHtml +
+      '</div>';
   }
 
   /* ----------------------------------------
@@ -1186,6 +1259,74 @@
             }).join('') +
           '</tbody>' +
         '</table>' +
+      '</div>';
+  }
+
+  /* Strategy auto-refresh + reporting */
+  var STRATEGY_INTERVAL = null;
+  var STRATEGY_CHECKLIST_HISTORY = [];
+
+  function startStrategyRefresh() {
+    if (STRATEGY_INTERVAL) clearInterval(STRATEGY_INTERVAL);
+    try {
+      var raw = localStorage.getItem('ga_strategy_history');
+      if (raw) STRATEGY_CHECKLIST_HISTORY = JSON.parse(raw);
+    } catch (e) {}
+    renderStrategyReport();
+    STRATEGY_INTERVAL = setInterval(function () {
+      renderStrategyReport();
+    }, 30000);
+  }
+
+  function stopStrategyRefresh() {
+    if (STRATEGY_INTERVAL) { clearInterval(STRATEGY_INTERVAL); STRATEGY_INTERVAL = null; }
+  }
+
+  function renderStrategyReport() {
+    var container = document.getElementById('strategy-report');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'strategy-report';
+      container.style.cssText = 'margin-bottom:16px';
+      var header = document.querySelector('#strategy .section-header');
+      if (header && header.parentNode) header.parentNode.insertBefore(container, header.nextSibling);
+    }
+    if (!container) return;
+    // Count leads by status to show active strategy impact
+    var leads = [];
+    try { var raw = localStorage.getItem('ga_leads'); if (raw) leads = Object.values(JSON.parse(raw)); } catch (e) {}
+    var total = leads.length;
+    var hot = leads.filter(function (l) { return l.segment === 'hot' || l.qualScore >= 70; }).length;
+    var warm = leads.filter(function (l) { return l.segment === 'warm' || (l.qualScore >= 45 && l.qualScore < 70); }).length;
+    var cold = leads.filter(function (l) { return l.segment === 'cold' || l.qualScore < 45; }).length;
+    var contacted = leads.filter(function (l) { return l.outreachMessage || l.status === 'Contacted'; }).length;
+    // Track history
+    var now = Date.now();
+    if (!STRATEGY_CHECKLIST_HISTORY.length || now - STRATEGY_CHECKLIST_HISTORY[STRATEGY_CHECKLIST_HISTORY.length - 1].time > 120000) {
+      STRATEGY_CHECKLIST_HISTORY.push({ time: now, total: total, hot: hot, contacted: contacted });
+      if (STRATEGY_CHECKLIST_HISTORY.length > 20) STRATEGY_CHECKLIST_HISTORY.shift();
+      try { localStorage.setItem('ga_strategy_history', JSON.stringify(STRATEGY_CHECKLIST_HISTORY)); } catch (e) {}
+    }
+    var barHtml = '';
+    if (STRATEGY_CHECKLIST_HISTORY.length > 1) {
+      barHtml = '<div style="display:flex;gap:3px;align-items:end;height:28px;padding:4px 0">';
+      STRATEGY_CHECKLIST_HISTORY.forEach(function (h, i) {
+        var pct = Math.max(total, 1);
+        var barH = Math.max(3, (h.total / Math.max.apply(null, STRATEGY_CHECKLIST_HISTORY.map(function (x) { return x.total; })) || 0) * 24);
+        barHtml += '<div style="width:7px;height:' + barH + 'px;background:var(--accent);border-radius:2px;opacity:' + (0.3 + 0.7 * (i / STRATEGY_CHECKLIST_HISTORY.length)) + ';transition:height .3s" title="' + h.total + ' leads at ' + new Date(h.time).toLocaleTimeString() + '"></div>';
+      });
+      barHtml += '</div>';
+    }
+    container.innerHTML = '<div class="card" style="padding:10px 16px">' +
+      '<div class="card-title" style="font-size:12px;margin-bottom:4px">📊 Strategy Impact <span style="font-weight:400;color:var(--text3)">' + total + ' total leads</span></div>' +
+      '<div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap;margin-bottom:4px">' +
+      '<span>🔥 Hot: <strong>' + hot + '</strong></span>' +
+      '<span>🟡 Warm: <strong>' + warm + '</strong></span>' +
+      '<span>❄️ Cold: <strong>' + cold + '</strong></span>' +
+      '<span>📨 Contacted: <strong>' + contacted + '</strong></span>' +
+      '<span>📈 Pipeline: <strong>' + Math.round((hot / Math.max(total, 1)) * 100) + '%</strong> hot rate</span>' +
+      '</div>' +
+      barHtml +
       '</div>';
   }
 
@@ -1696,8 +1837,21 @@
     html += '</tbody></table>';
     sitesContainer.innerHTML = html;
 
+    // Add live status container if not present
+    if (!document.getElementById('settings-status')) {
+      var statusDiv = document.createElement('div');
+      statusDiv.id = 'settings-status';
+      statusDiv.className = 'card';
+      statusDiv.style.cssText = 'max-width:600px;margin-top:16px';
+      var settingsCards = document.querySelector('#settings .card');
+      if (settingsCards && settingsCards.parentNode) {
+        settingsCards.parentNode.insertBefore(statusDiv, settingsCards.nextSibling);
+      }
+    }
+
     // Load saved settings from Firestore
     loadSettings();
+    renderSettingsStatus();
 
     // Wire save buttons
     var saveEmailBtn = document.getElementById('settings-save-email');
@@ -1706,6 +1860,51 @@
     if (saveEmailBtn) saveEmailBtn.addEventListener('click', function () { saveSettings('email'); });
     if (saveNotifBtn) saveNotifBtn.addEventListener('click', function () { saveSettings('notifications'); });
     if (saveAiBtn) saveAiBtn.addEventListener('click', function () { saveSettings('ai'); });
+
+    // Auto-reload settings on focus
+    if (!window._settingsFocusBound) {
+      window._settingsFocusBound = true;
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+          var active = document.querySelector('.section.active');
+          if (active && active.id === 'settings') {
+            loadSettings();
+            renderSettingsStatus();
+          }
+        }
+      });
+    }
+  }
+
+  function renderSettingsStatus() {
+    var el = document.getElementById('settings-status');
+    if (!el) return;
+    if (!window.FirebaseService) {
+      el.style.display = 'none';
+      return;
+    }
+    el.style.display = '';
+    FirebaseService.settings.get().then(function (data) {
+      if (!data) {
+        el.innerHTML = '<div class="card-title" style="font-size:13px">🔌 Connection Status</div>' +
+          '<div style="font-size:12px;color:var(--text3);padding:8px 0">No configuration loaded yet.</div>';
+        return;
+      }
+      var hasBrevo = !!(data.brevoApiKey || '').trim();
+      var hasOpenAI = !!(data.openaiApiKey || '').trim();
+      var hasSender = !!(data.brevoSenderEmail || '').trim();
+      var brevoOk = hasBrevo && hasSender;
+      el.innerHTML =
+        '<div class="card-title" style="font-size:13px">🔌 Connection Status</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0;font-size:12px">' +
+        '<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (brevoOk ? 'var(--green)' : 'var(--yellow)') + ';margin-right:6px"></span>Brevo Email: <strong>' + (brevoOk ? 'Configured' : hasBrevo ? 'Missing sender' : 'Not set') + '</strong></div>' +
+        '<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (hasOpenAI ? 'var(--green)' : 'var(--yellow)') + ';margin-right:6px"></span>OpenAI: <strong>' + (hasOpenAI ? 'Configured' : 'Not set') + '</strong></div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--text3);border-top:1px solid var(--border);padding-top:8px">Auto-reloads when this tab becomes visible</div>';
+    }).catch(function () {
+      el.innerHTML = '<div class="card-title" style="font-size:13px">🔌 Connection Status</div>' +
+        '<div style="font-size:12px;color:var(--red);padding:8px 0">⚠️ Could not reach Firestore</div>';
+    });
   }
 
   function loadSettings() {
@@ -1748,6 +1947,7 @@
     }
     FirebaseService.settings.save(data).then(function () {
       showToast('Settings saved');
+      renderSettingsStatus();
     }).catch(function () {
       showToast('Failed to save settings');
     });
@@ -2148,6 +2348,8 @@
         // Final score
         var finalScore = Math.round((score / total) * 100);
         AUDIT_RESULTS = { checks: checks, score: finalScore, total: total, passed: score };
+        AUDIT_SCORE_HISTORY.push({ score: finalScore, time: Date.now() });
+        if (AUDIT_SCORE_HISTORY.length > 20) AUDIT_SCORE_HISTORY.shift();
 
         showAuditResults(AUDIT_RESULTS);
       });
@@ -2169,11 +2371,36 @@
     if (scoreEl) {
       var scoreColor = audit.score >= 80 ? 'var(--green)' : audit.score >= 60 ? 'var(--yellow)' : 'var(--red)';
       var scoreLabel = audit.score >= 80 ? 'Ready to Deploy' : audit.score >= 60 ? 'Fix Warnings' : 'Fix Critical Issues';
+
+      // Trend
+      var trendHtml = '';
+      if (AUDIT_SCORE_HISTORY.length >= 2) {
+        var prev = AUDIT_SCORE_HISTORY[AUDIT_SCORE_HISTORY.length - 2].score;
+        var diff = audit.score - prev;
+        trendHtml = '<div style="font-size:14px;font-weight:700;color:' + (diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--text3)') + '">' + (diff > 0 ? '↑+' : diff < 0 ? '↓' : '→') + diff + '%</div>';
+      }
+
+      // History mini-chart
+      var historyHtml = '';
+      if (AUDIT_SCORE_HISTORY.length > 1) {
+        historyHtml = '<div style="display:flex;gap:4px;justify-content:center;margin-top:8px">';
+        AUDIT_SCORE_HISTORY.slice(-10).forEach(function (h, i) {
+          var hColor = h.score >= 80 ? 'var(--green)' : h.score >= 60 ? 'var(--yellow)' : 'var(--red)';
+          var barH = Math.max(6, (h.score / 100) * 30);
+          historyHtml += '<div style="width:10px;height:' + barH + 'px;background:' + hColor + ';border-radius:2px;opacity:' + (i === AUDIT_SCORE_HISTORY.slice(-10).length - 1 ? '1' : '0.35') + ';transition:height .3s" title="' + h.score + '% at ' + new Date(h.time).toLocaleTimeString() + '"></div>';
+        });
+        historyHtml += '</div>';
+      }
+
       scoreEl.style.display = 'block';
-      scoreEl.innerHTML = '<div class="card" style="text-align:center;padding:32px;border-top:4px solid ' + scoreColor + '">' +
+      scoreEl.innerHTML = '<div class="card" style="text-align:center;padding:24px;border-top:4px solid ' + scoreColor + '">' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:12px">' +
         '<div style="font-size:48px;font-weight:900;color:' + scoreColor + '">' + audit.score + '%</div>' +
-        '<div style="font-size:18px;font-weight:700;margin-top:4px">' + scoreLabel + '</div>' +
-        '<div style="font-size:13px;color:var(--text3);margin-top:4px">' + audit.passed + '/' + audit.total + ' checks passed</div>' +
+        trendHtml +
+        '</div>' +
+        '<div style="font-size:16px;font-weight:700;margin-top:2px">' + scoreLabel + '</div>' +
+        '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + audit.passed + '/' + audit.total + ' checks passed</div>' +
+        historyHtml +
         '</div>';
     }
 
@@ -2207,9 +2434,29 @@
 
   window.runAudit = runAudit;
 
+  /* Audit auto-refresh + score history */
+  var AUDIT_INTERVAL = null;
+  var AUDIT_SCORE_HISTORY = [];
+
+  function startAuditRefresh() {
+    if (AUDIT_INTERVAL) clearInterval(AUDIT_INTERVAL);
+    // Auto-run audit on tab switch
+    runAudit();
+    AUDIT_INTERVAL = setInterval(function () {
+      runAudit();
+    }, 30000);
+  }
+
+  function stopAuditRefresh() {
+    if (AUDIT_INTERVAL) { clearInterval(AUDIT_INTERVAL); AUDIT_INTERVAL = null; }
+  }
+
   /* ----------------------------------------
      PIPELINE TAB — Automated Lead Pipeline
      ---------------------------------------- */
+  var PIPELINE_INTERVAL = null;
+  var PIPELINE_HISTORY = [];
+
   function renderPipeline() {
     if (!window.Pipeline) return;
 
@@ -2220,12 +2467,40 @@
       if (raw) leads = Object.values(JSON.parse(raw));
     } catch (e) {}
 
-    // Also try to get from Firebase leads cache
     if (leads.length === 0 && window.Agents && Agents.getAllLeads) {
       leads = Agents.getAllLeads();
     }
 
     var queue = Pipeline.getPriorityQueue(leads);
+    var now = Date.now();
+
+    // Track history — one entry per minute max
+    if (!PIPELINE_HISTORY.length || now - PIPELINE_HISTORY[PIPELINE_HISTORY.length - 1].time > 60000) {
+      PIPELINE_HISTORY.push({
+        time: now,
+        total: leads.length,
+        hot: queue.hot.length,
+        warm: queue.warm.length,
+        cold: queue.cold.length,
+        value: queue.all.reduce(function (s, i) { return s + (i.estimatedDeal || 0); }, 0)
+      });
+      if (PIPELINE_HISTORY.length > 20) PIPELINE_HISTORY.shift();
+    }
+
+    // Trend calculation
+    var trendHtml = '';
+    if (PIPELINE_HISTORY.length >= 2) {
+      var first = PIPELINE_HISTORY[0];
+      var last = PIPELINE_HISTORY[PIPELINE_HISTORY.length - 1];
+      var trend = leads.length - (PIPELINE_HISTORY.length > 1 ? leads.length : 0);
+      trendHtml = '<div style="display:flex;gap:4px;align-items:end;height:40px;padding:8px 0">';
+      PIPELINE_HISTORY.forEach(function (h, i) {
+        var pct = leads.length > 0 ? (h.total / Math.max(leads.length, 1)) : 0;
+        var barH = Math.max(4, pct * 36);
+        trendHtml += '<div style="width:8px;height:' + barH + 'px;background:var(--accent);border-radius:2px;opacity:' + (0.3 + 0.7 * (i / PIPELINE_HISTORY.length)) + ';transition:height .3s" title="' + h.total + ' leads at ' + new Date(h.time).toLocaleTimeString() + '"></div>';
+      });
+      trendHtml += '</div>';
+    }
 
     // Status stats
     var statusEl = document.getElementById('pipeline-status');
@@ -2234,7 +2509,25 @@
         '<div class="stat-card" style="border-top:3px solid #ef4444"><div class="stat-value" style="color:#ef4444">' + queue.hot.length + '</div><div class="stat-label">🔥 Hot — Ready to Contact</div></div>' +
         '<div class="stat-card" style="border-top:3px solid #f59e0b"><div class="stat-value" style="color:#f59e0b">' + queue.warm.length + '</div><div class="stat-label">🟡 Warm — Nurture</div></div>' +
         '<div class="stat-card" style="border-top:3px solid #3b82f6"><div class="stat-value" style="color:#3b82f6">' + queue.cold.length + '</div><div class="stat-label">❄️ Cold — Segment</div></div>' +
-        '<div class="stat-card" style="border-top:3px solid #8b5cf6"><div class="stat-value" style="color:#8b5cf6">' + queue.coldSegments.length + '</div><div class="stat-label">📦 Campaign Segments</div></div>';
+        '<div class="stat-card" style="border-top:3px solid #8b5cf6"><div class="stat-value" style="color:#8b5cf6">' + queue.coldSegments.length + '</div><div class="stat-label">📦 Campaign Segments</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-value" style="color:var(--accent);font-size:18px">$' + queue.all.reduce(function (s, i) { return s + (i.estimatedDeal || 0); }, 0).toLocaleString() + '</div><div class="stat-label">💰 Pipeline Value</div></div>';
+    }
+
+    // Trend report
+    var reportContainer = document.getElementById('pipeline-report');
+    if (!reportContainer) {
+      reportContainer = document.createElement('div');
+      reportContainer.id = 'pipeline-report';
+      reportContainer.style.cssText = 'margin-bottom:16px';
+      if (statusEl && statusEl.parentNode) statusEl.parentNode.insertBefore(reportContainer, statusEl.nextSibling);
+    }
+    if (reportContainer && PIPELINE_HISTORY.length > 1) {
+      reportContainer.innerHTML = '<div class="card" style="padding:12px 16px">' +
+        '<div class="card-title" style="font-size:12px;margin-bottom:4px">📈 Lead Trend <span style="font-weight:400;color:var(--text3)">' + PIPELINE_HISTORY[0].total + ' → ' + PIPELINE_HISTORY[PIPELINE_HISTORY.length - 1].total + ' leads</span></div>' +
+        trendHtml +
+        '<div style="display:flex;gap:16px;font-size:11px;color:var(--text3);flex-wrap:wrap">' +
+        '<span>🔥 ' + queue.hot.length + ' hot</span><span>🟡 ' + queue.warm.length + ' warm</span><span>❄️ ' + queue.cold.length + ' cold</span>' +
+        '</div></div>';
     }
 
     // Priority Queue (top 20)
@@ -2360,6 +2653,15 @@
   }
 
   function refreshPipeline() { renderPipeline(); }
+
+  function startPipelineRefresh() {
+    if (PIPELINE_INTERVAL) clearInterval(PIPELINE_INTERVAL);
+    PIPELINE_INTERVAL = setInterval(function () { renderPipeline(); }, 10000);
+  }
+
+  function stopPipelineRefresh() {
+    if (PIPELINE_INTERVAL) { clearInterval(PIPELINE_INTERVAL); PIPELINE_INTERVAL = null; }
+  }
 
   window.runFullPipeline = runFullPipeline;
   window.refreshPipeline = refreshPipeline;
@@ -2657,19 +2959,37 @@
       }, 15000);
     }
 
-    // Pause/resume on visibility change
-    if (!document._smokeVisBound) {
-      document._smokeVisBound = true;
+    // Global visibility handler for all tab intervals
+    if (!window._visBound) {
+      window._visBound = true;
       document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
           if (SMOKE_INTERVAL) { clearInterval(SMOKE_INTERVAL); SMOKE_INTERVAL = null; }
-          if (SMOKE_LIVE_DOT) SMOKE_LIVE_DOT.style.background = 'var(--text3)';
+          if (PIPELINE_INTERVAL) { clearInterval(PIPELINE_INTERVAL); PIPELINE_INTERVAL = null; }
+          if (FINDER_INTERVAL) { clearInterval(FINDER_INTERVAL); FINDER_INTERVAL = null; }
+          if (STRATEGY_INTERVAL) { clearInterval(STRATEGY_INTERVAL); STRATEGY_INTERVAL = null; }
+          if (AUDIT_INTERVAL) { clearInterval(AUDIT_INTERVAL); AUDIT_INTERVAL = null; }
         } else {
-          runSmokeTest();
-          if (!SMOKE_INTERVAL) {
-            SMOKE_INTERVAL = setInterval(function () { runSmokeTest(); }, 15000);
+          var active = document.querySelector('.section.active');
+          if (!active) return;
+          if (active.id === 'smoke-test') {
+            runSmokeTest();
+            if (!SMOKE_INTERVAL) SMOKE_INTERVAL = setInterval(function () { runSmokeTest(); }, 15000);
           }
-          if (SMOKE_LIVE_DOT) SMOKE_LIVE_DOT.style.background = 'var(--green)';
+          if (active.id === 'pipeline-auto' || active.id === 'pipeline') {
+            renderPipeline();
+            if (!PIPELINE_INTERVAL) PIPELINE_INTERVAL = setInterval(function () { renderPipeline(); }, 10000);
+          }
+          if (active.id === 'finder') {
+            if (!FINDER_INTERVAL) FINDER_INTERVAL = setInterval(function () { renderFinderReport(); }, 15000);
+          }
+          if (active.id === 'strategy') {
+            if (!STRATEGY_INTERVAL) STRATEGY_INTERVAL = setInterval(function () { renderStrategyReport(); }, 30000);
+          }
+          if (active.id === 'audit') {
+            runAudit();
+            if (!AUDIT_INTERVAL) AUDIT_INTERVAL = setInterval(function () { runAudit(); }, 30000);
+          }
         }
       });
     }

@@ -326,10 +326,11 @@ window.Agents = (function () {
     var completed = 0;
     var allProspects = [];
 
-    // Try Google Places API first, fallback to templates
+    // Try Google Places API first, then web directory scraping, then templates
     var useRealAPI = false;
+    var useWebSearch = false;
 
-    // Check if API key is configured
+    // Check if Google Places API key is configured
     fetch('/api/places-search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -341,7 +342,20 @@ window.Agents = (function () {
       }
       runSearches();
     }).catch(function () {
-      runSearches();
+      // Try web directory scraping as fallback
+      fetch('/api/web-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keyword: 'plumbing service', location: 'New York' })
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        if (data.success && data.results && data.results.length) {
+          useWebSearch = true;
+          log('scout', 'web-search', 'Web directory scraping available — using real data', 'success');
+        }
+        runSearches();
+      }).catch(function () {
+        runSearches();
+      });
     });
 
     function runSearches() {
@@ -385,6 +399,50 @@ window.Agents = (function () {
               if (completed >= searches.length) finishScout();
             }).catch(function () {
               // Fallback to templates for this search
+              var prospects = generateProspects(search);
+              found += prospects.length;
+              allProspects = allProspects.concat(prospects);
+              completed++;
+              agent.tasksDone = completed;
+              if (completed >= searches.length) finishScout();
+            });
+          } else if (useWebSearch) {
+            // Use web directory scraping (Yellow Pages, Yelp, Google)
+            fetch('/api/web-search', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ keyword: search.keyword, location: 'United States' })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+              var prospects = (data.results || []).map(function (p) {
+                return {
+                  id: 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                  name: p.name,
+                  company: p.name,
+                  url: p.website || '',
+                  email: '',
+                  phone: p.phone || '',
+                  industry: search.industry,
+                  address: p.address || '',
+                  rating: p.rating || null,
+                  totalRatings: p.totalRatings || 0,
+                  source: 'Scout/Web Directory',
+                  status: 'New',
+                  score: 0,
+                  pipelineStage: 'prospect',
+                  segment: 'unclassified',
+                  createdAt: new Date().toISOString()
+                };
+              }).filter(function (p) { return p.url; });
+              found += prospects.length;
+              allProspects = allProspects.concat(prospects);
+              completed++;
+              agent.tasksDone = completed;
+              if (prospects.length > 0) {
+                log('scout', 'found', prospects.length + ' real prospects (web): "' + search.keyword + '"', 'success');
+              }
+              if (completed >= searches.length) finishScout();
+            }).catch(function () {
+              // Fallback to templates
               var prospects = generateProspects(search);
               found += prospects.length;
               allProspects = allProspects.concat(prospects);

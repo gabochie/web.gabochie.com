@@ -67,8 +67,8 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .logo svg{flex-shrink:0}
 .logo-text span{color:var(--accent)}
 .nav-link{color:var(--text-dim);margin-right:20px;font-weight:500;font-size:.9rem;transition:color .2s}
-.nav-link:hover{color:var(--accent)}
-.nav-link.active{color:var(--accent)}
+.nav-link:hover{color:var(--blue)}
+.nav-link.active{color:var(--blue)}
 
 /* HERO */
 .jobs-hero{padding:140px 0 60px;text-align:center}
@@ -87,20 +87,20 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .search-bar select:focus{border-color:var(--blue)}
 .search-bar .search-btn{height:48px;padding:0 28px}
 .toggle-group{display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;transition:all .2s;user-select:none;font-size:.85rem;font-weight:500;color:var(--text-dim)}
-.toggle-group.active{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.06)}
+.toggle-group.active{border-color:var(--blue);color:var(--blue);background:rgba(0,180,216,.06)}
 .toggle-group .toggle-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--text-muted);transition:all .2s}
-.toggle-group.active .toggle-dot{background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(34,197,94,.4)}
+.toggle-group.active .toggle-dot{background:var(--blue);border-color:var(--blue);box-shadow:0 0 8px rgba(0,180,216,.4)}
 .filter-stats{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:.82rem;color:var(--text-dim)}
 
 /* RESULTS */
 .jobs-results{padding:24px 0 80px}
 .job-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:14px;transition:all .25s;cursor:pointer}
-.job-card:hover{border-color:var(--accent);transform:translateX(4px);box-shadow:var(--shadow)}
-.job-card.highlighted{border-left:3px solid var(--yellow);background:rgba(245,158,11,.02)}
+.job-card:hover{border-color:var(--blue);transform:translateX(4px);box-shadow:var(--shadow)}
+.job-card.highlighted{border-left:3px solid var(--yellow);background:rgba(249,202,36,.03)}
 .job-card-header{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:10px}
 .job-title{font-size:1.1rem;font-weight:700;line-height:1.3;flex:1}
 .job-title a{color:var(--text);transition:color .2s}
-.job-card:hover .job-title a{color:var(--accent)}
+.job-card:hover .job-title a{color:var(--blue)}
 .job-meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:10px;font-size:.88rem;color:var(--text-dim)}
 .job-meta span{display:flex;align-items:center;gap:5px}
 .job-meta .meta-icon{opacity:.5}
@@ -110,15 +110,15 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .job-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
 .job-date{font-size:.78rem;color:var(--text-muted)}
 .job-save-btn{font-size:.78rem;padding:6px 14px;border-radius:100px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;font-weight:500}
-.job-save-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(230,57,70,.06)}
-.job-save-btn.saved{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3)}
+.job-save-btn:hover{border-color:var(--blue);color:var(--blue);background:rgba(0,180,216,.06)}
+.job-save-btn.saved{background:rgba(46,204,113,.12);color:var(--green);border-color:rgba(46,204,113,.3)}
 .job-apply-btn{font-size:.78rem;padding:6px 16px;border-radius:100px;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:all .2s;font-weight:600}
-.job-apply-btn:hover{background:var(--accent-dark)}
+.job-apply-btn:hover{background:var(--blue)}
 .source-badge{font-size:.7rem;padding:3px 10px;border-radius:100px;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border)}
 
 /* LOADING / EMPTY */
 .loading-state,.empty-state{text-align:center;padding:80px 20px;color:var(--text-dim)}
-.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-state h3{font-size:1.4rem;font-weight:700;margin-bottom:8px;color:var(--text)}
 .empty-state p{color:var(--text-dim);margin-bottom:20px}
@@ -131,7 +131,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 24px;font-size:.88rem;z-index:9999;opacity:0;transition:all .35s;pointer-events:none}
 .toast.show{opacity:1;bottom:120px}
 .toast.success{border-color:var(--green)}
-.toast.info{--accent:#6366f1}
+.toast.info{border-color:var(--blue)}
 .toast .toast-icon{margin-right:8px}
 
 /* RESPONSIVE */
@@ -150,7 +150,7 @@ footer{border-top:1px solid var(--border);padding:48px 0;color:var(--text-muted)
 footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
 footer h4{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:16px;text-transform:uppercase;letter-spacing:.06em}
 footer a{display:block;color:var(--text-dim);margin-bottom:8px;transition:color .2s}
-footer a:hover{color:var(--accent)}
+footer a:hover{color:var(--blue)}
 footer .footer-logo{font-size:1.2rem;font-weight:800;margin-bottom:8px;color:var(--text)}
 footer .footer-logo span{color:var(--accent)}
 footer .footer-desc{color:var(--text-dim);margin-bottom:20px;font-size:.85rem;line-height:1.6}
@@ -217,7 +217,7 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
     <div class="filter-stats">
       <div style="display:flex;align-items:center;gap:12px">
         <span id="resultCount">Enter a search term to find jobs</span>
-        <span class="live-badge" id="liveBadge" style="display:none;font-size:.72rem;padding:2px 10px;border-radius:100px;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);align-items:center;gap:5px">
+        <span class="live-badge" id="liveBadge" style="display:none;font-size:.72rem;padding:2px 10px;border-radius:100px;background:rgba(0,180,216,.1);color:var(--blue);border:1px solid rgba(0,180,216,.25);align-items:center;gap:5px">
           <span style="width:6px;height:6px;border-radius:50%;background:var(--blue);display:inline-block;animation:pulse 2s infinite"></span>
           <span>Live</span>
         </span>

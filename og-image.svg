@@ -3,13 +3,13 @@
   <rect x="60" y="60" width="1080" height="510" rx="24" fill="#121216" stroke="#1f1f28" stroke-width="2"/>
   <!-- GA Logo -->
   <g transform="translate(600,200) rotate(-45)">
-    <rect x="-40" y="-40" width="80" height="80" rx="12" fill="#e63946"/>
+    <rect x="-40" y="-40" width="80" height="80" rx="12" fill="#00ff88"/>
     <text x="0" y="8" text-anchor="middle" fill="#0b0b0f" font-family="system-ui" font-size="32" font-weight="800">GA</text>
   </g>
   <!-- Text -->
   <text x="600" y="340" text-anchor="middle" fill="#f0f0f0" font-family="system-ui" font-size="48" font-weight="800">Gideon Abochie</text>
   <text x="600" y="390" text-anchor="middle" fill="#8a8a95" font-family="system-ui" font-size="22">Revenue-Driven Growth Partner</text>
-  <text x="600" y="440" text-anchor="middle" fill="#e63946" font-family="system-ui" font-size="18" font-weight="600">10-15% of Revenue Lift • Pay Only When It Works</text>
+  <text x="600" y="440" text-anchor="middle" fill="#00ff88" font-family="system-ui" font-size="18" font-weight="600">Website Redesign &amp; CRO • Fixed-Price Packages</text>
   <!-- Footer -->
   <text x="600" y="500" text-anchor="middle" fill="#55555f" font-family="system-ui" font-size="14">gideonabochie.com</text>
 </svg>

@@ -167,13 +167,16 @@ label{display:block;font-size:.85rem;font-weight:500;color:var(--text-dim);margi
 .form-group{margin-bottom:16px}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(11,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
 nav .container{display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:800;letter-spacing:-.02em;text-decoration:none}
 .logo svg{flex-shrink:0}
 .logo-text span{color:var(--accent)}
-.nav-link{color:var(--text-dim);margin-right:20px;font-weight:500;font-size:.9rem;transition:color .2s}
+.nav-link{color:var(--text-dim);font-weight:500;font-size:.9rem;transition:color .2s;white-space:nowrap}
 .nav-link:hover{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:16px}
+.nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
 
 /* HERO */
 .hero{padding:160px 0 100px;position:relative}
@@ -338,7 +341,16 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
   .sticky-bar .bar-text{font-size:.8rem}
   nav .container{gap:12px}
   .btn-sm{padding:10px 16px;font-size:.82rem}
-  footer .container{grid-template-columns:1fr}
+  footer .container{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .nav-toggle{display:flex}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(0,0,0,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 24px;gap:12px;align-items:stretch}
+  .nav-links.open{display:flex}
+  .nav-links .nav-link{margin:0;padding:8px 0;font-size:.95rem}
+  .nav-links .btn{width:100%;justify-content:center;margin-top:4px}
+  .nav-toggle.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+  .nav-toggle.open span:nth-child(2){opacity:0}
+  .nav-toggle.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
 }
 </style>
 </head>
@@ -355,9 +367,14 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
       </svg>
       <span class="logo-text">Gideon <span>Abochie</span></span>
     </a>
-    <a href="services.html" class="nav-link">Services</a>
-    <a href="remote-jobs.html" class="nav-link">Remote Jobs</a>
-    <a href="#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="remote-jobs.html" class="nav-link">Remote Jobs</a>
+      <a href="#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
+    </div>
   </div>
 </nav>
 
@@ -1073,6 +1090,19 @@ document.querySelectorAll('.faq-q').forEach(function(q){
   q.addEventListener('click',function(){
     this.parentElement.classList.toggle('open');
   });
+});
+
+// NAV TOGGLE
+document.getElementById('navToggle').addEventListener('click',function(){
+  this.classList.toggle('open');
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.addEventListener('click',function(e){
+  var nav=document.getElementById('navLinks');
+  if(!e.target.closest('nav')&&nav.classList.contains('open')){
+    nav.classList.remove('open');
+    document.getElementById('navToggle').classList.remove('open');
+  }
 });
 
 // STICKY BAR

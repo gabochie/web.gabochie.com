@@ -61,14 +61,17 @@ label{display:block;font-size:.85rem;font-weight:500;color:var(--text-dim);margi
 .badge-onsite{background:rgba(255,71,87,.1);color:var(--red);border:1px solid rgba(255,71,87,.2)}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(11,11,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 nav .container{display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:800;letter-spacing:-.02em;text-decoration:none}
 .logo svg{flex-shrink:0}
 .logo-text span{color:var(--accent)}
-.nav-link{color:var(--text-dim);margin-right:20px;font-weight:500;font-size:.9rem;transition:color .2s}
-.nav-link:hover{color:var(--blue)}
-.nav-link.active{color:var(--blue)}
+.nav-link{color:var(--text-dim);font-weight:500;font-size:.9rem;transition:color .2s;white-space:nowrap;text-decoration:none}
+.nav-link:hover{color:var(--accent)}
+.nav-link.active{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:16px}
+.nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
 
 /* HERO */
 .jobs-hero{padding:140px 0 60px;text-align:center}
@@ -144,6 +147,25 @@ nav .container{display:flex;align-items:center;justify-content:space-between}
   .job-meta{flex-direction:column;gap:4px}
   .job-card-footer{flex-direction:column;gap:10px;align-items:stretch}
   footer .container{grid-template-columns:1fr}
+  .hero-badges{gap:6px}
+  .hero-badges span{padding:4px 10px;font-size:.72rem}
+  .nav-toggle{display:flex}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(0,0,0,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 24px;gap:12px;align-items:stretch}
+  .nav-links.open{display:flex}
+  .nav-links .nav-link{margin:0;padding:8px 0;font-size:.95rem}
+  .nav-links .btn{width:100%;justify-content:center;margin-top:4px}
+  .nav-toggle.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+  .nav-toggle.open span:nth-child(2){opacity:0}
+  .nav-toggle.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+}
+@media(max-width:480px){
+  .jobs-hero h1{font-size:1.6rem}
+  .jobs-hero .subtitle{font-size:.95rem}
+  .search-bar{flex-direction:column;gap:8px}
+  .search-bar input,.search-bar select{min-width:100%}
+  .hero-badges{flex-wrap:wrap;justify-content:center}
+  .job-card{padding:16px}
+  .remote-tag{font-size:.7rem;padding:3px 8px}
 }
 
 /* FOOTER */
@@ -173,9 +195,14 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
       </svg>
       <span class="logo-text">Gideon <span>Abochie</span></span>
     </a>
-    <a href="services.html" class="nav-link">Services</a>
-    <a href="remote-jobs.html" class="nav-link active">Remote Jobs</a>
-    <a href="index.html#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="remote-jobs.html" class="nav-link active">Remote Jobs</a>
+      <a href="index.html#audit" class="btn btn-primary btn-sm">Get Free Audit →</a>
+    </div>
   </div>
 </nav>
 
@@ -432,6 +459,17 @@ function escapeStr(s) {
 // Auto-search on load
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(searchJobs, 300);
+});
+document.getElementById('navToggle').addEventListener('click',function(){
+  this.classList.toggle('open');
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.addEventListener('click',function(e){
+  var nav=document.getElementById('navLinks');
+  if(!e.target.closest('nav')&&nav.classList.contains('open')){
+    nav.classList.remove('open');
+    document.getElementById('navToggle').classList.remove('open');
+  }
 });
 </script>
 </body>

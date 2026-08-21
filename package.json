@@ -1,5 +1,5 @@
 {
-  "name": "gideonabochie.com",
+  "name": "web.gabochie.com",
   "version": "1.0.0",
   "description": "",
   "main": "agents.js",
@@ -13,16 +13,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gabochie/gideonabochie-com.git"
+    "url": "git+https://github.com/gabochie/web.gabochie.com.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/gabochie/gideonabochie-com/issues"
+    "url": "https://github.com/gabochie/web.gabochie.com/issues"
   },
-  "homepage": "https://github.com/gabochie/gideonabochie-com#readme",
+  "homepage": "https://github.com/gabochie/web.gabochie.com#readme",
   "devDependencies": {
     "eslint": "^8.57.1"
   }

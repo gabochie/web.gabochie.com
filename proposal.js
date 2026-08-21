@@ -138,7 +138,7 @@ window.Proposal = (function () {
       '<li>See measurable results within 60-90 days</li></ol>' +
       '<br>' +
       '<p style="color:var(--text2);font-size:12px">This proposal is valid for 30 days. ' +
-      'Prepared by <strong>Gideon Abochie</strong> | gideonabochie.com</p>';
+      'Prepared by <strong>Web Gabochie</strong> | web.gabochie.com</p>';
   }
 
   function esc(str) {

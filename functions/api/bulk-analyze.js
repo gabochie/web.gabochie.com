@@ -193,6 +193,6 @@ function generateOutreach(analysis, contact, url) {
   const topIssues = issues.length ? issues.map(i => '• ' + i).join('\n') : '• Opportunities for improvement';
   return {
     subject: `Quick question about your website`,
-    body: `Hi ${contactName},\n\nI analyzed your website and found some conversion opportunities:\n${topIssues}\n• Score: ${score}/100\n\nOur clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call?\n\nBest,\nGideon\n+233 243 262 019`
+    body: `Hi ${contactName},\n\nI analyzed your website and found some conversion opportunities:\n${topIssues}\n• Score: ${score}/100\n\nOur clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call?\n\nBest,\nWeb Gabochie\n+233 243 262 019`
   };
 }

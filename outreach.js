@@ -10,49 +10,49 @@ window.Outreach = (function () {
       name: 'Ad Spend + Low Conversion',
       category: 'Cold — High Intent',
       subject: 'You\'re leaving money on the table, [Company]',
-      body: 'Hi [Name],\n\nI noticed [Company] is running paid ads — smart move. But here\'s the thing: your landing pages are converting at [CVR]%, while the industry benchmark is 3.5%.\n\nThat means for every $1,000 you spend on ads, roughly $400 is going to waste.\n\nWe specialize in closing that gap. Our clients typically see 40-60% improvement in conversion rates within 90 days.\n\nWant me to run a quick conversion audit on your current funnel? No cost, no obligation.\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nI noticed [Company] is running paid ads — smart move. But here\'s the thing: your landing pages are converting at [CVR]%, while the industry benchmark is 3.5%.\n\nThat means for every $1,000 you spend on ads, roughly $400 is going to waste.\n\nWe specialize in closing that gap. Our clients typically see 40-60% improvement in conversion rates within 90 days.\n\nWant me to run a quick conversion audit on your current funnel? No cost, no obligation.\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Competitor Automation Gap',
       category: 'Cold — Competitive',
       subject: '[Competitor] is automating. Are you?',
-      body: 'Hi [Name],\n\nI was looking at how [Competitor] handles their lead follow-up — they\'ve automated their email sequences, lead scoring, and appointment booking.\n\nMost [Industry] companies are still doing this manually, which means leads slip through the cracks.\n\nWe build automation systems that nurture leads 24/7 without your team lifting a finger. Interested in seeing what this would look like for [Company]?\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nI was looking at how [Competitor] handles their lead follow-up — they\'ve automated their email sequences, lead scoring, and appointment booking.\n\nMost [Industry] companies are still doing this manually, which means leads slip through the cracks.\n\nWe build automation systems that nurture leads 24/7 without your team lifting a finger. Interested in seeing what this would look like for [Company]?\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Revenue Opportunity Math',
       category: 'Cold — Value-First',
       subject: 'Quick math for [Company]',
-      body: 'Hi [Name],\n\nQuick math:\n\n• Your estimated monthly traffic: [Traffic] visitors\n• Your current conversion rate: [CVR]%\n• That\'s roughly [Leads] leads/month\n\nIf we lift your conversion to 3.5% (our average), you\'d get [PotentialLeads] leads/month — an extra [AdditionalLeads] leads.\n\nAt your average deal value, that\'s approximately $[MonthlyRevenue]/month in additional pipeline.\n\nWorth a 15-minute call to explore?\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nQuick math:\n\n• Your estimated monthly traffic: [Traffic] visitors\n• Your current conversion rate: [CVR]%\n• That\'s roughly [Leads] leads/month\n\nIf we lift your conversion to 3.5% (our average), you\'d get [PotentialLeads] leads/month — an extra [AdditionalLeads] leads.\n\nAt your average deal value, that\'s approximately $[MonthlyRevenue]/month in additional pipeline.\n\nWorth a 15-minute call to explore?\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Follow-Up — Audit Results',
       category: 'Follow-Up',
       subject: 'Re: [Company] conversion audit',
-      body: 'Hi [Name],\n\nJust following up on the conversion audit I ran for [Company]. Here\'s what I found:\n\n• Conversion score: [Score]/100\n• Key issues: [Issue Count]\n• Estimated monthly lost revenue: $[LostRevenue]\n\nThe good news — these are all fixable. Our clients typically see 40-60% improvement within 90 days.\n\nCan I walk you through the findings? No obligation.\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nJust following up on the conversion audit I ran for [Company]. Here\'s what I found:\n\n• Conversion score: [Score]/100\n• Key issues: [Issue Count]\n• Estimated monthly lost revenue: $[LostRevenue]\n\nThe good news — these are all fixable. Our clients typically see 40-60% improvement within 90 days.\n\nCan I walk you through the findings? No obligation.\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Follow-Up — 1 Week',
       category: 'Follow-Up',
       subject: 'Checking in — [Company] growth',
-      body: 'Hi [Name],\n\nJust circling back. I know timing is everything.\n\nIf now isn\'t right, I\'m happy to reconnect next quarter. In the meantime, I put together a quick projection of what a 1% conversion lift would mean for [Company]\'s revenue.\n\nWant me to send it over?\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nJust circling back. I know timing is everything.\n\nIf now isn\'t right, I\'m happy to reconnect next quarter. In the meantime, I put together a quick projection of what a 1% conversion lift would mean for [Company]\'s revenue.\n\nWant me to send it over?\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Proposal Send',
       category: 'Proposal',
       subject: '[Company] — Conversion System Proposal',
-      body: 'Hi [Name],\n\nAs promised, here\'s the conversion system proposal for [Company]. It includes:\n\n• Current funnel analysis\n• Revenue opportunity projection\n• Redesign + CRO + Automation system\n• ROI timeline (month 1-12)\n• Pricing: setup + monthly retainer\n\nThe short version: for a $[Setup] setup + $[Monthly]/mo, we project $[Revenue]/mo in additional pipeline within 6 months.\n\nTake a look and let me know if you have questions.\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nAs promised, here\'s the conversion system proposal for [Company]. It includes:\n\n• Current funnel analysis\n• Revenue opportunity projection\n• Redesign + CRO + Automation system\n• ROI timeline (month 1-12)\n• Pricing: setup + monthly retainer\n\nThe short version: for a $[Setup] setup + $[Monthly]/mo, we project $[Revenue]/mo in additional pipeline within 6 months.\n\nTake a look and let me know if you have questions.\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Post-Proposal Follow-Up',
       category: 'Proposal',
       subject: 'Re: [Company] proposal — thoughts?',
-      body: 'Hi [Name],\n\nJust checking in on the proposal. Any questions on the ROI projections or the approach?\n\nHappy to hop on a call to walk through it together.\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nJust checking in on the proposal. Any questions on the ROI projections or the approach?\n\nHappy to hop on a call to walk through it together.\n\nBest,\nWeb Gabochie'
     },
     {
       name: 'Referral Request',
       category: 'Relationship',
       subject: 'Quick favor',
-      body: 'Hi [Name],\n\nHope you\'re doing well. I\'m expanding my work with [Industry] companies that are spending on paid ads but need better conversion systems.\n\nAnyone come to mind? I\'d really appreciate the introduction.\n\nBest,\nGideon'
+      body: 'Hi [Name],\n\nHope you\'re doing well. I\'m expanding my work with [Industry] companies that are spending on paid ads but need better conversion systems.\n\nAnyone come to mind? I\'d really appreciate the introduction.\n\nBest,\nWeb Gabochie'
     }
   ];
 

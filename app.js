@@ -748,7 +748,7 @@
       var outreachContainer = document.getElementById('finder-outreach');
       if (outreachContainer) {
         outreachContainer.style.display = '';
-        var msg = window.Agents ? window.Agents.generateMessage(r) : { subject: 'Quick question about ' + r.name, body: 'Hi ' + (r.contactName || 'there') + ',\n\nI noticed your website could use some improvements. Score: ' + (r.qualScore || 0) + '/100.\n\nBest,\nGideon' };
+        var msg = window.Agents ? window.Agents.generateMessage(r) : { subject: 'Quick question about ' + r.name, body: 'Hi ' + (r.contactName || 'there') + ',\n\nI noticed your website could use some improvements. Score: ' + (r.qualScore || 0) + '/100.\n\nBest,\nWeb Gabochie' };
         document.getElementById('finder-outreach-content').innerHTML =
           '<div style="margin-bottom:8px"><strong>Subject:</strong> ' + esc(msg.subject) + '</div>' +
           '<pre style="white-space:pre-wrap;background:var(--surface2);padding:12px;border-radius:8px;font-size:13px;max-height:300px;overflow-y:auto">' + esc(msg.body) + '</pre>';
@@ -1032,7 +1032,7 @@
 
     if (channel === 'email') {
       var subject = document.getElementById('out-subject').value || 'Quick question about your website';
-      var html = document.getElementById('out-html').value || '<p>Hi {contactName},</p><p>I noticed {company}\'s website could use improvements.</p><p>Best,<br>Gideon</p>';
+      var html = document.getElementById('out-html').value || '<p>Hi {contactName},</p><p>I noticed {company}\'s website could use improvements.</p><p>Best,<br>Web Gabochie</p>';
 
       var scheduledFor = Date.now();
       if (schedule === '1h') scheduledFor = Date.now() + 3600000;
@@ -1184,10 +1184,10 @@
     if (!container) return;
 
     var templates = [
-      { name: 'Initial — Hot Lead', subject: '{company} — quick question about your website', body: 'Hi {contactName},\n\nI ran a quick analysis of {company}\'s website and spotted some conversion opportunities.\n\nKey findings:\n• Current score: {score}/100 (industry avg: 45)\n\nOur {industry} clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call?\n\nBest,\nGideon' },
-      { name: 'Value-Add Follow-Up', subject: 'Re: {company} — thought you\'d find this useful', body: 'Hi {contactName},\n\nFollowing up — I put together a quick breakdown of what a 1% conversion lift would mean for {company}.\n\nThat\'s real revenue walking out the door.\n\nWant me to send the full breakdown?\n\nBest,\nGideon' },
-      { name: 'Case Study', subject: 'How a {industry} company got 47% more leads', body: 'Hi {contactName},\n\nThought you\'d find this relevant — we recently helped a {industry} company similar to {company}:\n\n• Before: 2.1% conversion rate\n• After: 3.4% conversion rate\n• Result: 47% more qualified leads in 90 days\n\nHappy to walk you through what we did. 15 minutes, no obligation.\n\nBest,\nGideon' },
-      { name: 'Breakup', subject: 'Closing the loop on {company}', body: 'Hi {contactName},\n\nI\'ve reached out a few times about {company}\'s website — I assume the timing isn\'t right.\n\nI\'ll close this thread for now. If things change, you know where to find me.\n\nBest,\nGideon' }
+      { name: 'Initial — Hot Lead', subject: '{company} — quick question about your website', body: 'Hi {contactName},\n\nI ran a quick analysis of {company}\'s website and spotted some conversion opportunities.\n\nKey findings:\n• Current score: {score}/100 (industry avg: 45)\n\nOur {industry} clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call?\n\nBest,\nWeb Gabochie' },
+      { name: 'Value-Add Follow-Up', subject: 'Re: {company} — thought you\'d find this useful', body: 'Hi {contactName},\n\nFollowing up — I put together a quick breakdown of what a 1% conversion lift would mean for {company}.\n\nThat\'s real revenue walking out the door.\n\nWant me to send the full breakdown?\n\nBest,\nWeb Gabochie' },
+      { name: 'Case Study', subject: 'How a {industry} company got 47% more leads', body: 'Hi {contactName},\n\nThought you\'d find this relevant — we recently helped a {industry} company similar to {company}:\n\n• Before: 2.1% conversion rate\n• After: 3.4% conversion rate\n• Result: 47% more qualified leads in 90 days\n\nHappy to walk you through what we did. 15 minutes, no obligation.\n\nBest,\nWeb Gabochie' },
+      { name: 'Breakup', subject: 'Closing the loop on {company}', body: 'Hi {contactName},\n\nI\'ve reached out a few times about {company}\'s website — I assume the timing isn\'t right.\n\nI\'ll close this thread for now. If things change, you know where to find me.\n\nBest,\nWeb Gabochie' }
     ];
 
     container.innerHTML = templates.map(function (t) {
@@ -1273,7 +1273,7 @@
           'conversion-optimized websites that drive real results.\n\n' +
           'Would you be open to a quick 10-minute call this week? I\'d love to share some ' +
           'ideas specific to your business.\n\n' +
-          'Best regards,\nGideon Abochie\nGA Web Design' +
+          'Best regards,\nWeb Gabochie\nGA Web Design' +
           '<button class="btn btn-outline btn-xs copy-btn" style="position:absolute;top:8px;right:8px" onclick="navigator.clipboard && navigator.clipboard.writeText(this.parentElement.textContent.replace(\'Copy\',\'\').trim()).then(function(){showToast(\'Copied!\',\'success\')})">📋 Copy</button>' +
         '</div>' +
       '</div>' +
@@ -1609,7 +1609,7 @@
 
     // Phase 6: Launch
     { id: 'rm_26', phase: 'launch', name: 'Delete Netlify site', desc: 'Remove old Netlify site, cancel if on paid plan', status: 'Todo', priority: 'high', due: '2026-07-10' },
-    { id: 'rm_27', phase: 'launch', name: 'DNS final verification', desc: 'Verify gideonabochie.com + www both resolve to CF Pages', status: 'Todo', priority: 'critical', due: '2026-07-10' },
+    { id: 'rm_27', phase: 'launch', name: 'DNS final verification', desc: 'Verify web.gabochie.com + www both resolve to CF Pages', status: 'Todo', priority: 'critical', due: '2026-07-10' },
     { id: 'rm_28', phase: 'launch', name: 'Performance audit', desc: 'Lighthouse 90+ on all pages, Core Web Vitals pass', status: 'Todo', priority: 'high', due: '2026-07-11' },
     { id: 'rm_29', phase: 'launch', name: 'Security audit', desc: 'Verify CSP, HSTS, X-Frame-Options, no mixed content', status: 'Todo', priority: 'high', due: '2026-07-11' },
     { id: 'rm_30', phase: 'launch', name: 'Ship it 🚀', desc: 'Everything wired, tested, and live on Cloudflare Pages', status: 'Todo', priority: 'critical', due: '2026-07-12' }
@@ -2258,7 +2258,7 @@
     var period = document.getElementById('report-period').value;
     showToast('📧 Sending report...');
     Reporting.sendScheduledReport(period).then(function () {
-      showToast('✅ Report sent to info@gideonabochie.com');
+      showToast('✅ Report sent to web@gabochie.com');
     }).catch(function () {
       showToast('❌ Failed — check Brevo API key in Settings');
     });
@@ -3622,7 +3622,7 @@
   }
 
   function renderOfferEmailPreview(lead, offer) {
-    var msg = window.Agents ? window.Agents.generateMessage(lead) : { subject: 'Quick question', body: 'Hi there,\n\nWould you like a free website audit?\n\nBest,\nGideon' };
+    var msg = window.Agents ? window.Agents.generateMessage(lead) : { subject: 'Quick question', body: 'Hi there,\n\nWould you like a free website audit?\n\nBest,\nWeb Gabochie' };
     var withOffer = window.Offers.injectOfferIntoMessage(msg.body, offer);
     var subject = msg.subject + ' [Includes ' + offer.headline + ']';
     return '<div class="card" style="margin-top:12px">' +

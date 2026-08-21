@@ -53,44 +53,44 @@ window.Agents = (function () {
     initial: {
       hot: {
         subject: '{company} — quick question about your website',
-        body: 'Hi {contactName},\n\nI ran a quick analysis of {company}\'s website and spotted some conversion opportunities that could significantly impact your revenue.\n\nKey findings:\n{topIssues}\n• Current score: {score}/100 (industry avg: 45)\n\nOur {industry} clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call to discuss? I can share the full analysis.\n\nBest,\nGideon\n+233 243 262 019'
+        body: 'Hi {contactName},\n\nI ran a quick analysis of {company}\'s website and spotted some conversion opportunities that could significantly impact your revenue.\n\nKey findings:\n{topIssues}\n• Current score: {score}/100 (industry avg: 45)\n\nOur {industry} clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call to discuss? I can share the full analysis.\n\nBest,\nWeb Gabochie\n+233 243 262 019'
       },
       warm: {
         subject: '{company} website — opportunity I noticed',
-        body: 'Hi {contactName},\n\nI specialize in helping {industry} companies improve their online presence and conversion rates.\n\nI noticed a few areas on {company}\'s website that could be optimized:\n{topIssues}\n• Score: {score}/100\n\nHappy to share a quick audit if you\'re interested.\n\nBest,\nGideon'
+        body: 'Hi {contactName},\n\nI specialize in helping {industry} companies improve their online presence and conversion rates.\n\nI noticed a few areas on {company}\'s website that could be optimized:\n{topIssues}\n• Score: {score}/100\n\nHappy to share a quick audit if you\'re interested.\n\nBest,\nWeb Gabochie'
       },
       cold: {
         subject: 'Quick question about {company}',
-        body: 'Hi {contactName},\n\nI help {industry} businesses modernize their websites and increase conversions.\n\nWould you be open to a free website audit? Takes 2 minutes.\n\nBest,\nGideon'
+        body: 'Hi {contactName},\n\nI help {industry} businesses modernize their websites and increase conversions.\n\nWould you be open to a free website audit? Takes 2 minutes.\n\nBest,\nWeb Gabochie'
       }
     },
     'value-add': {
       subject: 'Re: {company} — thought you\'d find this useful',
-      body: 'Hi {contactName},\n\nFollowing up — I put together a quick breakdown of what a 1% conversion lift would mean for {company}:\n\n• Current estimated monthly traffic: {traffic} visitors\n• At {score}/100, you\'re leaving conversions on the table\n• A 1% lift = ~{potentialLeads} extra leads/month\n\nThat\'s real revenue walking out the door.\n\nWant me to send the full breakdown?\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nFollowing up — I put together a quick breakdown of what a 1% conversion lift would mean for {company}:\n\n• Current estimated monthly traffic: {traffic} visitors\n• At {score}/100, you\'re leaving conversions on the table\n• A 1% lift = ~{potentialLeads} extra leads/month\n\nThat\'s real revenue walking out the door.\n\nWant me to send the full breakdown?\n\nBest,\nWeb Gabochie'
     },
     'check-in': {
       subject: 'Re: {company} — checking in',
-      body: 'Hi {contactName},\n\nJust circling back on my earlier note about {company}\'s website.\n\nI know timing is everything — if now isn\'t right, happy to reconnect next quarter.\n\nIn the meantime, here\'s a 2-minute read on how {industry} companies are boosting conversions in 2026: [link]\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nJust circling back on my earlier note about {company}\'s website.\n\nI know timing is everything — if now isn\'t right, happy to reconnect next quarter.\n\nIn the meantime, here\'s a 2-minute read on how {industry} companies are boosting conversions in 2026: [link]\n\nBest,\nWeb Gabochie'
     },
     'case-study': {
       subject: 'How a {industry} company got 47% more leads',
-      body: 'Hi {contactName},\n\nThought you\'d find this relevant — we recently helped a {industry} company similar to {company}:\n\n• Before: 2.1% conversion rate, outdated design\n• After: 3.4% conversion rate, modern redesign\n• Result: 47% more qualified leads in 90 days\n\nThey were in a similar spot — great service, but the website wasn\'t converting.\n\nHappy to walk you through what we did. 15 minutes, no obligation.\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nThought you\'d find this relevant — we recently helped a {industry} company similar to {company}:\n\n• Before: 2.1% conversion rate, outdated design\n• After: 3.4% conversion rate, modern redesign\n• Result: 47% more qualified leads in 90 days\n\nThey were in a similar spot — great service, but the website wasn\'t converting.\n\nHappy to walk you through what we did. 15 minutes, no obligation.\n\nBest,\nWeb Gabochie'
     },
     urgency: {
       subject: '{company} — last thought before I move on',
-      body: 'Hi {contactName},\n\nI don\'t want to be a pest, so this is my last note.\n\nI genuinely believe {company} is leaving money on the table with the current website. The score ({score}/100) tells the story.\n\nIf you ever want to revisit this, I\'m here. No hard feelings either way.\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nI don\'t want to be a pest, so this is my last note.\n\nI genuinely believe {company} is leaving money on the table with the current website. The score ({score}/100) tells the story.\n\nIf you ever want to revisit this, I\'m here. No hard feelings either way.\n\nBest,\nWeb Gabochie'
     },
     breakup: {
       subject: 'Closing the loop on {company}',
-      body: 'Hi {contactName},\n\nI\'ve reached out a few times about {company}\'s website — I assume the timing isn\'t right.\n\nI\'ll close this thread for now. If things change, you know where to find me.\n\nWishing you and the team all the best.\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nI\'ve reached out a few times about {company}\'s website — I assume the timing isn\'t right.\n\nI\'ll close this thread for now. If things change, you know where to find me.\n\nWishing you and the team all the best.\n\nBest,\nWeb Gabochie'
     },
     meeting: {
       subject: 'Let\'s meet — {company} growth strategy',
-      body: 'Hi {contactName},\n\nI\'d love to schedule a quick 15-minute call to walk through the conversion analysis for {company}.\n\nHere\'s what I\'ll cover:\n• Your current website score and gaps\n• Revenue opportunity projection\n• How our {industry} clients typically see 40-60% improvement\n\nPick a time that works: [calendar link]\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nI\'d love to schedule a quick 15-minute call to walk through the conversion analysis for {company}.\n\nHere\'s what I\'ll cover:\n• Your current website score and gaps\n• Revenue opportunity projection\n• How our {industry} clients typically see 40-60% improvement\n\nPick a time that works: [calendar link]\n\nBest,\nWeb Gabochie'
     },
     proposal: {
       subject: '{company} — Conversion System Proposal',
-      body: 'Hi {contactName},\n\nAs promised, here\'s the conversion system proposal for {company}:\n\n• Current funnel analysis\n• Revenue opportunity projection\n• Redesign + CRO + Automation system\n• ROI timeline (month 1-12)\n• Pricing: setup + monthly retainer\n\nThe short version: for a $7,500 setup + $3,000/mo, we project $15K/mo in additional pipeline within 6 months.\n\nTake a look and let me know if you have questions.\n\nBest,\nGideon'
+      body: 'Hi {contactName},\n\nAs promised, here\'s the conversion system proposal for {company}:\n\n• Current funnel analysis\n• Revenue opportunity projection\n• Redesign + CRO + Automation system\n• ROI timeline (month 1-12)\n• Pricing: setup + monthly retainer\n\nThe short version: for a $7,500 setup + $3,000/mo, we project $15K/mo in additional pipeline within 6 months.\n\nTake a look and let me know if you have questions.\n\nBest,\nWeb Gabochie'
     }
   };
 

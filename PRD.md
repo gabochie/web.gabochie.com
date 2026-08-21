@@ -1,8 +1,8 @@
 # Product Requirements Document (PRD)
-## Gideon Abochie — Conversion-Focused Web Design Sales Platform
+## Web Gabochie — Conversion-Focused Web Design Sales Platform
 **Version:** 4.0  
 **Last Updated:** July 5, 2026  
-**Author:** Gideon Abochie
+**Author:** Web Gabochie
 
 ---
 
@@ -28,7 +28,7 @@ A production-grade sales intelligence platform for a website redesign + CRO agen
 ## 2. Folder Structure
 
 ```
-gideonabochie.com/
+web.gabochie.com/
 ├── index.html              # Public marketing site (conversion-focused)
 ├── admin.html              # Admin dashboard (NOT public-facing)
 ├── admin.css               # Dashboard styles (sidebar, roadmap, voice panel)
@@ -89,7 +89,7 @@ gideonabochie.com/
 - Company dropdown (16 companies with redesigns)
 - Password authentication (shared: `nology2026`)
 - After login: company info, redesign preview link, feedback form
-- Feedback → WhatsApp (`+233243262019`) + email (`gideon@gideonabochie.com`)
+- Feedback → WhatsApp (`+233243262019`) + email (`gideon@web.gabochie.com`)
 
 ### 3.4 Pricing Tiers
 | Tier | Setup | Monthly | Includes |
@@ -227,7 +227,7 @@ gideonabochie.com/
 - Used for: Client feedback, contact form, lead capture
 
 ### 7.2 Email
-- Address: `gideon@gideonabochie.com`
+- Address: `gideon@web.gabochie.com`
 - Used for: Client feedback, contact form, lead capture
 
 ---

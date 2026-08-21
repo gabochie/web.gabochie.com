@@ -347,8 +347,8 @@ window.Automation = (function () {
           subject: subject,
           htmlContent: htmlBody,
           apiKey: settings.brevoApiKey || '',
-          senderName: settings.brevoSenderName || 'Gideon Abochie',
-          senderEmail: settings.brevoSenderEmail || 'info@gideonabochie.com'
+          senderName: settings.brevoSenderName || 'Web Gabochie',
+          senderEmail: settings.brevoSenderEmail || 'web@gabochie.com'
         })
       });
     }).then(function (r) { return r.json(); });
@@ -635,19 +635,19 @@ window.Automation = (function () {
           var templates = {
             welcome: {
               subject: 'Welcome to GA — Let\'s Build Something Great',
-              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h1 style="color:#e63946">Welcome, {lead.name}! 🎉</h1><p>We\'re thrilled to work with {lead.company} on your website redesign.</p><p><strong>What happens next:</strong></p><ol><li>Kickoff call this week</li><li>Strategy & audit (Week 1-2)</li><li>Design & build (Week 3-8)</li><li>Launch & optimize (Week 9)</li></ol><p>Questions? Reply to this email or call +233 243 262 019.</p><p>— Gideon</p></div>'
+              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h1 style="color:#e63946">Welcome, {lead.name}! 🎉</h1><p>We\'re thrilled to work with {lead.company} on your website redesign.</p><p><strong>What happens next:</strong></p><ol><li>Kickoff call this week</li><li>Strategy & audit (Week 1-2)</li><li>Design & build (Week 3-8)</li><li>Launch & optimize (Week 9)</li></ol><p>Questions? Reply to this email or call +233 243 262 019.</p><p>— Web Gabochie</p></div>'
             },
             proposal: {
               subject: '{lead.company} — Your Conversion System Proposal',
-              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h1 style="color:#e63946">Your Proposal is Ready</h1><p>Hi {lead.name},</p><p>As promised, here\'s the conversion system proposal for {lead.company}.</p><p>Key highlights:</p><ul><li>Current website score: {lead.score}/100</li><li>Projected improvement: 40-60% more leads</li><li>ROI timeline: Month 1-12</li></ul><p>Take a look and let me know if you have questions.</p><p>— Gideon</p></div>'
+              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h1 style="color:#e63946">Your Proposal is Ready</h1><p>Hi {lead.name},</p><p>As promised, here\'s the conversion system proposal for {lead.company}.</p><p>Key highlights:</p><ul><li>Current website score: {lead.score}/100</li><li>Projected improvement: 40-60% more leads</li><li>ROI timeline: Month 1-12</li></ul><p>Take a look and let me know if you have questions.</p><p>— Web Gabochie</p></div>'
             },
             reengagement: {
               subject: '{lead.company} — Quick question about your website',
-              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h2>Hi {lead.name},</h2><p>I noticed it\'s been a while since we last connected about {lead.company}\'s website.</p><p>I put together a quick analysis of what\'s changed in the {lead.industry} space — thought you might find it useful.</p><p><strong>Want me to send the updated report?</strong></p><p>— Gideon</p></div>'
+              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h2>Hi {lead.name},</h2><p>I noticed it\'s been a while since we last connected about {lead.company}\'s website.</p><p>I put together a quick analysis of what\'s changed in the {lead.industry} space — thought you might find it useful.</p><p><strong>Want me to send the updated report?</strong></p><p>— Web Gabochie</p></div>'
             },
             'referral-request': {
               subject: 'Quick favor, {lead.name}?',
-              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h2>Hi {lead.name},</h2><p>Hope {lead.company} is doing great!</p><p>Quick question — do you know any other {lead.industry} businesses that could benefit from a website upgrade?</p><p>If so, I\'d love an introduction. And as a thank you, I\'ll offer them <strong>10% off setup</strong> and <strong>you $500 credit</strong> for each referral that closes.</p><p>Just hit reply with a name and I\'ll take it from there.</p><p>— Gideon</p></div>'
+              html: '<div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;padding:32px"><h2>Hi {lead.name},</h2><p>Hope {lead.company} is doing great!</p><p>Quick question — do you know any other {lead.industry} businesses that could benefit from a website upgrade?</p><p>If so, I\'d love an introduction. And as a thank you, I\'ll offer them <strong>10% off setup</strong> and <strong>you $500 credit</strong> for each referral that closes.</p><p>Just hit reply with a name and I\'ll take it from there.</p><p>— Web Gabochie</p></div>'
             },
             'weekly-report': {
               subject: '📊 Your Weekly Pipeline Report',

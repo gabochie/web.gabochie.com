@@ -422,7 +422,7 @@ window.Reporting = (function () {
       });
     }
 
-    html += '<p style="color:#55555f;font-size:11px;margin-top:24px;text-align:center">View full dashboard: <a href="https://gideonabochie.com/admin.html" style="color:#e63946">Open Command Center</a></p>';
+    html += '<p style="color:#55555f;font-size:11px;margin-top:24px;text-align:center">View full dashboard: <a href="https://web.gabochie.com/admin.html" style="color:#e63946">Open Command Center</a></p>';
     html += '</div>';
     return html;
   }
@@ -440,7 +440,7 @@ window.Reporting = (function () {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          recipients: [{ email: 'info@gideonabochie.com', name: 'Gideon' }],
+          recipients: [{ email: 'web@gabochie.com', name: 'Web Gabochie' }],
           subject: 'GA ' + (period === '7d' ? 'Weekly' : period === '30d' ? 'Monthly' : 'Daily') + ' Growth Report',
           htmlContent: html,
           apiKey: brevoKey,

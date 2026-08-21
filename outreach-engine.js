@@ -102,8 +102,8 @@ window.OutreachEngine = (function () {
             textContent: textContent || '',
             tags: ['outreach', campaignName || 'bulk'],
             apiKey: settings.brevoApiKey || '',
-            senderName: settings.brevoSenderName || 'Gideon Abochie',
-            senderEmail: settings.brevoSenderEmail || 'info@gideonabochie.com'
+            senderName: settings.brevoSenderName || 'Web Gabochie',
+            senderEmail: settings.brevoSenderEmail || 'web@gabochie.com'
           })
         });
       })
@@ -237,7 +237,7 @@ window.OutreachEngine = (function () {
       default: 'Thanks for connecting, {contactName}! I wanted to share a quick insight about {company}\'s website — I ran an analysis and spotted some opportunities that could boost your conversions by 30-50%. Would you be open to a 10-minute call to walk through it?'
     },
     inmail: {
-      default: 'Subject: Quick idea for {company}\n\nHi {contactName},\n\nI noticed {company}\'s website could be converting better. I specialize in {industry} website optimization and typically see 40-60% lifts in lead generation.\n\nQuick question: would a 15-minute call to review your site\'s performance be valuable?\n\nBest,\nGideon'
+      default: 'Subject: Quick idea for {company}\n\nHi {contactName},\n\nI noticed {company}\'s website could be converting better. I specialize in {industry} website optimization and typically see 40-60% lifts in lead generation.\n\nQuick question: would a 15-minute call to review your site\'s performance be valuable?\n\nBest,\nWeb Gabochie'
     }
   };
 
@@ -802,7 +802,7 @@ window.OutreachEngine = (function () {
   }
 
   function getReferralLink(code) {
-    return 'https://gideonabochie.com/ref/' + code;
+    return 'https://web.gabochie.com/ref/' + code;
   }
 
   function trackReferralClick(code) {

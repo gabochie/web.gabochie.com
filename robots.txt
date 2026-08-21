@@ -5,4 +5,4 @@ Disallow: /portal.html
 Disallow: /portal.js
 Disallow: /api/
 
-Sitemap: https://gideonabochie.com/sitemap.xml
+Sitemap: https://web.gabochie.com/sitemap.xml

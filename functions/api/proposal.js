@@ -132,10 +132,10 @@ function generateProposalHTML(data) {
     <li>We begin within 48 hours of signed agreement</li>
   </ol>
 
-  <a href="mailto:info@gideonabochie.com?subject=Re:${data.company} Proposal" class="cta">Accept Proposal →</a>
+  <a href="mailto:web@gabochie.com?subject=Re:${data.company} Proposal" class="cta">Accept Proposal →</a>
 
   <div class="footer">
-    Gideon Abochie · info@gideonabochie.com · +233 243 262 019<br>
+    Web Gabochie · web@gabochie.com · +233 243 262 019<br>
     This proposal is valid for 30 days from the date above.
   </div>
 </body>

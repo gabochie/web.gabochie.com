@@ -203,15 +203,15 @@ window.Pipeline = (function () {
     var templates = {
       hot: {
         subject: 'Quick fix for ' + (lead.company || lead.name || 'your website'),
-        body: 'Hi ' + (lead.name || 'there') + ',\n\nI ran a quick audit on ' + (lead.url || 'your site') + ' and found a few things that are likely costing you customers.\n\nYour site scores ' + (lead.score || 'low') + '/100 on mobile performance — that means roughly ' + Math.round((100 - (lead.score || 50)) / 2) + '% of visitors leave before it loads.\n\nI specialize in fixing exactly this for ' + (scoring.industryLabel || 'businesses') + ' like yours. Would a 15-minute walkthrough of the fixes be useful?\n\nBest,\nGideon'
+        body: 'Hi ' + (lead.name || 'there') + ',\n\nI ran a quick audit on ' + (lead.url || 'your site') + ' and found a few things that are likely costing you customers.\n\nYour site scores ' + (lead.score || 'low') + '/100 on mobile performance — that means roughly ' + Math.round((100 - (lead.score || 50)) / 2) + '% of visitors leave before it loads.\n\nI specialize in fixing exactly this for ' + (scoring.industryLabel || 'businesses') + ' like yours. Would a 15-minute walkthrough of the fixes be useful?\n\nBest,\nWeb Gabochie'
       },
       warm: {
         subject: (lead.company || 'Your website') + ' — quick question',
-        body: 'Hi ' + (lead.name || 'there') + ',\n\nI noticed ' + (lead.company || 'your business') + ' has great reviews (' + (lead.rating || '4+') + '★, ' + (lead.totalRatings || 'many') + ' ratings) but the website doesn\'t quite match the quality of your service.\n\nI help ' + (scoring.industryLabel || 'businesses') + ' turn their website into a lead-generating machine. Interested in seeing what a redesign could look like for you?\n\nBest,\nGideon'
+        body: 'Hi ' + (lead.name || 'there') + ',\n\nI noticed ' + (lead.company || 'your business') + ' has great reviews (' + (lead.rating || '4+') + '★, ' + (lead.totalRatings || 'many') + ' ratings) but the website doesn\'t quite match the quality of your service.\n\nI help ' + (scoring.industryLabel || 'businesses') + ' turn their website into a lead-generating machine. Interested in seeing what a redesign could look like for you?\n\nBest,\nWeb Gabochie'
       },
       cold: {
         subject: 'Re: ' + (lead.company || 'your website'),
-        body: 'Hi ' + (lead.name || 'there') + ',\n\nI came across ' + (lead.company || 'your business') + ' and wanted to reach out. I work with ' + (scoring.industryLabel || 'businesses') + ' on improving their online presence.\n\nWould you be open to a quick chat about how your website could be working harder for you?\n\nBest,\nGideon'
+        body: 'Hi ' + (lead.name || 'there') + ',\n\nI came across ' + (lead.company || 'your business') + ' and wanted to reach out. I work with ' + (scoring.industryLabel || 'businesses') + ' on improving their online presence.\n\nWould you be open to a quick chat about how your website could be working harder for you?\n\nBest,\nWeb Gabochie'
       }
     };
 

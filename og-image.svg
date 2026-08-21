@@ -4,7 +4,7 @@
   <!-- GA Logo -->
   <g transform="translate(600,200) rotate(-45)">
     <rect x="-40" y="-40" width="80" height="80" rx="12" fill="#00ff88"/>
-    <text x="0" y="8" text-anchor="middle" fill="#0b0b0f" font-family="system-ui" font-size="32" font-weight="800">GA</text>
+    <text x="0" y="8" text-anchor="middle" fill="#0b0b0f" font-family="system-ui" font-size="32" font-weight="800">WG</text>
   </g>
   <!-- Text -->
   <text x="600" y="340" text-anchor="middle" fill="#f0f0f0" font-family="system-ui" font-size="48" font-weight="800">Web Gabochie</text>

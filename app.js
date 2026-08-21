@@ -1227,9 +1227,10 @@
     ];
 
     var pricingTiers = [
-      { name: 'Starter', price: '$2,500', features: ['5-page responsive website', 'Mobile optimized', 'Contact form', 'Basic SEO', 'SSL certificate', '1 month support'] },
-      { name: 'Professional', price: '$5,000', features: ['10-page responsive website', 'CMS integration', 'Advanced SEO', 'Analytics setup', 'Blog setup', '3 months support', 'Content migration'] },
-      { name: 'Enterprise', price: '$10,000', features: ['20+ page custom design', 'Custom functionality', 'E-commerce ready', 'API integrations', 'Performance optimization', '6 months support', 'Training sessions', 'Priority support'] }
+      { name: 'Starter', price: '$2,499 (intro)', features: ['5-page responsive website', 'Mobile-first build', 'Contact form & analytics', 'Basic SEO', 'SSL certificate', '30-day support'] },
+      { name: 'Growth', price: '$5,999', features: ['Everything in Starter', 'Conversion rate optimization', 'A/B testing framework', 'Exit-intent & lead capture', 'Heatmap analytics', '4 revision rounds', '60-day support'] },
+      { name: 'Scale', price: '$12,999', features: ['Everything in Growth', 'Advanced integrations & dashboards', 'Automated lead nurturing', 'Monthly CRO reviews', 'Unlimited revisions', 'Dedicated project manager', 'Revenue tracking dashboard', '90-day support'] },
+      { name: 'Care Plans', price: '$99-$349/mo', features: ['Updates, backups & monitoring', 'CRO experiments', 'Monthly performance reports', 'Priority turnaround', 'Cancel anytime'] }
     ];
 
     container.innerHTML =
@@ -1399,22 +1400,22 @@
       '<div class="tier-cards">' +
         '<div class="tier-card">' +
           '<div class="tier-name">Starter</div>' +
-          '<div class="tier-price">$2,500</div>' +
-          '<ul class="tier-features"><li>5-page responsive site</li><li>Mobile optimized</li><li>Contact form</li><li>Basic SEO</li></ul>' +
+          '<div class="tier-price">$2,499 intro rate</div>' +
+          '<ul class="tier-features"><li>5-page responsive site</li><li>Mobile-first build</li><li>Contact form</li><li>Basic SEO</li></ul>' +
         '</div>' +
         '<div class="tier-card recommended">' +
-          '<div class="tier-name">Professional ★</div>' +
-          '<div class="tier-price">$5,000</div>' +
-          '<ul class="tier-features"><li>10-page responsive site</li><li>CMS integration</li><li>Advanced SEO</li><li>Analytics</li><li>3 months support</li></ul>' +
+          '<div class="tier-name">Growth ★</div>' +
+          '<div class="tier-price">$5,999</div>' +
+          '<ul class="tier-features"><li>Everything in Starter</li><li>CRO + A/B testing</li><li>Exit-intent capture</li><li>Heatmaps</li><li>60-day support</li></ul>' +
         '</div>' +
         '<div class="tier-card">' +
-          '<div class="tier-name">Enterprise</div>' +
-          '<div class="tier-price">$10,000</div>' +
-          '<ul class="tier-features"><li>20+ custom pages</li><li>Custom functionality</li><li>E-commerce ready</li><li>6 months support</li></ul>' +
+          '<div class="tier-name">Scale</div>' +
+          '<div class="tier-price">$12,999</div>' +
+          '<ul class="tier-features"><li>Everything in Growth</li><li>Advanced integrations</li><li>Dedicated PM</li><li>90-day support</li></ul>' +
         '</div>' +
       '</div>' +
       '<h2>Timeline</h2>' +
-      '<p>Starter: 2 weeks · Professional: 4 weeks · Enterprise: 6-8 weeks</p>' +
+      '<p>Starter: 6-7 weeks · Growth: 7-8 weeks · Scale: 8-12 weeks</p>' +
       '<h2>Next Steps</h2>' +
       '<p>1. Schedule a discovery call<br>2. Review and select a tier<br>3. Begin design phase</p>';
   }

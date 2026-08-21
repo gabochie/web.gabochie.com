@@ -15,97 +15,97 @@
   var COMPANIES = {
     berkshire: {
       name: 'Berkshire Hathaway', industry: 'Finance / Conglomerate', location: 'Omaha, Nebraska',
-      tier: 'Enterprise', startDate: '2026-06-01', delivery: '2026-08-15',
+      tier: 'Scale', startDate: '2026-06-01', delivery: '2026-08-15',
       preview: 'redesigns/berkshire.html',
       credentials: { 'warren@berkshire.com': 'berkshire2026' }
     },
     koch: {
       name: 'Koch Industries', industry: 'Manufacturing / Energy', location: 'Wichita, Kansas',
-      tier: 'Professional', startDate: '2026-06-15', delivery: '2026-08-01',
+      tier: 'Growth', startDate: '2026-06-15', delivery: '2026-08-01',
       preview: null,
       credentials: { 'charles@koch.com': 'koch2026' }
     },
     cargill: {
       name: 'Cargill', industry: 'Food / Agriculture', location: 'Wayzata, Minnesota',
-      tier: 'Professional', startDate: '2026-06-10', delivery: '2026-07-28',
+      tier: 'Growth', startDate: '2026-06-10', delivery: '2026-07-28',
       preview: null,
       credentials: { 'ceo@cargill.com': 'cargill2026' }
     },
     fidelity: {
       name: 'Fidelity', industry: 'Financial Services', location: 'Boston, Massachusetts',
-      tier: 'Enterprise', startDate: '2026-05-20', delivery: '2026-08-01',
+      tier: 'Scale', startDate: '2026-05-20', delivery: '2026-08-01',
       preview: 'redesigns/fidelity.html',
       credentials: { 'admin@fidelity.com': 'fidelity2026' }
     },
     hearst: {
       name: 'Hearst', industry: 'Media / Publishing', location: 'New York, NY',
-      tier: 'Enterprise', startDate: '2026-05-15', delivery: '2026-07-30',
+      tier: 'Scale', startDate: '2026-05-15', delivery: '2026-07-30',
       preview: 'redesigns/hearst.html',
       credentials: { 'digital@hearst.com': 'hearst2026' }
     },
     scjohnson: {
       name: 'S.C. Johnson', industry: 'Consumer Goods', location: 'Racine, Wisconsin',
-      tier: 'Professional', startDate: '2026-06-20', delivery: '2026-08-10',
+      tier: 'Growth', startDate: '2026-06-20', delivery: '2026-08-10',
       preview: null,
       credentials: { 'marketing@scjohnson.com': 'scjohnson2026' }
     },
     heb: {
       name: 'H-E-B', industry: 'Retail / Grocery', location: 'San Antonio, Texas',
-      tier: 'Essentials', startDate: '2026-07-01', delivery: '2026-08-12',
+      tier: 'Launch', startDate: '2026-07-01', delivery: '2026-08-12',
       preview: null,
       credentials: { 'team@heb.com': 'heb2026' }
     },
     publix: {
       name: 'Publix', industry: 'Retail / Grocery', location: 'Lakeland, Florida',
-      tier: 'Enterprise', startDate: '2026-06-05', delivery: '2026-08-20',
+      tier: 'Scale', startDate: '2026-06-05', delivery: '2026-08-20',
       preview: 'redesigns/publix.html',
       credentials: { 'admin@publix.com': 'publix2026' }
     },
     comcast: {
       name: 'Comcast', industry: 'Telecom / Media', location: 'Philadelphia, PA',
-      tier: 'Professional', startDate: '2026-06-12', delivery: '2026-08-05',
+      tier: 'Growth', startDate: '2026-06-12', delivery: '2026-08-05',
       preview: null,
       credentials: { 'digital@comcast.com': 'comcast2026' }
     },
     verizon: {
       name: 'Verizon', industry: 'Telecom', location: 'New York, NY',
-      tier: 'Enterprise', startDate: '2026-05-25', delivery: '2026-08-10',
+      tier: 'Scale', startDate: '2026-05-25', delivery: '2026-08-10',
       preview: 'redesigns/verizon.html',
       credentials: { 'marketing@verizon.com': 'verizon2026' }
     },
     mcdonalds: {
       name: "McDonald's", industry: 'Food / QSR', location: 'Chicago, Illinois',
-      tier: 'Enterprise', startDate: '2026-06-01', delivery: '2026-08-25',
+      tier: 'Scale', startDate: '2026-06-01', delivery: '2026-08-25',
       preview: 'redesigns/mcdonalds.html',
       credentials: { 'digital@mcdonalds.com': 'mcdonalds2026' }
     },
     parkave: {
       name: 'Park Avenue Dental', industry: 'Dental', location: 'New York, NY',
-      tier: 'Essentials', startDate: '2026-07-05', delivery: '2026-08-15',
+      tier: 'Launch', startDate: '2026-07-05', delivery: '2026-08-15',
       preview: null,
       credentials: { 'dr@parkavedental.com': 'parkave2026' }
     },
     bhmedical: {
       name: 'Beverly Hills Medical Group', industry: 'Medical', location: 'Beverly Hills, CA',
-      tier: 'Professional', startDate: '2026-06-25', delivery: '2026-08-08',
+      tier: 'Growth', startDate: '2026-06-25', delivery: '2026-08-08',
       preview: null,
       credentials: { 'admin@bhmedical.com': 'bhmedical2026' }
     },
     goldcoast: {
       name: 'Gold Coast Plumbing', industry: 'Home Services', location: 'Sydney, Australia',
-      tier: 'Essentials', startDate: '2026-07-10', delivery: '2026-08-20',
+      tier: 'Launch', startDate: '2026-07-10', delivery: '2026-08-20',
       preview: null,
       credentials: { 'info@goldcoastplumbing.com': 'goldcoast2026' }
     },
     hudsonlegal: {
       name: 'Hudson Valley Legal Group', industry: 'Legal', location: 'Hudson Valley, NY',
-      tier: 'Professional', startDate: '2026-06-18', delivery: '2026-08-01',
+      tier: 'Growth', startDate: '2026-06-18', delivery: '2026-08-01',
       preview: null,
       credentials: { 'partner@hudsonlegal.com': 'hudsonlegal2026' }
     },
     heritage: {
       name: 'Heritage Wealth Management', industry: 'Financial Services', location: 'Dallas, Texas',
-      tier: 'Professional', startDate: '2026-06-22', delivery: '2026-08-05',
+      tier: 'Growth', startDate: '2026-06-22', delivery: '2026-08-05',
       preview: null,
       credentials: { 'advisor@heritagewealth.com': 'heritage2026' }
     }

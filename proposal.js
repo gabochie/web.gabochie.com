@@ -36,9 +36,9 @@ window.Proposal = (function () {
     }
 
     // Pricing
-    var setupPrice = isEnterprise ? '$10,000 – $20,000' : '$3,000 – $8,000';
-    var monthlyPrice = isEnterprise ? '$5,000 – $10,000' : '$1,500 – $3,500';
-    var yearlyValue = isEnterprise ? '$60,000 – $120,000' : '$18,000 – $42,000';
+    var setupPrice = isEnterprise ? '$5,999 – $12,999' : '$2,499 – $5,999';
+    var monthlyPrice = isEnterprise ? '$199 – $349/mo' : '$99 – $199/mo';
+    var yearlyValue = isEnterprise ? '$8,400 – $17,200' : '$3,700 – $8,400';
 
     // ROI projections
     var m1 = opp ? Math.round(opp.monthlyOpportunity * 0.15) : '—';
@@ -116,11 +116,11 @@ window.Proposal = (function () {
       '<div style="font-size:20px;font-weight:800;margin:4px 0">' + setupPrice + '</div>' +
       '<div style="font-size:11px;color:var(--text2)">One-time · Redesign + CRO foundation</div></div>' +
       '<div style="padding:16px;background:var(--surface2);border:1px solid var(--accent);border-radius:8px">' +
-      '<div style="font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;font-weight:600">Monthly Retainer</div>' +
+      '<div style="font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;font-weight:600">Monthly Care Plan</div>' +
       '<div style="font-size:20px;font-weight:800;margin:4px 0">' + monthlyPrice + '</div>' +
-      '<div style="font-size:11px;color:var(--text2)">Ongoing optimization · CRO · Automation</div></div>' +
+      '<div style="font-size:11px;color:var(--text2)">Updates · CRO experiments · Monitoring · cancel anytime</div></div>' +
       '</div>' +
-      '<p style="font-size:12px;color:var(--text2);margin-top:8px">Annual value: <strong>' + yearlyValue + '</strong> · Minimum 6-month commitment</p>' +
+      '<p style="font-size:12px;color:var(--text2);margin-top:8px">Annual value: <strong>' + yearlyValue + '</strong> · care plan, cancel anytime</p>' +
 
       '<h2>Why Us</h2>' +
       '<ul style="margin:8px 0 0 20px;color:var(--text2)">' +

@@ -99,21 +99,33 @@ function generateProposalHTML(data) {
   <p>We propose a complete website redesign focused on conversion optimization — turning your traffic into revenue.</p>
 
   <div class="tier">
-    <h4>Essentials</h4>
-    <div class="price">$5,000</div>
-    <p>5-page responsive site · Mobile optimized · Contact form · Basic SEO · SSL · 1 month support</p>
-  </div>
-
-  <div class="tier" style="border-color:#e63946;position:relative">
-    <h4>Professional ★ Recommended</h4>
-    <div class="price">$10,000</div>
-    <p>10-page responsive site · CMS · Advanced SEO · Analytics · Blog · 3 months support · Content migration</p>
+    <h4>Launch Page Sprint</h4>
+    <div class="price">$999</div>
+    <p>1&ndash;3 page conversion-focused site · Mobile-first · Live in 7 days · Perfect fast start</p>
   </div>
 
   <div class="tier">
-    <h4>Enterprise</h4>
-    <div class="price">$20,000+</div>
-    <p>20+ custom pages · Custom functionality · E-commerce · API integrations · Performance optimization · 6 months support</p>
+    <h4>Starter</h4>
+    <div class="price">$2,499 intro rate</div>
+    <p>5&ndash;8 page responsive site · Mobile-first · Contact form &amp; analytics · Basic SEO · SSL · 30-day support</p>
+  </div>
+
+  <div class="tier" style="border-color:#e63946;position:relative">
+    <h4>Growth ★ Recommended</h4>
+    <div class="price">$5,999</div>
+    <p>CRO · A/B testing framework · Exit-intent &amp; lead capture · Heatmaps · 4 revision rounds · 60-day support</p>
+  </div>
+
+  <div class="tier">
+    <h4>Scale</h4>
+    <div class="price">$12,999</div>
+    <p>Complete growth system · Advanced integrations · Automated lead nurturing · Dedicated PM · 90-day support</p>
+  </div>
+
+  <div class="tier">
+    <h4>Care Plans (after launch)</h4>
+    <div class="price">$99&ndash;$349/mo</div>
+    <p>Updates · Backups · Monitoring · CRO experiments · Cancel anytime</p>
   </div>
 
   <h2>Timeline</h2>

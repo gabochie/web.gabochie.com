@@ -385,12 +385,6 @@
     if (searchEl) searchEl.addEventListener('input', debounce(renderPipeline, 300));
   }
 
-  function renderPipeline() {
-    renderPipelineStages();
-    renderStats(getModeLeads());
-    renderLeadTable(getFilteredLeads());
-  }
-
   function renderPipelineStages() {
     var container = document.getElementById('pipeline-stages-bar');
     if (!container) return;
@@ -3001,7 +2995,7 @@
       var cl = document.createElement('div');
       cl.id = 'smoke-changelog';
       cl.style.cssText = 'margin-top:16px';
-      resultsEl = document.getElementById('smoke-results');
+      var resultsEl = document.getElementById('smoke-results');
       if (resultsEl && resultsEl.parentNode) resultsEl.parentNode.appendChild(cl);
     }
 
@@ -3567,7 +3561,7 @@
     var params = new URLSearchParams(window.location.search);
     var autoLeadId = params.get('lead');
     if (autoLeadId) {
-      var leads = getLeads();
+          leads = getLeads();
       var autoLead = leads.find(function (l) { return l.id === autoLeadId; });
       if (autoLead && select) {
         select.value = autoLead.id;

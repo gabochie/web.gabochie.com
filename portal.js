@@ -254,7 +254,7 @@
   }
 
   function renderCurrentView() {
-    if (currentView === 'overview') renderOverview();
+    if (currentView === 'overview') renderDashboard();
     if (currentView === 'preview') renderPreview();
     if (currentView === 'feedback') renderFeedbackHistory();
     if (currentView === 'timeline') renderTimeline();

@@ -225,7 +225,7 @@
       var stateMatch = lower.match(/in ([a-z ]+)$/);
       if (stateMatch) {
         var stateName = stateMatch[1].trim();
-        var leads = typeof GAAdmin !== 'undefined' ? GAAdmin.getLeads() : [];
+        leads = typeof GAAdmin !== 'undefined' ? GAAdmin.getLeads() : [];
         var stateCode = findStateCode(stateName, leads);
         if (stateCode) {
           var count = leads.filter(function (l) { return l.state === stateCode; }).length;
@@ -269,7 +269,7 @@
     // Stats
     else if (matchAny(lower, ['show stats', 'show numbers', 'pipeline', 'pipeline stats', 'overview', 'summary'])) {
       switchTab('dashboard');
-      var leads = typeof GAAdmin !== 'undefined' ? GAAdmin.getLeads() : [];
+      leads = typeof GAAdmin !== 'undefined' ? GAAdmin.getLeads() : [];
       var totalVal = 0;
       var states = {};
       leads.forEach(function (l) { totalVal += (l.value || 0); states[l.state] = true; });
@@ -367,6 +367,7 @@
     var states = {};
     leads.forEach(function (l) { states[l.state] = true; });
     var upper = name.toUpperCase();
+    var lower = String(name || '').toLowerCase().trim();
     if (states[upper]) return upper;
     var map = {
       'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR', 'california': 'CA',

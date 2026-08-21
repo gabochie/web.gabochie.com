@@ -26,6 +26,14 @@ window.Pipeline = (function () {
     'unknown': { payScore: 50, avgDeal: 5000, label: 'Unknown' }
   };
 
+  function log(agentId, action, detail, level) {
+    if (window.Agents && window.Agents.log) {
+      try { window.Agents.log(agentId, action, detail, level); } catch (e) {}
+    } else {
+      try { console.log('[Pipeline] [' + (level || 'info') + '] ' + agentId + ':' + action + ' ' + (detail || '')); } catch (e) {}
+    }
+  }
+
   /* ----------------------------------------
      PIPELINE SCORING ENGINE
      Scores 0-100 based on likelihood to pay

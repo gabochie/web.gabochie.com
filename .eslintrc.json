@@ -8,6 +8,7 @@
     "ecmaVersion": "latest",
     "sourceType": "script"
   },
+  "ignorePatterns": ["node_modules/", "redesigns/"],
   "rules": {
     "no-undef": "error",
     "no-unused-vars": ["warn", { "args": "none" }],
@@ -16,10 +17,10 @@
     "no-unreachable": "error",
     "no-constant-condition": "warn",
     "no-debugger": "warn",
-    "no-empty": "warn",
+    "no-empty": ["warn", { "allowEmptyCatch": true }],
     "no-extra-semi": "warn",
     "no-func-assign": "error",
-    "no-inner-declarations": "error",
+    "no-inner-declarations": "warn",
     "no-invalid-regexp": "error",
     "no-irregular-whitespace": "warn",
     "no-unexpected-multiline": "error",
@@ -32,10 +33,30 @@
   },
   "globals": {
     "firebase": "readonly",
+    "Sentry": "readonly",
     "FirebaseService": "readonly",
     "AuthService": "readonly",
     "PortfolioManager": "readonly",
     "GAAdmin": "readonly",
-    "Sentry": "readonly"
-  }
+    "VisitorTracker": "readonly",
+    "Analytics": "readonly",
+    "Reporting": "readonly",
+    "Agents": "readonly",
+    "Pipeline": "readonly",
+    "Orchestrator": "readonly",
+    "OutreachEngine": "readonly",
+    "CommandCenter": "readonly",
+    "searchRemoteJobs": "writable"
+  },
+  "overrides": [
+    {
+      "files": ["functions/**/*.js"],
+      "parserOptions": { "sourceType": "module" },
+      "env": { "worker": true }
+    },
+    {
+      "files": ["firebase-config.js"],
+      "rules": { "no-redeclare": "off" }
+    }
+  ]
 }

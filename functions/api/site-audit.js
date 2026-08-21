@@ -262,7 +262,7 @@ function auditPerformance(html, ttfb) {
   const issues = [];
   const strengths = [];
 
-  if (ttfb > 2000) issues.push({ severity: 'critical', text: `TTFB: ${tttfb}ms (>2s)`, detail: 'Server response is very slow.' });
+  if (ttfb > 2000) issues.push({ severity: 'critical', text: `TTFB: ${ttfb}ms (>2s)`, detail: 'Server response is very slow.' });
   else if (ttfb > 1000) issues.push({ severity: 'high', text: `TTFB: ${ttfb}ms (>1s)`, detail: 'Server response could be faster.' });
   else if (ttfb > 500) issues.push({ severity: 'medium', text: `TTFB: ${ttfb}ms (>500ms)`, detail: 'Acceptable but could improve.' });
   else strengths.push(`Fast TTFB: ${ttfb}ms`);

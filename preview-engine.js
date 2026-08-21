@@ -288,7 +288,7 @@
     var key = (industry || "").toLowerCase().replace(/[\s-_]/g, "-");
     if (themes[key]) return themes[key];
     for (var k in themes) {
-      if (themes.hasOwnProperty(k) && key.indexOf(k) !== -1) return themes[k];
+      if (Object.prototype.hasOwnProperty.call(themes, k) && key.indexOf(k) !== -1) return themes[k];
     }
     return themes["default"];
   }

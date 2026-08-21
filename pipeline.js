@@ -228,10 +228,6 @@ window.Pipeline = (function () {
     }
     return tpl;
   }
-    };
-
-    return templates[scoring.segment] || templates.cold;
-  }
 
   /* ----------------------------------------
      AUTOMATED PIPELINE RUNNER

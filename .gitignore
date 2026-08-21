@@ -1,2 +1,6 @@
 node_modules/
 .eslintrc.local.*
+
+portal-worker/.dev.vars
+portal-worker/.wrangler/
+.wrangler/

@@ -128,10 +128,21 @@ function sanitizeError(err) {
 // Pre-check DNS via DoH: an unresolvable subrequest can terminate at the CF
 // edge with a raw error before our handler can respond, so resolve first.
 async function domainResolves(hostname) {
-  const query = (type) => fetch(
-    'https://cloudflare-dns.com/dns-query?name=' + encodeURIComponent(hostname) + '&type=' + type,
-    { headers: { 'accept': 'application/dns-json' }, signal: AbortSignal.timeout(5000) }
-  ).then(r => r.ok ? r.json() : null).catch(() => null);
+  const query = async (type) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    try {
+      const res = await fetch(
+        'https://cloudflare-dns.com/dns-query?name=' + encodeURIComponent(hostname) + '&type=' + type,
+        { headers: { 'accept': 'application/dns-json' }, signal: controller.signal }
+      );
+      return res.ok ? await res.json() : null;
+    } catch (e) {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
 
   try {
     const a = await query('A');

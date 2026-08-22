@@ -144,6 +144,7 @@ async function domainResolves(hostname) {
     if (aaaa.Status !== 3 && a.Status !== 3) return true;
     return false;
   } catch (e) {
+    console.error('domainResolves failed open for', hostname, String(e && e.message || e));
     return true;
   }
 }

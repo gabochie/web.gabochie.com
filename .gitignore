@@ -3,4 +3,5 @@ node_modules/
 
 portal-worker/.dev.vars
 portal-worker/.wrangler/
+portal-worker/.env.e2e
 .wrangler/

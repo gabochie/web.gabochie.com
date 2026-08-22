@@ -14,7 +14,7 @@ window.PortfolioManager = (function () {
     { id: 'lutterodt', name: 'Lutterodt', url: 'https://lutterodt.org', tag: 'Heritage', color: '#2a1a2a' },
     { id: 'buildcostgh', name: 'BuildCost GH', url: 'https://buildcostgh.com', tag: 'Construction', color: '#3d2b1f' },
     { id: 'godnology', name: 'Godnology', url: 'https://godnology.org', tag: 'Faith/Tech', color: '#1a1a2e' },
-    { id: 'neogh', name: 'NeoGH', url: 'https://neogh.org', tag: 'Civic Tech', color: '#0a2540' }
+    { id: 'neogh', name: 'NeoGH', url: 'https://neogh.gabochie.com', tag: 'Civic Tech', color: '#0a2540' }
   ];
 
   var auditHistory = {};

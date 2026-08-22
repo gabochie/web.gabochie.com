@@ -36,10 +36,10 @@ console.log('== /api/analyze ==');
   check('private IP -> 400', private_.status === 400, private_);
 
   const dead = await post('/api/analyze', { url: 'this-domain-does-not-exist-gx7q.com' });
-  check('dead domain -> 502 + message', dead.status === 502 && dead.data && typeof dead.data.error === 'string', dead);
+  check('dead domain -> 422 + message', dead.status === 422 && dead.data && typeof dead.data.error === 'string', dead);
 
   const deadTld = await post('/api/analyze', { url: 'real-site-but-nxdomain.invalid' });
-  check('dead TLD -> 502 + message', deadTld.status === 502 && deadTld.data && typeof deadTld.data.error === 'string', deadTld);
+  check('dead TLD -> 422 + message', deadTld.status === 422 && deadTld.data && typeof deadTld.data.error === 'string', deadTld);
 
   const noBody = await fetch(BASE + '/api/analyze', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{broken'

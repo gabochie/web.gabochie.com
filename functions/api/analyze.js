@@ -155,7 +155,6 @@ async function domainResolves(hostname) {
     if (aaaa.Status !== 3 && a.Status !== 3) return true;
     return false;
   } catch (e) {
-    console.error('domainResolves failed open for', hostname, String(e && e.message || e));
     return true;
   }
 }
@@ -180,7 +179,7 @@ export async function onRequestPost(context) {
   }
 
   if (!(await domainResolves(new URL(targetUrl).hostname))) {
-    return json({ error: 'Domain not found — check the address', offline: true }, 502);
+    return json({ error: 'Domain not found — check the address', offline: true }, 422);
   }
 
   if (active >= MAX_CONCURRENT) {
@@ -203,18 +202,18 @@ export async function onRequestPost(context) {
         }
       });
     } catch (err) {
-      return json({ error: sanitizeError(err), offline: true }, 502);
+      return json({ error: sanitizeError(err), offline: true }, 422);
     } finally {
       clearTimeout(timer);
     }
 
     if (!response.ok) {
-      return json({ error: `Site returned HTTP ${response.status}`, offline: true }, 502);
+      return json({ error: `Site returned HTTP ${response.status}`, offline: true }, 422);
     }
 
     const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
     if (contentType && !contentType.includes('html') && !contentType.includes('xml') && !contentType.includes('text/plain')) {
-      return json({ error: 'URL did not return an HTML page', offline: true }, 502);
+      return json({ error: 'URL did not return an HTML page', offline: true }, 422);
     }
 
     const { text: html } = await readBodyCapped(response, MAX_HTML_BYTES);
@@ -230,7 +229,7 @@ export async function onRequestPost(context) {
     return json(analyzeHTML(html, cssText, finalUrl), 200);
 
   } catch (err) {
-    return json({ error: sanitizeError(err), offline: true }, 502);
+    return json({ error: sanitizeError(err), offline: true }, 422);
   } finally {
     active--;
   }

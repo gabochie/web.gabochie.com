@@ -115,7 +115,7 @@ export async function onRequestPost(context) {
       totalFailed: response.ok ? 0 : payload.to.length,
       messageId: data.messageId || null,
       error: response.ok ? null : (data.message || `Brevo HTTP ${response.status}`)
-    }, response.ok ? 200 : 502);
+    }, response.ok ? 200 : 422);
 
   } catch (err) {
     return json({ error: err.message }, 500);

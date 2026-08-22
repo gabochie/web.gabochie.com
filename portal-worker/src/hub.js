@@ -54,6 +54,7 @@ function timingSafeEqualStr(a, b) {
 }
 
 function rows(cursor) {
+  if (typeof cursor.toArray === 'function') return cursor.toArray();
   const out = [];
   const iterator = cursor.rows ? cursor.rows() : cursor;
   for (const row of iterator) {
@@ -93,7 +94,7 @@ export class PortalHub extends DurableObject {
   ensureSchema() {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS companies (
       id TEXT PRIMARY KEY, name TEXT NOT NULL UNIQUE, industry TEXT, location TEXT,
-      tier TEXT, start_date TEXT, delivery_date TEXT, created_at INTEGER NOT NULL)`);
+      tier TEXT, start_date TEXT, delivery_date TEXT, preview_url TEXT, created_at INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS users (
       email TEXT PRIMARY KEY, company_id TEXT NOT NULL, salt TEXT NOT NULL,
       hash TEXT NOT NULL, iterations INTEGER NOT NULL, created_at INTEGER NOT NULL)`);
@@ -111,6 +112,7 @@ export class PortalHub extends DurableObject {
       mime TEXT, size INTEGER NOT NULL, data BLOB, uploaded_by TEXT, created_at INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_attempts (
       key TEXT NOT NULL, ts INTEGER NOT NULL)`);
+    try { this.sql.exec('ALTER TABLE companies ADD COLUMN preview_url TEXT'); } catch (e) { /* column exists */ }
     this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_milestones_company ON milestones(company_id, sort)`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_feedback_company ON feedback(company_id, created_at)`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_files_company ON files(company_id, created_at)`);
@@ -232,6 +234,16 @@ export class PortalHub extends DurableObject {
     return file || null;
   }
 
+  #seedMilestones(company) {
+    const start = new Date(String(company.start_date || new Date().toISOString().slice(0, 10)) + 'T00:00:00Z');
+    if (isNaN(start.getTime())) return;
+    DEFAULT_MILESTONES.forEach((m, i) => {
+      const due = new Date(start.getTime() + m.offset * 86400000);
+      this.sql.exec('INSERT INTO milestones (company_id, name, descr, due_date, status, sort) VALUES (?, ?, ?, ?, ?, ?)',
+        company.id, m.name, m.descr, due.toISOString().slice(0, 10), 'pending', i);
+    });
+  }
+
   async adminProvision(adminToken, body) {
     const expected = this.env.PORTAL_ADMIN_TOKEN;
     if (!expected) return { ok: false, status: 500, error: 'PORTAL_ADMIN_TOKEN not configured' };
@@ -250,19 +262,16 @@ export class PortalHub extends DurableObject {
     const now = Date.now();
     if (!company) {
       const id = makeId('co');
-      this.sql.exec('INSERT INTO companies (id, name, industry, location, tier, start_date, delivery_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      this.sql.exec('INSERT INTO companies (id, name, industry, location, tier, start_date, delivery_date, preview_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         id, name, String(c.industry || ''), String(c.location || ''), String(c.tier || 'Growth'),
-        String(c.start_date || new Date().toISOString().slice(0, 10)), String(c.delivery_date || ''), now);
+        String(c.start_date || new Date().toISOString().slice(0, 10)), String(c.delivery_date || ''),
+        c.preview_url ? String(c.preview_url).slice(0, 500) : null, now);
       company = rows(this.sql.exec('SELECT * FROM companies WHERE id = ?', id))[0];
-
-      const start = new Date(company.start_date + 'T00:00:00Z');
-      DEFAULT_MILESTONES.forEach((m, i) => {
-        const due = new Date(start.getTime() + m.offset * 86400000);
-        this.sql.exec('INSERT INTO milestones (company_id, name, descr, due_date, status, sort) VALUES (?, ?, ?, ?, ?, ?)',
-          company.id, m.name, m.descr, due.toISOString().slice(0, 10), 'pending', i);
-      });
+      this.#seedMilestones(company);
     } else if (rows(this.sql.exec('SELECT 1 FROM users WHERE email = ?', email)).length) {
       return { ok: false, status: 409, error: 'User already exists for this company' };
+    } else if (!rows(this.sql.exec('SELECT 1 FROM milestones WHERE company_id = ?', company.id)).length) {
+      this.#seedMilestones(company);
     }
 
     const existingUser = rows(this.sql.exec('SELECT 1 FROM users WHERE email = ?', email))[0];

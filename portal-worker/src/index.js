@@ -69,19 +69,26 @@ export default {
     if (path.startsWith('/admin/')) {
       const authHeader = request.headers.get('Authorization') || '';
       const adminToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-      if (path === '/admin/companies' && method === 'GET') {
-        const expected = env.PORTAL_ADMIN_TOKEN;
-        if (!expected || !adminToken) return json({ error: 'Forbidden' }, 403);
+      const expected = env.PORTAL_ADMIN_TOKEN;
+      let authorized = false;
+      if (expected && adminToken) {
         const a = await sha256Hex(adminToken);
         const b = await sha256Hex(expected);
-        let equal = false;
         if (a.length === b.length) {
-          equal = crypto.subtle.timingSafeEqual
+          authorized = crypto.subtle.timingSafeEqual
             ? crypto.subtle.timingSafeEqual(new TextEncoder().encode(a), new TextEncoder().encode(b))
             : a === b;
         }
-        if (!equal) return json({ error: 'Forbidden' }, 403);
+      }
+      if (!authorized) return json({ error: 'Forbidden' }, 403);
+
+      if (path === '/admin/companies' && method === 'GET') {
         return json({ companies: await hub.adminListCompanies() });
+      }
+      if (path === '/admin/provision' && method === 'POST') {
+        const body = await readJson(request);
+        const result = await hub.adminProvision(adminToken, body);
+        return result.ok ? json(result) : json({ error: result.error }, result.status);
       }
       return json({ error: 'Not found' }, 404);
     }

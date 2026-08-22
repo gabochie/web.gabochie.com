@@ -125,6 +125,29 @@ function sanitizeError(err) {
   return 'Could not reach website';
 }
 
+// Pre-check DNS via DoH: an unresolvable subrequest can terminate at the CF
+// edge with a raw error before our handler can respond, so resolve first.
+async function domainResolves(hostname) {
+  const query = (type) => fetch(
+    'https://cloudflare-dns.com/dns-query?name=' + encodeURIComponent(hostname) + '&type=' + type,
+    { headers: { 'accept': 'application/dns-json' }, signal: AbortSignal.timeout(5000) }
+  ).then(r => r.ok ? r.json() : null).catch(() => null);
+
+  try {
+    const a = await query('A');
+    if (a === null) return true; // DoH unavailable — fail open, let fetch decide
+    if (a.Answer && a.Answer.length) return true;
+    const aaaa = await query('AAAA');
+    if (aaaa === null) return true;
+    if (aaaa.Answer && aaaa.Answer.length) return true;
+    // Status 3 = NXDOMAIN; anything else unexpected -> don't block
+    if (aaaa.Status !== 3 && a.Status !== 3) return true;
+    return false;
+  } catch (e) {
+    return true;
+  }
+}
+
 export async function onRequestPost(context) {
   const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
 
@@ -142,6 +165,10 @@ export async function onRequestPost(context) {
   const targetUrl = validateUrl(body && body.url);
   if (!targetUrl) {
     return json({ error: 'Invalid URL' }, 400);
+  }
+
+  if (!(await domainResolves(new URL(targetUrl).hostname))) {
+    return json({ error: 'Domain not found — check the address', offline: true }, 502);
   }
 
   if (active >= MAX_CONCURRENT) {

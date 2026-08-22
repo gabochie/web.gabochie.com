@@ -327,15 +327,18 @@ export class PortalHub extends DurableObject {
     const industry = String(body.industry || '').trim().slice(0, 60);
     const source = String(body.source || 'Website').trim().slice(0, 60);
 
-    if (!name || !email || !url) return { ok: false, status: 400, error: 'Name, email and website are required' };
+    // url is optional: contact-form messages may not include a website
+    if (!name || !email) return { ok: false, status: 400, error: 'Name and email are required' };
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, status: 400, error: 'Invalid email address' };
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-    try {
-      const parsed = new URL(url);
-      if (!/^https?:$/.test(parsed.protocol) || !parsed.hostname.includes('.')) throw new Error('bad');
-      url = parsed.href;
-    } catch (e) {
-      return { ok: false, status: 400, error: 'Invalid website URL' };
+    if (url) {
+      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+      try {
+        const parsed = new URL(url);
+        if (!/^https?:$/.test(parsed.protocol) || !parsed.hostname.includes('.')) throw new Error('bad');
+        url = parsed.href;
+      } catch (e) {
+        return { ok: false, status: 400, error: 'Invalid website URL' };
+      }
     }
 
     // Rate limit: 5 leads per hour per IP

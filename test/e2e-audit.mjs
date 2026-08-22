@@ -14,7 +14,8 @@ async function post(path, body, headers = {}) {
   const res = await fetch(BASE + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...headers },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(45000)
   });
   let data = null;
   try { data = await res.json(); } catch (e) { /* non-JSON */ }
@@ -37,6 +38,9 @@ console.log('== /api/analyze ==');
   const dead = await post('/api/analyze', { url: 'this-domain-does-not-exist-gx7q.com' });
   check('dead domain -> 502 + message', dead.status === 502 && dead.data && typeof dead.data.error === 'string', dead);
 
+  const deadTld = await post('/api/analyze', { url: 'real-site-but-nxdomain.invalid' });
+  check('dead TLD -> 502 + message', deadTld.status === 502 && deadTld.data && typeof deadTld.data.error === 'string', deadTld);
+
   const noBody = await fetch(BASE + '/api/analyze', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{broken'
   });
@@ -47,15 +51,20 @@ console.log('== /api/lead ==');
 {
   const stamp = Date.now();
   const good = await post('/api/lead', {
-    name: 'Audit E2E', email: `audit-e2e-${stamp}@example.com`, company: 'E2E Co',
-    source: 'heroForm', message: 'e2e-audit test lead'
+    name: 'Audit E2E', email: `audit-e2e-${stamp}@example.com`, companyName: 'E2E Co',
+    url: 'e2e-test-site.example', source: 'heroForm', message: 'e2e-audit test lead'
   }, { Origin: BASE });
-  check('valid lead -> 201', good.status === 201, good);
+  check('valid lead -> 200', good.status === 200 && good.data && good.data.ok === true, good);
+
+  const noUrl = await post('/api/lead', {
+    name: 'Contact E2E', email: `contact-e2e-${stamp}@example.com`, url: '', source: 'Contact Form'
+  }, { Origin: BASE });
+  check('contact lead (no url) -> 200', noUrl.status === 200 && noUrl.data && noUrl.data.ok === true, noUrl);
 
   const hp = await post('/api/lead', {
     name: 'Bot', email: 'bot@example.com', website: 'http://spam.example'
   }, { Origin: BASE });
-  check('honeypot -> fake success', hp.status === 201 && hp.data && hp.data.ok === true, hp);
+  check('honeypot -> fake success (indistinguishable)', hp.status === 200 && hp.data && hp.data.ok === true, hp);
 
   const badEmail = await post('/api/lead', { name: 'X', email: 'not-an-email' }, { Origin: BASE });
   check('bad email -> 400', badEmail.status === 400, badEmail);

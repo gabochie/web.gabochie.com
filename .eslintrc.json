@@ -55,6 +55,11 @@
       "env": { "worker": true }
     },
     {
+      "files": ["test/**/*.mjs", "**/*.mjs"],
+      "parserOptions": { "sourceType": "module" },
+      "env": { "node": true, "es2022": true }
+    },
+    {
       "files": ["firebase-config.js"],
       "rules": { "no-redeclare": "off" }
     }

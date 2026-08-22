@@ -22,28 +22,6 @@ async function verifyTurnstileToken(secret, token, ip) {
   }
 }
 
-async function sendLeadNotification(env, lead) {
-  const apiKey = env.BREVO_API_KEY;
-  if (!apiKey) return; // email not configured; lead is still stored
-  const hub = env.PORTAL_HUB.getByName('main');
-  const mail = hub.buildLeadNotificationEmail(lead);
-  try {
-    await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: { 'api-key': apiKey, 'Content-Type': 'application/json', 'accept': 'application/json' },
-      body: JSON.stringify({
-        sender: { name: 'Web Gabochie Site', email: 'web@gabochie.com' },
-        to: [{ email: mail.to }],
-        replyTo: [{ email: lead.email }],
-        subject: mail.subject,
-        htmlContent: mail.html
-      })
-    });
-  } catch (e) {
-    console.log('lead notification failed:', e.message);
-  }
-}
-
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status: status,
@@ -97,7 +75,7 @@ export default {
         if (!turnstileOk) return json({ error: 'Bot check failed. Please retry.' }, 403);
         const result = await hub.addLead(ip, body);
         if (!result.ok) return json({ error: result.error }, result.status);
-        if (result.lead) ctx.waitUntil(sendLeadNotification(env, result.lead));
+        if (result.lead) ctx.waitUntil(hub.sendLeadNotification(result.lead));
         return json({ ok: true });
       }
 

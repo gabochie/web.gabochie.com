@@ -341,12 +341,12 @@ export class PortalHub extends DurableObject {
       }
     }
 
-    // Rate limit: 5 leads per hour per IP
+    // Rate limit: 20 leads per hour per IP
     const attemptKey = ip;
     const cutoff = Date.now() - 60 * 60 * 1000;
     this.sql.exec('DELETE FROM lead_attempts WHERE ts < ?', cutoff);
     const recent = rows(this.sql.exec('SELECT COUNT(*) AS n FROM lead_attempts WHERE key = ?', attemptKey))[0].n;
-    if (recent >= 5) return { ok: false, status: 429, error: 'Too many requests. Please try again later.' };
+    if (recent >= 20) return { ok: false, status: 429, error: 'Too many requests. Please try again later.' };
     this.sql.exec('INSERT INTO lead_attempts (key, ts) VALUES (?, ?)', attemptKey, Date.now());
 
     const id = makeId('lead');
@@ -383,6 +383,30 @@ export class PortalHub extends DurableObject {
       '<table style="background:#121216;border:1px solid #1f1f28;border-radius:12px;border-collapse:inherit;width:100%;margin-bottom:22px">' + rowsHtml + '</table>' +
       '<p style="color:#55555f;font-size:.85rem">Reply to reply directly to the lead.</p></div>';
     return { to: ownerEmail, subject: 'New audit lead — ' + lead.name + (lead.company ? ' (' + lead.company + ')' : ''), html: html };
+  }
+
+  // Runs inside the DO so lead/mail objects stay local (no RPC property weirdness)
+  async sendLeadNotification(lead) {
+    const apiKey = this.env.BREVO_API_KEY;
+    if (!apiKey) return; // email not configured; lead is still stored
+    const mail = this.buildLeadNotificationEmail(lead);
+    try {
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: { 'api-key': apiKey, 'Content-Type': 'application/json', 'accept': 'application/json' },
+        body: JSON.stringify({
+          sender: { name: 'Web Gabochie Site', email: 'web@gabochie.com' },
+          to: [{ email: mail.to }],
+          replyTo: { email: lead.email },
+          subject: mail.subject,
+          htmlContent: mail.html
+        })
+      });
+      console.log('lead notification:', res.status, lead.id, '->', mail.to);
+      if (!res.ok) console.log('brevo error body:', await res.text());
+    } catch (e) {
+      console.log('lead notification failed:', e.message);
+    }
   }
 
   async adminListLeads(adminToken) {

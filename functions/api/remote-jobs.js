@@ -1,119 +1,229 @@
 /* ========================================
    CF PAGES FUNCTION — Remote Tech Jobs Finder
-   Scrapes Indeed (CA, US, UK, DE, AU) RSS
-   + built-in sample dataset as fallback
+   Live source: Remotive public API (free, no key)
+   Fallback: built-in sample dataset (flagged live:false)
+
+   Hardened:
+   - Same-origin only (Origin/Referer allowlist)
+   - Per-IP rate limiting
+   - Edge cache (5 min) per query
    ======================================== */
-export async function onRequestPost(context) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
+const ALLOWED_ORIGINS = [
+  'https://web.gabochie.com',
+  'http://localhost:8788',
+  'http://127.0.0.1:8788'
+];
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60 * 1000;
+const CACHE_TTL = 300;
+const MAX_JOBS = 60;
 
-  try {
-    const { keywords, remote, country, page } = await context.request.json();
-    const searchTerm = keywords || 'software developer';
-    const results = [];
+const hits = new Map();
 
-    // Country-specific Indeed RSS configs
-    const indeedConfigs = {
-      CA: { domain: 'ca.indeed.com', label: 'Indeed Canada' },
-      US: { domain: 'www.indeed.com', label: 'Indeed US' },
-      UK: { domain: 'www.indeed.co.uk', label: 'Indeed UK' },
-      DE: { domain: 'de.indeed.com', label: 'Indeed Germany' },
-      AU: { domain: 'au.indeed.com', label: 'Indeed Australia' },
-      AE: { domain: 'ae.indeed.com', label: 'Indeed UAE' }
+function json(data, status) {
+  const res = new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': 'https://web.gabochie.com'
+    }
+  });
+  return res;
+}
+
+function originAllowed(request) {
+  const origin = request.headers.get('Origin');
+  const referer = request.headers.get('Referer');
+  if (origin) return ALLOWED_ORIGINS.includes(origin);
+  if (referer) {
+    try {
+      const ref = new URL(referer).origin;
+      return ALLOWED_ORIGINS.includes(ref);
+    } catch (e) { return false; }
+  }
+  // No Origin and no Referer: non-browser client -> reject
+  return false;
+}
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const list = (hits.get(ip) || []).filter(ts => now - ts < RATE_WINDOW_MS);
+  if (list.length >= RATE_LIMIT) {
+    hits.set(ip, list);
+    return true;
+  }
+  list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 5000) hits.clear(); // crude memory guard
+  return false;
+}
+
+function fetchWithTimeout(url, ms) {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), ms);
+  return fetch(url, {
+    signal: controller.signal,
+    headers: { 'User-Agent': 'web-gabochie-job-board' }
+  }).finally(() => clearTimeout(t));
+}
+
+function detectCountry(location) {
+  const l = (location || '').toLowerCase();
+  if (/uae|u\.a\.e|dubai|abu dhabi|emirates/.test(l)) return 'AE';
+  if (/\buk\b|\bu\.k\.|united kingdom|britain|england|scotland|wales|london\b/.test(l)) return 'UK';
+  if (/united states|\busa\b|\bu\.s\.a|united states of america|america|\bny\b|\bsf\b/.test(l)) return 'US';
+  if (/canada|canadian|\btoronto\b|\bvancouver\b|montreal|\bontario\b/.test(l)) return 'CA';
+  if (/germany|german|deutschland|berlin|munich|hamburg/.test(l)) return 'DE';
+  if (/australia|australian|sydney|melbourne|brisbane|new south wales/.test(l)) return 'AU';
+  return '';
+}
+
+function stripHtml(html) {
+  return String(html || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#\d+;/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function fetchRemotive(keywords, country) {
+  const url = 'https://remotive.com/api/remote-jobs?limit=100' +
+    (keywords ? '&search=' + encodeURIComponent(keywords) : '');
+  const resp = await fetchWithTimeout(url, 8000);
+  if (!resp.ok) throw new Error('Remotive responded ' + resp.status);
+  const data = await resp.json();
+  const jobs = Array.isArray(data.jobs) ? data.jobs : [];
+
+  let mapped = jobs.map(j => {
+    const location = j.candidate_required_location || 'Worldwide';
+    return {
+      id: String(j.id || ''),
+      title: stripHtml(j.title),
+      company: stripHtml(j.company_name) || 'Company',
+      location: location,
+      url: j.url,
+      description: stripHtml(j.description).slice(0, 500),
+      postedDate: j.publication_date ? new Date(j.publication_date).toISOString() : new Date().toISOString(),
+      salary: j.salary || '',
+      remote: true,
+      source: 'Remotive',
+      country: detectCountry(location),
+      tags: getTags(j.title),
+      highlighted: false
     };
+  });
 
-    const countriesToScrape = country && indeedConfigs[country] ? [country] : Object.keys(indeedConfigs);
+  mapped = mapped.filter(j => j.title && j.url);
+  if (country) {
+    const byCountry = mapped.filter(j => j.country === country);
+    // Country selected but board is global-remote: keep global matches rather than empty
+    if (byCountry.length > 0) mapped = byCountry;
+  }
+  return mapped;
+}
 
-    for (const c of countriesToScrape) {
-      try {
-        const cfg = indeedConfigs[c];
-        const indeedUrl = `https://${cfg.domain}/rss?q=${encodeURIComponent(searchTerm + ' tech')}&l=${c === 'DE' ? 'Deutschland' : c}`;
-        const resp = await fetch(indeedUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-        if (resp.ok) {
-          const html = await resp.text();
-          const items = html.match(/<item>[\s\S]*?<\/item>/g) || [];
-          items.forEach(item => {
-            const title = (item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || [])[1] || (item.match(/<title>(.*?)<\/title>/) || [])[1] || '';
-            const link = (item.match(/<link>(.*?)<\/link>/) || [])[1] || '';
-            const desc = (item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/) || [])[1] || (item.match(/<description>(.*?)<\/description>/) || [])[1] || '';
-            const pubDate = (item.match(/<pubDate>(.*?)<\/pubDate>/) || [])[1] || '';
-            if (title && link) {
-              const isRemote = /remote|work from home|wfh|virtual/i.test(desc + title);
-              const isTech = /developer|engineer|software|devops|programmer|coder|frontend|backend|full.?stack|data.?scientist|machine.?learning|ai|cloud|architect|it.?support|sysadmin|network|security|analyst/i.test(title + desc);
-              if (isTech) {
-                results.push({
-                  title: title.replace(/<\/?[^>]+(>|$)/g, '').trim(),
-                  company: extractCompany(desc) || 'Company',
-                  location: (extractLocation(desc) || c === 'CA' ? 'Canada' : c === 'US' ? 'United States' : c === 'UK' ? 'United Kingdom' : c === 'DE' ? 'Germany' : c === 'AU' ? 'Australia' : 'UAE') + ' (' + cfg.label + ')',
-                  url: link.trim(),
-                  description: desc.replace(/<\/?[^>]+(>|$)/g, '').trim().slice(0, 500),
-                  postedDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
-                  salary: extractSalary(desc),
-                  remote: isRemote || remote === true,
-                  source: cfg.label,
-                  country: c
-                });
-              }
-            }
-          });
-        }
-      } catch (e) {}
+export async function onRequestPost(context) {
+  try {
+    if (!originAllowed(context.request)) {
+      return json({ error: 'Forbidden' }, 403);
+    }
+    const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
+    if (rateLimited(ip)) {
+      return json({ error: 'Too many searches — try again shortly' }, 429);
     }
 
-    // If no results from scraping, use fallback sample data
-    if (results.length === 0) {
-      results.push(...getFallbackJobs(searchTerm, country, remote));
+    let body;
+    try {
+      body = await context.request.json();
+    } catch (e) {
+      return json({ error: 'Invalid JSON body' }, 400);
     }
 
-    // Deduplicate
+    const keywords = typeof body.keywords === 'string' ? body.keywords.trim().slice(0, 120) : '';
+    const searchTerm = keywords || 'software developer';
+    const country = typeof body.country === 'string' && ['CA', 'US', 'UK', 'DE', 'AU', 'AE'].includes(body.country)
+      ? body.country : '';
+    const remoteOnly = body.remote === true;
+
+    // Edge cache keyed on normalized query (skip cache on errors below)
+    const cache = caches.default;
+    const cacheKey = new Request(
+      'https://cache.web-gabochie.internal/remote-jobs?kw=' + encodeURIComponent(searchTerm.toLowerCase()) +
+      '&c=' + country + '&r=' + (remoteOnly ? 1 : 0)
+    );
+    const cached = await cache.match(cacheKey);
+    if (cached) return cached;
+
+    let jobs = [];
+    let live = false;
+    try {
+      jobs = await fetchRemotive(searchTerm, country);
+      live = jobs.length > 0;
+    } catch (e) { /* fall through to sample data */ }
+
+    if (!live) {
+      jobs = getFallbackJobs(searchTerm, country, remoteOnly);
+    } else if (remoteOnly) {
+      // All live results are remote by definition; sample path already filters
+    }
+
+    // Dedupe by URL
     const seen = new Set();
-    const unique = results.filter(r => {
-      const key = r.title + '|' + r.company + '|' + r.country;
+    jobs = jobs.filter(j => {
+      const key = j.url;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
 
-    // Filter remote if requested
-    let filtered = unique;
-    if (remote === true) {
-      filtered = unique.filter(r => r.remote);
-    }
+    // Newest first
+    jobs.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+    jobs = jobs.slice(0, MAX_JOBS);
 
-    // Sort by date (newest first)
-    filtered.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+    const payload = {
+      jobs,
+      total: jobs.length,
+      page: 1,
+      live,
+      sources: live ? ['Remotive'] : ['Sample Data']
+    };
 
-    return new Response(JSON.stringify({
-      jobs: filtered.slice(0, 60),
-      total: filtered.length,
-      page: page || 1,
-      sources: ['Indeed Canada', 'Indeed US', 'Indeed UK', 'Indeed Germany', 'Indeed Australia', 'Indeed UAE']
-    }), { headers });
+    const res = new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://web.gabochie.com',
+        'Cache-Control': 'public, max-age=' + CACHE_TTL
+      }
+    });
+    context.waitUntil(cache.put(cacheKey, res.clone()));
+    return res;
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message, jobs: getFallbackJobs() }), { status: 200, headers });
+    // 502 bodies are stripped by the CF edge on Pages Functions — use 422
+    return json({ error: err.message, jobs: getFallbackJobs(), total: 0, live: false, sources: ['Sample Data'] }, 422);
   }
 }
 
-function extractCompany(desc) {
-  const m = desc.match(/Company:\s*([^<]+)/i) || desc.match(/at\s+([A-Z][^,\s]+(?:\s+[A-Z][^,\s]+){0,3})/);
-  return m ? m[1].trim() : '';
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': 'https://web.gabochie.com',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
 }
 
-function extractLocation(desc) {
-  const m = desc.match(/Location:\s*([^<]+)/i);
-  return m ? m[1].trim() : '';
-}
-
-function extractSalary(desc) {
-  const m = desc.match(/\$[\d,]+(?:\.\d{2})?(?:\s*-\s*\$[\d,]+(?:\.\d{2})?)?/);
-  return m ? m[0] : '';
-}
-
+// ---------- sample dataset (used when live source unavailable) ----------
 function getFallbackJobs(keyword, country, remote) {
   const techJobs = [
     // CANADA
@@ -141,18 +251,18 @@ function getFallbackJobs(keyword, country, remote) {
     { title: 'Data Scientist', company: 'DeepMind', location: 'London, UK', country: 'UK', remote: false, salary: '£100,000 - £180,000', url: 'https://www.deepmind.com/careers' },
     { title: 'Platform Engineer', company: 'Deliveroo', location: 'London, UK', country: 'UK', remote: true, salary: '£80,000 - £130,000', url: 'https://deliveroo.co.uk/careers' },
     { title: 'Frontend Developer', company: 'Spotify', location: 'London, UK', country: 'UK', remote: true, salary: '£70,000 - £110,000', url: 'https://www.spotifyjobs.com/' },
-    { title: 'Contract React Developer', company: 'Various Agencies', location: 'Remote, UK', country: 'UK', remote: true, salary: '£400 - £700/day', url: 'https://www.indeed.co.uk' },
+    { title: 'Contract React Developer', company: 'Various Agencies', location: 'Remote, UK', country: 'UK', remote: true, salary: '£400 - £700/day', url: 'https://uk.indeed.com' },
     // GERMANY
     { title: 'Software Engineer', company: 'Zalando', location: 'Berlin, Germany', country: 'DE', remote: true, salary: '€70,000 - €110,000', url: 'https://jobs.zalando.com/' },
     { title: 'Backend Developer', company: 'N26', location: 'Berlin, Germany', country: 'DE', remote: true, salary: '€65,000 - €100,000', url: 'https://n26.com/en/careers' },
-    { title: 'DevOps Engineer', company: 'SoundCloud', location: 'Berlin, Germany', country: 'DE', remote: true, salary: '€70,000 - €105,000', url: 'https://soundcloud.com/careers' },
-    { title: 'AI Engineer', company: 'SAP', location: 'Walldorf, Germany', country: 'DE', remote: true, salary: '€80,000 - €130,000', url: 'https://www.sap.com/careers.html' },
-    { title: 'Senior Java Developer', company: 'Deutsche Bank', location: 'Frankfurt, Germany', country: 'DE', remote: false, salary: '€85,000 - €120,000', url: 'https://www.db.com/careers/' },
+    { title: 'DevOps Engineer', company: 'SoundCloud', location: 'Berlin, Germany', country: 'DE', remote: true, salary: '€70,000 - €105,000', url: 'https://www.soundcloud.com/jobs' },
+    { title: 'AI Engineer', company: 'SAP', location: 'Walldorf, Germany', country: 'DE', remote: true, salary: '€80,000 - €130,000', url: 'https://jobs.sap.com/' },
+    { title: 'Senior Java Developer', company: 'Deutsche Bank', location: 'Frankfurt, Germany', country: 'DE', remote: false, salary: '€85,000 - €120,000', url: 'https://careers.db.com/' },
     // AUSTRALIA
     { title: 'Software Engineer', company: 'Atlassian', location: 'Sydney, Australia', country: 'AU', remote: true, salary: 'A$130,000 - A$180,000', url: 'https://www.atlassian.com/company/careers' },
     { title: 'Full Stack Developer', company: 'Canva', location: 'Sydney, Australia', country: 'AU', remote: true, salary: 'A$120,000 - A$170,000', url: 'https://www.canva.com/careers/' },
     { title: 'Data Engineer', company: 'REA Group', location: 'Melbourne, Australia', country: 'AU', remote: true, salary: 'A$110,000 - A$160,000', url: 'https://www.rea-group.com/careers/' },
-    { title: 'DevOps Engineer', company: 'Xero', location: 'Melbourne, Australia', country: 'AU', remote: true, salary: 'A$120,000 - A$165,000', url: 'https://www.xero.com/about/careers/' },
+    { title: 'DevOps Engineer', company: 'Xero', location: 'Melbourne, Australia', country: 'AU', remote: true, salary: 'A$120,000 - A$165,000', url: 'https://www.xero.com/cares/careers/' },
     { title: 'Frontend Developer', company: 'SafetyCulture', location: 'Sydney, Australia', country: 'AU', remote: true, salary: 'A$100,000 - A$145,000', url: 'https://safetyculture.com/careers/' },
     { title: 'Freelance Web Developer', company: 'Various Startups', location: 'Remote, NA', country: 'US', remote: true, salary: '$80 - $150/hr', url: 'https://www.indeed.com' },
     { title: 'Freelance Mobile Developer', company: 'Various Clients', location: 'Remote, EU', country: 'DE', remote: true, salary: '€60 - €120/hr', url: 'https://de.indeed.com' },
@@ -167,13 +277,17 @@ function getFallbackJobs(keyword, country, remote) {
   const kw = (keyword || '').toLowerCase();
   let filtered = techJobs;
   if (kw && kw !== 'software developer' && kw !== 'tech') {
-    filtered = techJobs.filter(j => j.title.toLowerCase().includes(kw) || j.company.toLowerCase().includes(kw));
+    filtered = techJobs.filter(j =>
+      j.title.toLowerCase().includes(kw.split(' ')[0]) ||
+      j.company.toLowerCase().includes(kw)
+    );
   }
   if (remote === true) {
     filtered = filtered.filter(j => j.remote);
   }
   if (country) {
-    filtered = filtered.filter(j => j.country === country);
+    const byCountry = filtered.filter(j => j.country === country);
+    if (byCountry.length > 0) filtered = byCountry;
   }
 
   return filtered.map((j, i) => ({
@@ -183,10 +297,10 @@ function getFallbackJobs(keyword, country, remote) {
     location: j.location,
     url: j.url,
     description: j.title + ' position at ' + j.company + (j.remote ? ' (Remote). ' : ' in ' + j.location + '. ') + 'Apply directly on company website.',
-    postedDate: new Date(Date.now() - i * 86400000 * Math.floor(Math.random() * 5 + 1)).toISOString(),
+    postedDate: new Date(Date.now() - (i % 7) * 86400000).toISOString(),
     salary: j.salary,
     remote: j.remote,
-    source: j.country === 'CA' ? 'Tech Jobs Canada' : j.country === 'US' ? 'Tech Jobs USA' : j.country === 'UK' ? 'Tech Jobs UK' : j.country === 'DE' ? 'Tech Jobs Germany' : j.country === 'AU' ? 'Tech Jobs Australia' : 'Tech Jobs UAE',
+    source: 'Sample Data',
     country: j.country,
     tags: getTags(j.title),
     highlighted: j.title.includes('Senior') || j.title.includes('Lead') || j.title.includes('Architect')
@@ -194,21 +308,22 @@ function getFallbackJobs(keyword, country, remote) {
 }
 
 function getTags(title) {
-  const t = title.toLowerCase();
+  const t = String(title || '').toLowerCase();
   const tags = [];
   if (t.includes('react')) tags.push('React');
   if (t.includes('node') || t.includes('backend')) tags.push('Node.js');
   if (t.includes('python')) tags.push('Python');
-  if (t.includes('java')) tags.push('Java');
+  if (/\bjava\b/.test(t)) tags.push('Java');
   if (t.includes('devops') || t.includes('sre') || t.includes('platform')) tags.push('DevOps');
-  if (t.includes('frontend') || t.includes('react') || t.includes('angular') || t.includes('vue')) tags.push('Frontend');
-  if (t.includes('full') || t.includes('fullstack')) tags.push('Full Stack');
-  if (t.includes('data') || t.includes('machine') || t.includes('ai')) tags.push('AI/ML');
-  if (t.includes('ios') || t.includes('mobile') || t.includes('react native')) tags.push('Mobile');
-  if (t.includes('security') || t.includes('blockchain')) tags.push('Security');
-  if (t.includes('qa') || t.includes('test') || t.includes('automation')) tags.push('QA');
-  if (t.includes('product') || t.includes('technical writer')) tags.push('Product');
-  if (t.includes('co-op') || t.includes('junior') || t.includes('intern')) tags.push('Junior');
+  if (t.includes('frontend') || t.includes('angular') || t.includes('vue')) tags.push('Frontend');
+  if (t.includes('full stack') || t.includes('fullstack')) tags.push('Full Stack');
+  if (t.includes('data') || t.includes('machine learning')) tags.push('AI/ML');
+  if (/\bai\b/.test(t)) tags.push('AI/ML');
+  if (t.includes('ios') || t.includes('android') || t.includes('mobile')) tags.push('Mobile');
+  if (t.includes('security')) tags.push('Security');
+  if (t.includes('qa') || t.includes('test')) tags.push('QA');
+  if (t.includes('product manager') || t.includes('technical writer')) tags.push('Product');
+  if (t.includes('co-op') || t.includes('junior') || t.includes('intern') || t.includes('graduate')) tags.push('Junior');
   if (t.includes('architect')) tags.push('Architect');
   if (t.includes('freelance') || t.includes('contract')) tags.push('Freelance');
   if (tags.length === 0) tags.push('General Dev');

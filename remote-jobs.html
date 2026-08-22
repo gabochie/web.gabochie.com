@@ -312,7 +312,6 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
 </footer>
 
 <script src="scoring.js"></script>
-<script src="firebase-config.js"></script>
 <script src="cookie-consent.js"></script>
 <script src="visitor-tracker.js"></script>
 <script src="analytics.js"></script>
@@ -323,7 +322,10 @@ CookieConsent.showManageButton();
 VisitorTracker.init();
 Analytics.init();
 
-var savedJobs = JSON.parse(localStorage.getItem('rj_savedJobs') || '{}');
+var savedJobs = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
+
+function savedKey(job) { return job.url || job.title + job.company; }
+function isJobSaved(job) { return savedJobs.some(function(s) { return savedKey(s) === savedKey(job); }); }
 
 function showToast(msg, type) {
   var t = document.getElementById('toast');
@@ -334,15 +336,15 @@ function showToast(msg, type) {
 }
 
 function toggleSave(job) {
-  var key = job.url || job.title + job.company;
-  if (savedJobs[key]) {
-    delete savedJobs[key];
+  var idx = savedJobs.findIndex(function(s) { return savedKey(s) === savedKey(job); });
+  if (idx >= 0) {
+    savedJobs.splice(idx, 1);
     showToast('Removed from saved jobs', 'info');
   } else {
-    savedJobs[key] = Object.assign({}, job, { savedAt: new Date().toISOString() });
-    showToast('✓ Job saved! View in admin dashboard', 'success');
+    savedJobs.push(Object.assign({}, job, { savedAt: new Date().toISOString(), status: 'Saved' }));
+    showToast('✓ Job saved! Track it in the admin dashboard', 'success');
   }
-  localStorage.setItem('rj_savedJobs', JSON.stringify(savedJobs));
+  localStorage.setItem('rj_adminSavedJobs', JSON.stringify(savedJobs));
   renderJobs(window._currentJobs);
 }
 
@@ -368,8 +370,15 @@ function searchJobs() {
     loading.style.display = 'none';
     window._currentJobs = data.jobs || [];
     renderJobs(window._currentJobs);
-    count.textContent = data.jobs ? data.jobs.length + ' jobs found' : 'No results';
-    document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    count.textContent = window._currentJobs.length + ' jobs found';
+    var badge = document.getElementById('liveBadge');
+    if (data.live) {
+      badge.style.display = 'inline-flex';
+      document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    } else {
+      badge.style.display = 'none';
+      document.getElementById('lastUpdated').textContent = 'Showing sample listings (live feed unavailable)';
+    }
   })
   .catch(function(err) {
     loading.style.display = 'none';
@@ -387,8 +396,7 @@ function renderJobs(jobs) {
   }
 
   container.innerHTML = jobs.map(function(job) {
-    var key = job.url || job.title + job.company;
-    var isSaved = !!savedJobs[key];
+    var isSaved = isJobSaved(job);
     var daysAgo = Math.floor((Date.now() - new Date(job.postedDate).getTime()) / 86400000);
     var dateStr = daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : daysAgo + ' days ago';
 
@@ -398,7 +406,7 @@ function renderJobs(jobs) {
 
     var salaryHtml = job.salary ? '<span><span class="meta-icon">💰</span>' + job.salary + '</span>' : '';
 
-    var countryFlags = { CA: '🇨🇦', US: '🇺🇸', UK: '🇬🇧', DE: '🇩🇪', AU: '🇦🇺' };
+    var countryFlags = { CA: '🇨🇦', US: '🇺🇸', UK: '🇬🇧', DE: '🇩🇪', AU: '🇦🇺', AE: '🇦🇪' };
     var flag = countryFlags[job.country] || '🌍';
 
     return '<div class="job-card' + (job.highlighted ? ' highlighted' : '') + '" onclick="openJob(\'' + escapeStr(job.url) + '\')">' +

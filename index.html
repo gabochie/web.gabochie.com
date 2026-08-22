@@ -150,8 +150,6 @@
   <script>Sentry.init({ dsn: 'https://74bcc636abae3754072458ca7badb8aa@o4511673351077888.ingest.de.sentry.io/4511686654689360' });</script>
   <!-- Microsoft Clarity — Heatmaps & Session Recordings -->
   <script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","7tdjawx98u");</script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#000;--surface:#0a0a0a;--surface2:#141414;--accent:#00ff88;--accent-dark:#00cc6a;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--text:#fff;--text-dim:#aaa;--text2:#888;--text3:#555;--text-muted:#444;--border:#222;--radius:12px;--radius-sm:8px;--radius-xs:6px;--shadow:0 8px 32px rgba(0,0,0,.6)}
@@ -414,8 +412,7 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
       <h3>Get Your Free Website Audit</h3>
       <p class="form-sub">Enter your URL. Get your score. No obligation.</p>
       <form id="heroForm" name="Website Audit" method="POST">
-        <input type="hidden" name="form-name" value="Website Audit">
-        <p class="hidden" style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+        <input type="text" id="heroWebsiteHp" name="website" value="" style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="form-group">
           <label for="heroName">Name</label>
           <input type="text" id="heroName" placeholder="John Smith" required>
@@ -718,8 +715,7 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
       </div>
       <div class="contact-form">
         <form id="contactForm" name="Contact" method="POST">
-          <input type="hidden" name="form-name" value="Contact">
-          <p class="hidden" style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+          <input type="text" id="contactWebsiteHp" name="website" value="" style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-group">
             <label for="cName">Name</label>
             <input type="text" id="cName" required>
@@ -800,8 +796,7 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
     <h3>Wait — Don't Leave Yet</h3>
     <p class="form-sub">Get your free website audit before you go.</p>
     <form id="popupForm" name="Exit Popup" method="POST">
-      <input type="hidden" name="form-name" value="Exit Popup">
-      <p class="hidden" style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <input type="text" id="popupWebsiteHp" name="website" value="" style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="form-group">
         <label for="popName">Name</label>
         <input type="text" id="popName" required>
@@ -823,7 +818,6 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
 <div class="toast" id="toast"></div>
 
   <script src="scoring.js"></script>
-  <script src="firebase-config.js"></script>
   <script src="cookie-consent.js"></script>
   <script src="visitor-tracker.js"></script>
   <script src="analytics.js"></script>
@@ -845,7 +839,6 @@ footer .copyright{grid-column:1/-1;text-align:center;padding-top:32px;border-top
     });
   </script>
 <script>
-FirebaseService.init();
 // PORTFOLIO DATA
 var portfolio=[
   {name:'TrustInfraOS',tag:'Fintech',color:'#0f172a',file:'trustinfraos',result:'Trust infrastructure for diaspora capital — verification, monitoring & milestone payments',url:'https://trustinfraos.com',img:'https://image.thum.io/get/width/600/crop/400/https://trustinfraos.com'},
@@ -856,7 +849,6 @@ var portfolio=[
   {name:'NeoGH',tag:'Civic Tech',color:'#0a2540',file:'neogh',result:'Gamified national youth policy — civic education through missions & XP',url:'https://neogh.org',img:'https://api.microlink.io/?url=https://neogh.org&screenshot=true&meta=false&embed=screenshot.url'}
 ];
 
-var WHATSAPP='233243262019';
 var EMAIL='web@gabochie.com';
 
 function showToast(msg){
@@ -866,85 +858,32 @@ function showToast(msg){
   setTimeout(function(){t.classList.remove('show')},4000);
 }
 
-function openWhatsApp(text){
-  window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(text),'_blank');
+function postLead(payload, okMsg){
+  return fetch('/api/lead', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).then(function(r){
+    return r.json().catch(function(){return {};}).then(function(d){ return {ok:r.ok, d:d}; });
+  }).then(function(res){
+    if (res.ok) { showToast(okMsg || '✓ Request received — we\'ll be in touch within 24h'); }
+    else { showToast('⚠ ' + ((res.d && res.d.error) || 'Submission failed — please try again')); }
+    return res.ok;
+  }).catch(function(){
+    showToast('⚠ Network error — please try again');
+    return false;
+  });
 }
-function openEmail(subject,body){
-  window.location='mailto:'+EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-}
+
 function submitForm(name,email,company,url,source){
-  // Save lead to Firestore
-  if (window.FirebaseService) {
-    var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    var leadData = {
-      id: leadId,
-      name: name || 'Unknown',
-      email: email,
-      company: company || '',
-      url: url || '',
-      source: source || 'Website',
-      industry: document.getElementById('heroIndustry')?.value || '',
-      status: 'New',
-      score: 0,
-      createdAt: new Date().toISOString()
-    };
-
-    // Merge visitor session data
-    if (window.VisitorTracker && VisitorTracker.getSession()) {
-      var session = VisitorTracker.getSession();
-      leadData.visitorSession = {
-        sessionId: session.id,
-        pages: (session.pages || []).slice(-10),
-        referrer: session.referrer || '',
-        referrerType: session.referrerType || '',
-        referrerDomain: session.referrerDomain || '',
-        utm: session.utm || {},
-        device: session.device || {},
-        geo: session.geo || {},
-        pageViews: session.pageCount || 0,
-        firstVisit: session.started,
-        convertedAt: Date.now()
-      };
-      // Mark session as converted
-      VisitorTracker.onFormSubmit(leadId);
-    }
-
-    // Log funnel conversion
-    if (window.Analytics) {
-      Analytics.logFunnel('lead_created', { leadId: leadId, source: source });
-    }
-
-    FirebaseService.leads.update(leadId, leadData).catch(function () {});
-
-    // Send automated follow-up email via Brevo
-    if (email) {
-      fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: email,
-          subject: 'Your Free Website Audit - Web Gabochie',
-          html: '<div style="font-family:Inter,system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#0b0b0f;color:#f0f0f0">' +
-            '<div style="font-size:1.5rem;font-weight:800;margin-bottom:24px">Web <span style="color:#00ff88">Gabochie</span></div>' +
-            '<h1 style="font-size:1.6rem;margin-bottom:12px">Your Free Website Audit</h1>' +
-            '<p style="color:#8a8a95;margin-bottom:20px">Thanks for requesting an audit' + (name ? ', ' + name : '') + '. We\'ll review your site and get back to you shortly.</p>' +
-            '<div style="background:#121216;border:1px solid #1f1f28;border-radius:12px;padding:24px;margin-bottom:24px">' +
-            '<div style="font-size:.8rem;color:#8a8a95;margin-bottom:8px">Next Steps</div>' +
-            '<div style="font-size:1rem;color:#f0f0f0;line-height:1.7">1. We analyze your site<br>2. We prepare recommendations<br>3. We reach out with a proposal</div>' +
-            '</div>' +
-            '<h2 style="font-size:1.2rem;margin-bottom:12px">Fixed-Price Packages</h2>' +
-            '<p style="color:#8a8a95;margin-bottom:20px">We offer redesign packages starting at $999. No hidden fees, no revenue share. <a href="https://web.gabochie.com/services.html" style="color:#00ff88">See packages →</a></p>' +
-            '<p style="color:#55555f;font-size:.85rem">Or reply to this email to schedule a call.</p>' +
-            '</div>'
-        })
-      }).catch(function () {});
-    }
-  }
-
-  // Send lead via WhatsApp/email
-  var msg='New website audit request from '+source+':\n\nName: '+name+'\nEmail: '+email+'\nCompany: '+(company||'N/A')+'\nWebsite: '+(url||'N/A');
-  openWhatsApp(msg);
-  setTimeout(function(){openEmail('Website Audit Request — '+name,msg);},800);
+  var industryEl = document.getElementById('heroIndustry');
+  var honeypotEl = document.getElementById('heroWebsiteHp');
+  postLead({
+    name:name, email:email, companyName:company, url:url,
+    industry: industryEl ? industryEl.value : '',
+    source:source,
+    website: honeypotEl ? honeypotEl.value : ''
+  });
 
   // Run live analysis
     if (url && window.Scoring) {
@@ -956,6 +895,18 @@ function submitForm(name,email,company,url,source){
     window.Scoring.analyzeWebsite(url).then(function (result) {
       if (btn) { btn.textContent = '🔍 Analyze My Website — Free'; btn.disabled = false; }
       if (!result) return;
+
+      if (result.error) {
+        document.getElementById('heroScoreTotal').textContent = '—';
+        document.getElementById('heroScoreTotal').style.color = 'var(--yellow)';
+        ['heroDesignScore', 'heroMobileScore', 'heroPerfScore'].forEach(function (id) {
+          document.getElementById(id).textContent = '—';
+        });
+        document.getElementById('heroIssuesList').innerHTML =
+          '<div style="font-size:.85rem;color:var(--text2);padding:3px 0">⚠ ' + ((result.issues && result.issues[0]) || 'Analysis failed — please try again') + '</div>';
+        document.getElementById('heroWinsList').innerHTML = '';
+        return;
+      }
 
       var total = result.total || result.scores?.total || 0;
       var design = result.design || result.scores?.design || 0;
@@ -1052,27 +1003,13 @@ document.getElementById('contactForm').addEventListener('submit',function(e){
   var em=document.getElementById('cEmail').value;
   var co=document.getElementById('cCompany').value;
   var m=document.getElementById('cMessage').value;
+  var hp=document.getElementById('contactWebsiteHp');
 
-  // Save lead to Firestore
-  if (window.FirebaseService) {
-    var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    var leadData = {
-      id: leadId, name: n, email: em, company: co || '', message: m,
-      source: 'Contact Form', status: 'New', score: 0, createdAt: new Date().toISOString()
-    };
-    if (window.VisitorTracker && VisitorTracker.getSession()) {
-      var s = VisitorTracker.getSession();
-      leadData.visitorSession = { sessionId: s.id, pages: (s.pages||[]).slice(-10), referrer: s.referrer||'', referrerType: s.referrerType||'', utm: s.utm||{}, device: s.device||{}, geo: s.geo||{} };
-      VisitorTracker.onFormSubmit(leadId);
-    }
-    if (window.Analytics) Analytics.logFunnel('lead_created', { leadId: leadId, source: 'Contact Form' });
-    FirebaseService.leads.update(leadId, leadData).catch(function () {});
-  }
-
-  var msg='New contact message:\n\nName: '+n+'\nEmail: '+em+'\nCompany: '+(co||'N/A')+'\nMessage: '+m;
-  openWhatsApp(msg);
-  setTimeout(function(){openEmail('Contact from '+n,msg);},800);
-  showToast('✓ Message sent! Opening WhatsApp & email...');
+  postLead({
+    name:n, email:em, companyName:co, url:'',
+    source:'Contact Form', message:m,
+    website: hp ? hp.value : ''
+  }, '✓ Message sent! We\'ll reply within 24 hours.');
   this.reset();
 });
 
@@ -1082,21 +1019,12 @@ document.getElementById('popupForm').addEventListener('submit',function(e){
   var n=document.getElementById('popName').value;
   var em=document.getElementById('popEmail').value;
   var u=document.getElementById('popUrl').value;
+  var hp=document.getElementById('popupWebsiteHp');
 
-  // Save lead to Firestore
-  if (window.FirebaseService) {
-    var leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    FirebaseService.leads.update(leadId, {
-      id: leadId, name: n, email: em, url: u || '',
-      source: 'Exit Popup', status: 'New', score: 0, createdAt: new Date().toISOString()
-    }).catch(function () {});
-  }
-
-  // Send via WhatsApp/email
-  var msg='New audit request (Exit Popup):\n\nName: '+n+'\nEmail: '+em+'\nWebsite: '+(u||'N/A');
-  openWhatsApp(msg);
-  setTimeout(function(){openEmail('Audit Request — '+n,msg);},800);
-  showToast('✓ Submitted! Opening WhatsApp & email...');
+  postLead({
+    name:n, email:em, url:u, source:'Exit Popup',
+    website: hp ? hp.value : ''
+  }, '✓ Submitted! Check your inbox soon.');
   document.getElementById('exitPopup').classList.remove('active');
   this.reset();
 });

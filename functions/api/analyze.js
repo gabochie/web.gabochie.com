@@ -1,72 +1,209 @@
 /* ========================================
    CF PAGES FUNCTION — Website Analyzer
    Real HTML fetch + conversion signal analysis
+
+   Hardened:
+   - URL validation (no private/internal hosts, no credentials)
+   - Per-IP rate limiting + global concurrency guard
+   - Streaming body read with size cap
+   - External stylesheet fetch for accurate responsive checks
+   - Honest HTTP status codes (400 / 502 / 200)
    ======================================== */
-export async function onRequestPost(context) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
+const MAX_HTML_BYTES = 800 * 1024;
+const MAX_CSS_BYTES = 300 * 1024;
+const MAX_CSS_FILES = 5;
+const FETCH_TIMEOUT_MS = 12000;
+const CSS_TIMEOUT_MS = 6000;
+const RATE_LIMIT = 15;
+const RATE_WINDOW_MS = 60 * 1000;
+const MAX_CONCURRENT = 8;
 
+function json(data, status) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+  });
+}
+
+// ---------- rate limiting (per-isolate, best effort) ----------
+const hits = new Map();
+let active = 0;
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const list = (hits.get(ip) || []).filter(ts => now - ts < RATE_WINDOW_MS);
+  if (list.length >= RATE_LIMIT) { hits.set(ip, list); return true; }
+  list.push(now);
+  hits.set(ip, list);
+  if (hits.size > 5000) hits.clear();
+  return false;
+}
+
+// ---------- URL validation ----------
+function validateUrl(input) {
+  let raw = String(input || '').trim();
+  if (!raw) return null;
+  if (!/^https?:\/\//i.test(raw)) raw = 'https://' + raw;
+  let parsed;
+  try { parsed = new URL(raw); } catch (e) { return null; }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+  if (parsed.username || parsed.password) return null;
+  const host = parsed.hostname.toLowerCase();
+  if (!host.includes('.')) return null;
+  if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.0\.0\.0$)/.test(host)) return null;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return null;
+  if (host === '::1' || host.endsWith('.local') || host.endsWith('.internal')) return null;
+  return parsed.href;
+}
+
+// ---------- capped body reader ----------
+async function readBodyCapped(response, maxBytes) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder('utf-8', { stream: true });
+  let text = '';
+  let total = 0;
   try {
-    const { url } = await context.request.json();
-    if (!url || !url.includes('.')) {
-      return new Response(JSON.stringify({ error: 'Invalid URL' }), { status: 400, headers });
+    while (total < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      text += decoder.decode(value, { stream: true });
+      if (total >= maxBytes) {
+        text += decoder.decode();
+        try { await reader.cancel(); } catch (e) { /* already done */ }
+      }
     }
+  } finally {
+    try { reader.releaseLock(); } catch (e) { /* noop */ }
+  }
+  return { text, truncated: total >= maxBytes };
+}
 
-    const targetUrl = /^https?:\/\//.test(url) ? url : `https://${url}`;
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    const response = await fetch(targetUrl, {
+async function fetchTextCapped(url, timeoutMs, maxBytes, acceptHeader) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
       signal: controller.signal,
+      redirect: 'follow',
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; GAWebsiteAnalyzer/1.0)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-      },
-      redirect: 'follow'
+        'Accept': acceptHeader || 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      }
     });
-    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const { text } = await readBodyCapped(res, maxBytes);
+    return text;
+  } catch (e) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
-    if (!response.ok) {
-      return new Response(JSON.stringify({
-        error: `HTTP ${response.status}`,
-        design: 30, mobile: 30, performance: 30, total: 30,
-        issues: [`Website returned HTTP ${response.status}`],
-        wins: [], offline: true
-      }), { status: 200, headers });
+function extractStylesheetUrls(html, baseUrl) {
+  const urls = [];
+  const linkTags = html.match(/<link[^>]*>/gi) || [];
+  for (const tag of linkTags) {
+    if (!/rel\s*=\s*["']?[^"'>]*stylesheet/i.test(tag)) continue;
+    const hrefMatch = tag.match(/href\s*=\s*["']([^"' ]+)["']/i);
+    if (!hrefMatch) continue;
+    try {
+      const abs = new URL(hrefMatch[1], baseUrl);
+      if (abs.protocol === 'http:' || abs.protocol === 'https:') urls.push(abs.href);
+    } catch (e) { /* skip malformed */ }
+    if (urls.length >= MAX_CSS_FILES) break;
+  }
+  return urls;
+}
+
+function sanitizeError(err) {
+  const msg = String(err && err.message || err);
+  if (/abort/i.test(msg)) return 'Website took too long to respond';
+  if (/ENOTFOUND|getaddrinfo|dns/i.test(msg)) return 'Domain not found — check the address';
+  if (/SSL|certificate|TLS/i.test(msg)) return 'SSL/TLS certificate problem';
+  return 'Could not reach website';
+}
+
+export async function onRequestPost(context) {
+  const ip = context.request.headers.get('CF-Connecting-IP') || 'unknown';
+
+  if (rateLimited(ip)) {
+    return json({ error: 'Too many requests — please wait a minute.' }, 429);
+  }
+
+  let body;
+  try {
+    body = await context.request.json();
+  } catch (e) {
+    return json({ error: 'Invalid request body' }, 400);
+  }
+
+  const targetUrl = validateUrl(body && body.url);
+  if (!targetUrl) {
+    return json({ error: 'Invalid URL' }, 400);
+  }
+
+  if (active >= MAX_CONCURRENT) {
+    return json({ error: 'Analyzer is busy — please retry in a moment.' }, 503);
+  }
+
+  active++;
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    let response;
+    try {
+      response = await fetch(targetUrl, {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; GAWebsiteAnalyzer/1.0)',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        }
+      });
+    } catch (err) {
+      return json({ error: sanitizeError(err), offline: true }, 502);
+    } finally {
+      clearTimeout(timer);
     }
 
-    const html = await response.text();
-    const result = analyzeHTML(html, targetUrl);
-    return new Response(JSON.stringify(result), { status: 200, headers });
+    if (!response.ok) {
+      return json({ error: `Site returned HTTP ${response.status}`, offline: true }, 502);
+    }
+
+    const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+    if (contentType && !contentType.includes('html') && !contentType.includes('xml') && !contentType.includes('text/plain')) {
+      return json({ error: 'URL did not return an HTML page', offline: true }, 502);
+    }
+
+    const { text: html } = await readBodyCapped(response, MAX_HTML_BYTES);
+    const finalUrl = response.url || targetUrl;
+
+    // Fetch external stylesheets so responsive checks are accurate
+    const cssUrls = extractStylesheetUrls(html, finalUrl);
+    const cssResults = await Promise.allSettled(
+      cssUrls.map(u => fetchTextCapped(u, CSS_TIMEOUT_MS, MAX_CSS_BYTES, 'text/css,*/*;q=0.5'))
+    );
+    const cssText = cssResults.map(r => (r.status === 'fulfilled' && r.value) ? r.value : '').join('\n');
+
+    return json(analyzeHTML(html, cssText, finalUrl), 200);
 
   } catch (err) {
-    return new Response(JSON.stringify({
-      error: err.message,
-      design: 30, mobile: 30, performance: 30, total: 30,
-      issues: ['Could not fetch website — ' + err.message],
-      wins: [], offline: true
-    }), { status: 200, headers });
+    return json({ error: sanitizeError(err), offline: true }, 502);
+  } finally {
+    active--;
   }
 }
 
 export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS'
-    }
-  });
+  return new Response(null, { status: 204 });
 }
 
-function analyzeHTML(html, url) {
+function analyzeHTML(html, cssText, url) {
   const lower = html.toLowerCase();
+  const styleText = (cssText || '').toLowerCase() + ' ' + lower;
   const issues = [];
   const wins = [];
   let scoreDesign = 70;
@@ -97,9 +234,9 @@ function analyzeHTML(html, url) {
   if (!lower.includes('viewport') || !lower.includes('width=device-width')) { issues.push('Missing mobile viewport meta tag — site not mobile-optimized'); scoreMobile -= 25; }
   else { wins.push('Mobile viewport tag present'); scoreMobile += 15; }
 
-  const hasMediaQueries = lower.includes('@media');
-  const hasFlexbox = lower.includes('display:flex') || lower.includes('display: flex');
-  const hasGrid = lower.includes('display:grid') || lower.includes('display: grid');
+  const hasMediaQueries = styleText.includes('@media');
+  const hasFlexbox = styleText.includes('display:flex') || styleText.includes('display: flex');
+  const hasGrid = styleText.includes('display:grid') || styleText.includes('display: grid');
   if (hasMediaQueries || hasFlexbox || hasGrid) { wins.push('Responsive CSS detected'); scoreMobile += 10; }
   else { issues.push('No responsive CSS detected — likely not mobile-friendly'); scoreMobile -= 15; }
 
@@ -150,7 +287,7 @@ function analyzeHTML(html, url) {
     else { wins.push('Copyright year current'); }
   }
 
-  if (lower.includes('.swf') || lower.includes('flash')) { issues.push('Uses Adobe Flash — obsolete technology'); scoreDesign -= 15; scoreMobile -= 20; }
+  if (lower.includes('.swf') || /\bflash\b/.test(lower)) { issues.push('Uses Adobe Flash — obsolete technology'); scoreDesign -= 15; scoreMobile -= 20; }
   if (lower.includes('jquery')) { issues.push('Uses jQuery — consider modern lightweight alternatives'); scorePerf -= 3; }
 
   if (lower.includes('application/ld+json') || lower.includes('itemtype')) { wins.push('Structured data (Schema.org) detected'); scoreDesign += 3; }

@@ -11,7 +11,9 @@
     { "tag": "v1", "new_sqlite_classes": ["PortalHub"] }
   ],
   "routes": [
-    { "pattern": "web.gabochie.com/api/portal/*", "zone_name": "gabochie.com" }
+    { "pattern": "web.gabochie.com/api/portal/*", "zone_name": "gabochie.com" },
+    { "pattern": "web.gabochie.com/api/lead", "zone_name": "gabochie.com" },
+    { "pattern": "web.gabochie.com/api/lead/admin/list", "zone_name": "gabochie.com" }
   ],
   "observability": {
     "enabled": true,

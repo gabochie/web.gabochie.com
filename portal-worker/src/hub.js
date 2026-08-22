@@ -53,6 +53,11 @@ function timingSafeEqualStr(a, b) {
   return diff === 0;
 }
 
+function escHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+
 function rows(cursor) {
   if (typeof cursor.toArray === 'function') return cursor.toArray();
   const out = [];
@@ -112,6 +117,13 @@ export class PortalHub extends DurableObject {
       mime TEXT, size INTEGER NOT NULL, data BLOB, uploaded_by TEXT, created_at INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_attempts (
       key TEXT NOT NULL, ts INTEGER NOT NULL)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS leads (
+      id TEXT PRIMARY KEY, name TEXT, email TEXT, company TEXT, url TEXT,
+      industry TEXT, source TEXT, message TEXT, total INTEGER, design INTEGER, mobile INTEGER,
+      performance INTEGER, top_issues TEXT, user_agent TEXT, ip TEXT, created_at INTEGER NOT NULL)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS lead_attempts (
+      key TEXT NOT NULL, ts INTEGER NOT NULL)`);
+    try { this.sql.exec('ALTER TABLE leads ADD COLUMN message TEXT'); } catch (e) { /* column exists */ }
     try { this.sql.exec('ALTER TABLE companies ADD COLUMN preview_url TEXT'); } catch (e) { /* column exists */ }
     this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_milestones_company ON milestones(company_id, sort)`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_feedback_company ON feedback(company_id, created_at)`);
@@ -299,6 +311,83 @@ export class PortalHub extends DurableObject {
       result.push(c);
     }
     return result;
+  }
+
+  async addLead(ip, body) {
+    body = body || {};
+    // Honeypot: real users never fill the hidden "website" field.
+    // Pretend success so bots do not learn they were caught.
+    if (String(body.website || '').trim() !== '') {
+      return { ok: true, honeypot: true };
+    }
+
+    const name = String(body.name || '').trim().slice(0, 100);
+    const email = String(body.email || '').trim().toLowerCase().slice(0, 200);
+    let url = String(body.url || '').trim().slice(0, 500);
+    const industry = String(body.industry || '').trim().slice(0, 60);
+    const source = String(body.source || 'Website').trim().slice(0, 60);
+
+    if (!name || !email || !url) return { ok: false, status: 400, error: 'Name, email and website are required' };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, status: 400, error: 'Invalid email address' };
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    try {
+      const parsed = new URL(url);
+      if (!/^https?:$/.test(parsed.protocol) || !parsed.hostname.includes('.')) throw new Error('bad');
+      url = parsed.href;
+    } catch (e) {
+      return { ok: false, status: 400, error: 'Invalid website URL' };
+    }
+
+    // Rate limit: 5 leads per hour per IP
+    const attemptKey = ip;
+    const cutoff = Date.now() - 60 * 60 * 1000;
+    this.sql.exec('DELETE FROM lead_attempts WHERE ts < ?', cutoff);
+    const recent = rows(this.sql.exec('SELECT COUNT(*) AS n FROM lead_attempts WHERE key = ?', attemptKey))[0].n;
+    if (recent >= 5) return { ok: false, status: 429, error: 'Too many requests. Please try again later.' };
+    this.sql.exec('INSERT INTO lead_attempts (key, ts) VALUES (?, ?)', attemptKey, Date.now());
+
+    const id = makeId('lead');
+    this.sql.exec(
+      'INSERT INTO leads (id, name, email, company, url, industry, source, message, total, design, mobile, performance, top_issues, user_agent, ip, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      id, name, email, String(body.companyName || '').slice(0, 150), url, industry, source,
+      String(body.message || '').slice(0, 3000),
+      Number.isFinite(body.total) ? Math.max(0, Math.min(100, Math.round(body.total))) : null,
+      Number.isFinite(body.design) ? Math.max(0, Math.min(100, Math.round(body.design))) : null,
+      Number.isFinite(body.mobile) ? Math.max(0, Math.min(100, Math.round(body.mobile))) : null,
+      Number.isFinite(body.performance) ? Math.max(0, Math.min(100, Math.round(body.performance))) : null,
+      Array.isArray(body.issues) ? body.issues.slice(0, 8).map(i => String(i).slice(0, 200)).join(' | ') : '',
+      String(body.userAgent || '').slice(0, 300), ip, Date.now()
+    );
+
+    const lead = rows(this.sql.exec('SELECT * FROM leads WHERE id = ?', id))[0];
+    return { ok: true, lead: lead };
+  }
+
+  buildLeadNotificationEmail(lead) {
+    const ownerEmail = this.env.LEAD_NOTIFY_EMAIL || 'web@gabochie.com';
+    const rowsHtml = [
+      ['Name', lead.name], ['Email', lead.email], ['Company', lead.company],
+      ['Website', lead.url], ['Industry', lead.industry], ['Source', lead.source],
+      ['Audit score', lead.total === null ? 'pending' : lead.total + '/100'],
+      lead.message ? ['Message', lead.message] : null,
+      ['Top issues', lead.top_issues || '—']
+    ].filter(Boolean).map(r => '<tr><td style="padding:6px 14px;color:#8a8a95;font-size:13px;white-space:nowrap">' + r[0] +
+      '</td><td style="padding:6px 14px;color:#f0f0f0;font-size:13px">' + escHtml(r[1] === null || r[1] === undefined ? '' : String(r[1])) + '</td></tr>').join('');
+    const html = '<div style="font-family:Inter,system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#0b0b0f;color:#f0f0f0">' +
+      '<div style="font-size:1.4rem;font-weight:800;margin-bottom:20px">Web <span style="color:#00ff88">Gabochie</span></div>' +
+      '<h1 style="font-size:1.3rem;margin-bottom:6px">New audit lead</h1>' +
+      '<p style="color:#8a8a95;font-size:13px;margin-bottom:18px">' + new Date(lead.created_at).toISOString() + '</p>' +
+      '<table style="background:#121216;border:1px solid #1f1f28;border-radius:12px;border-collapse:inherit;width:100%;margin-bottom:22px">' + rowsHtml + '</table>' +
+      '<p style="color:#55555f;font-size:.85rem">Reply to reply directly to the lead.</p></div>';
+    return { to: ownerEmail, subject: 'New audit lead — ' + lead.name + (lead.company ? ' (' + lead.company + ')' : ''), html: html };
+  }
+
+  async adminListLeads(adminToken) {
+    if (!this.env.PORTAL_ADMIN_TOKEN || !adminToken || !timingSafeEqualStr(adminToken, this.env.PORTAL_ADMIN_TOKEN)) {
+      return { ok: false, status: 403, error: 'Forbidden' };
+    }
+    const leads = rows(this.sql.exec('SELECT id, name, email, company, url, industry, source, total, top_issues, created_at FROM leads ORDER BY created_at DESC LIMIT 200'));
+    return { ok: true, leads: leads };
   }
 
   async adminSetMilestoneStatus(companyToken, companyId, milestoneName, status) {

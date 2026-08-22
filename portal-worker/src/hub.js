@@ -135,13 +135,19 @@ export class PortalHub extends DurableObject {
     this.sql.exec('DELETE FROM login_attempts WHERE ts < ?', cutoff);
     const recent = rows(this.sql.exec('SELECT COUNT(*) AS n FROM login_attempts WHERE key = ?', attemptKey))[0].n;
     if (recent >= 8) return { ok: false, status: 429, error: 'Too many attempts. Try again in 15 minutes.' };
-    this.sql.exec('INSERT INTO login_attempts (key, ts) VALUES (?, ?)', attemptKey, Date.now());
 
     const user = rows(this.sql.exec('SELECT * FROM users WHERE email = ?', email))[0];
-    if (!user) return { ok: false, status: 401, error: 'Invalid email or password' };
-
-    const candidate = await this.#hashPassword(password, user.salt, user.iterations);
-    if (!timingSafeEqualStr(candidate, user.hash)) {
+    if (user) {
+      const candidate = await this.#hashPassword(password, user.salt, user.iterations);
+      if (!timingSafeEqualStr(candidate, user.hash)) {
+        // Only failed attempts count toward the lockout
+        this.sql.exec('INSERT INTO login_attempts (key, ts) VALUES (?, ?)', attemptKey, Date.now());
+        return { ok: false, status: 401, error: 'Invalid email or password' };
+      }
+    } else {
+      // Burn comparable CPU so a missing user is not distinguishable by timing
+      await this.#hashPassword(password, b64(crypto.getRandomValues(new Uint8Array(16))), ITERATIONS);
+      this.sql.exec('INSERT INTO login_attempts (key, ts) VALUES (?, ?)', attemptKey, Date.now());
       return { ok: false, status: 401, error: 'Invalid email or password' };
     }
 

@@ -80,12 +80,15 @@ try {
 
   section('Valid login lands on dashboard');
   await page.fill('#loginPass', PASSWORD);
-  await Promise.all([
-    page.waitForResponse(r => r.url().includes('/api/portal/bootstrap') && r.status() === 200),
-    page.click('#loginForm button[type="submit"]')
-  ]);
+  await page.click('#loginForm button[type="submit"]');
+  try {
+    await page.waitForSelector('#app', { state: 'visible', timeout: 25000 });
+    ok('dashboard visible', true);
+  } catch {
+    const err = ((await page.textContent('#authError')) || '').trim();
+    ok('dashboard visible', false, 'server said: ' + (err || 'no error shown'));
+  }
   await page.waitForSelector('#app', { state: 'visible' });
-  ok('dashboard visible', await page.isVisible('#app'));
   ok('sidebar shows company', ((await page.textContent('#sbCompany')) || '').trim() === COMPANY,
     (await page.textContent('#sbCompany')));
   ok('milestones rendered', (await page.$$('#milestonesList .milestone')).length >= 6);
@@ -115,7 +118,7 @@ try {
     mimeType: 'text/plain',
     buffer: Buffer.from('uploaded by playwright')
   });
-  await page.waitForSelector('.file-card .file-name >> text=browser-e2e.txt');
+  await page.waitForSelector('#filesList .file-card:has-text("browser-e2e.txt")');
   ok('uploaded file card rendered', true);
 
   section('Overview stats update');

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Opportunity Radar</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="app" class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">◉</div>
+        <div>
+          <div class="brand-title">Opportunity Radar</div>
+          <div class="brand-sub">Ghana · Global Remote</div>
+        </div>
+      </div>
+      <nav id="nav">
+        <button data-view="overview" class="nav-item active">Overview</button>
+        <button data-view="radar" class="nav-item">Opportunity Radar</button>
+        <button data-view="opportunities" class="nav-item">All Opportunities</button>
+        <button data-view="payments" class="nav-item">Payment Intelligence</button>
+        <button data-view="skills" class="nav-item">Skills &amp; Gaps</button>
+        <button data-view="portfolio" class="nav-item">Portfolio</button>
+        <button data-view="applications" class="nav-item">Applications</button>
+        <button data-view="analytics" class="nav-item">Analytics</button>
+        <button data-view="sources" class="nav-item">Sources</button>
+        <button data-view="reports" class="nav-item">Intelligence Reports</button>
+        <button data-view="settings" class="nav-item">Settings</button>
+      </nav>
+      <div class="sidebar-foot">
+        <button id="btnDiscover" class="btn btn-primary btn-block">Run Discovery</button>
+        <div class="fx-line" id="fxLine"></div>
+      </div>
+    </aside>
+    <main class="main" id="main">
+      <div id="view"></div>
+    </main>
+  </div>
+
+  <!-- Opportunity detail + application modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="modalTitle"></h2>
+        <button id="modalClose" class="icon-btn">×</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

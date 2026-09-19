@@ -4,7 +4,7 @@ const $ = (sel) => document.querySelector(sel);
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 
 async function api(path, opts) {
-  const res = await fetch('/api' + path, opts);
+  const res = await fetch('/api/rj' + path, opts);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || res.status);
   return data;
@@ -210,7 +210,7 @@ async function viewOpportunities() {
   selGhana.onchange = (e) => { state.oppGhana = e.target.value; paint(); };
   bar.appendChild(q); bar.appendChild(selRisk); bar.appendChild(selGhana);
   const exportBtn = el('button', 'btn', 'Export CSV');
-  exportBtn.onclick = async () => { window.open('/api/export.csv'); toast('Export started'); };
+  exportBtn.onclick = async () => { window.open('/api/rj/export.csv'); toast('Export started'); };
   bar.appendChild(exportBtn);
   v.appendChild(bar);
 
@@ -494,7 +494,7 @@ async function viewSettings() {
   const reset = el('div', 'panel');
   reset.appendChild(el('h3', '', 'Data'));
   const rbtn = el('button', 'btn btn-danger', 'Reset pipeline data (reseed)');
-  rbtn.onclick = async () => { if (confirm('Reset? This wipes opportunities/applications/reports and reseeds.')) { await fetch('/api/admin/reset', { method: 'POST' }); location.reload(); } };
+  rbtn.onclick = async () => { if (confirm('Reset? This wipes opportunities/applications/reports and reseeds.')) { await fetch('/api/rj/admin/reset', { method: 'POST' }); location.reload(); } };
   reset.appendChild(rbtn);
   v.appendChild(reset);
 

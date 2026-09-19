@@ -261,21 +261,18 @@ class SqliteDriver {
   async run(sql, params = []) {
     const stmt = this.handle.prepare(sql);
     const out = stmt.run(...params);
-    stmt.finalize();
     return { changes: out.changes, lastInsertRowid: Number(out.lastInsertRowid) };
   }
 
   async all(sql, params = []) {
     const stmt = this.handle.prepare(sql);
     const rows = stmt.all(...params);
-    stmt.finalize();
     return rows;
   }
 
   async row(sql, params = []) {
     const stmt = this.handle.prepare(sql);
     const out = stmt.get(...params);
-    stmt.finalize();
     return out;
   }
 }

@@ -2,14 +2,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { hashListing, canonicalUrl } from '../src/engines/dedup.js';
 
-test('hashListing is deterministic per listing', () => {
+test('hashListing is deterministic per listing', async () => {
   const a = { title: 'Senior React Engineer', company: 'Acme', url: 'https://x.io/job/1' };
-  assert.equal(hashListing(a), hashListing({ ...a }));
+  assert.equal(await hashListing(a), await hashListing({ ...a }));
 });
 
-test('hashListing differs for different listings', () => {
-  const a = hashListing({ title: 'Senior React Engineer', company: 'Acme', url: 'https://x.io/job/1' });
-  const b = hashListing({ title: 'Senior Go Engineer', company: 'Acme', url: 'https://x.io/job/1' });
+test('hashListing differs for different listings', async () => {
+  const a = await hashListing({ title: 'Senior React Engineer', company: 'Acme', url: 'https://x.io/job/1' });
+  const b = await hashListing({ title: 'Senior Go Engineer', company: 'Acme', url: 'https://x.io/job/1' });
   assert.notEqual(a, b);
 });
 

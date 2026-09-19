@@ -16,36 +16,36 @@ const { generateDailyReport, latestReport } = await import('../src/engines/repor
 const { buildApplicationPlan } = await import('../src/engines/application.js');
 
 beforeEach(async () => {
-  db().exec('DELETE FROM opportunities');
+  await (await db()).exec('DELETE FROM opportunities');
 });
 
 test('seedAll populates all reference tables', async () => {
   await seedAll({ refreshFx: false });
-  assert.ok(row('SELECT COUNT(*) c FROM skills').c >= 10);
-  assert.equal(row('SELECT COUNT(*) c FROM payment_providers').c, defaultPaymentProviders.length);
-  assert.ok(row('SELECT COUNT(*) c FROM sources').c >= 20);
-  assert.ok(row('SELECT COUNT(*) c FROM opportunities').c >= 10);
+  assert.ok((await row('SELECT COUNT(*) c FROM skills')).c >= 10);
+  assert.equal((await row('SELECT COUNT(*) c FROM payment_providers')).c, defaultPaymentProviders.length);
+  assert.ok((await row('SELECT COUNT(*) c FROM sources')).c >= 20);
+  assert.ok((await row('SELECT COUNT(*) c FROM opportunities')).c >= 10);
 });
 
 test('seeding is idempotent (no duplicate opportunities)', async () => {
   await seedAll({ refreshFx: false });
-  const first = row('SELECT COUNT(*) c FROM opportunities').c;
+  const first = (await row('SELECT COUNT(*) c FROM opportunities')).c;
   await seedAll({ refreshFx: false });
-  const second = row('SELECT COUNT(*) c FROM opportunities').c;
+  const second = (await row('SELECT COUNT(*) c FROM opportunities')).c;
   assert.equal(first, second);
 });
 
 test('seeded opportunities carry Ghana payment compatibility data', async () => {
   await seedAll({ refreshFx: false });
-  const opp = all('SELECT * FROM opportunities LIMIT 1')[0];
+  const opp = (await all('SELECT * FROM opportunities LIMIT 1'))[0];
   const pay = JSON.parse(opp.ghana_payment_compat || '{}');
   assert.ok(Array.isArray(pay.channels) && pay.channels.length > 0, 'expected payment channels');
 });
 
 test('buildApplicationPlan returns usable plan for a seed opportunity', async () => {
   await seedAll({ refreshFx: false });
-  const opp = all('SELECT * FROM opportunities LIMIT 1')[0];
-  const plan = buildApplicationPlan(opp);
+  const opp = (await all('SELECT * FROM opportunities LIMIT 1'))[0];
+  const plan = await buildApplicationPlan(opp);
   assert.ok(plan.checklist.length >= 3);
   assert.ok(typeof plan.proposal === 'string' && plan.proposal.length > 80);
   assert.ok(plan.paymentRoute.length > 0);
@@ -53,14 +53,14 @@ test('buildApplicationPlan returns usable plan for a seed opportunity', async ()
 
 test('daily report generation works on seeded data', async () => {
   await seedAll({ refreshFx: false });
-  const res = generateDailyReport();
+  const res = await generateDailyReport();
   assert.ok(res.id);
-  const rep = latestReport('daily');
+  const rep = await latestReport('daily');
   assert.ok(rep && rep.content.length > 200);
 });
 
-test('db helpers roundtrip meta settings and values', () => {
-  db().exec('INSERT OR REPLACE INTO settings(key, value) VALUES(\'test_key\',\'v1\')');
-  const v = row('SELECT value FROM settings WHERE key=?', ['test_key']);
+test('db helpers roundtrip meta settings and values', async () => {
+  await (await db()).exec('INSERT OR REPLACE INTO settings(key, value) VALUES(\'test_key\',\'v1\')');
+  const v = await row('SELECT value FROM settings WHERE key=?', ['test_key']);
   assert.equal(v.value, 'v1');
 });

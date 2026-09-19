@@ -6,18 +6,18 @@ import { defaultWeights } from './matching.js';
 import { loadWeights } from '../engine_utils.js';
 import { todayStr } from './analytics.js';
 
-export function createAlert(kind, headline, body = '', opportunityId = null, severity = 'info') {
-  run('INSERT INTO alerts(kind,severity,headline,body,opportunity_id,created_at) VALUES(?,?,?,?,?,?)',
+export async function createAlert(kind, headline, body = '', opportunityId = null, severity = 'info') {
+  await run('INSERT INTO alerts(kind,severity,headline,body,opportunity_id,created_at) VALUES(?,?,?,?,?,?)',
     [kind, severity, headline, body, opportunityId, new Date().toISOString()]);
 }
 
-function usdDisplay(n) {
+async function usdDisplay(n) {
   if (n == null) return '—';
-  const ghs = convert(n, 'GHS');
+  const ghs = await convert(n, 'GHS');
   return `$${Number(n).toLocaleString()}${ghs?.rate ? ` (≈ GHS ${Number((n * ghs.rate).toFixed(0)).toLocaleString()})` : ''}`;
 }
 
-function topOpportunities(limit = 10) {
+async function topOpportunities(limit = 10) {
   return all(
     `SELECT id,title,company,opp_type,category,estimated_usd,deadline,match_score,ghana_eligible,
             scam_risk,ghana_payment_compat,source,url,skills,description
@@ -28,29 +28,29 @@ function topOpportunities(limit = 10) {
   );
 }
 
-function fmtList(opp) {
+async function fmtList(opp) {
   let esc = (s) => String(s || '').replace(/\n/g, ' ').slice(0, 220);
   let pay = JSON.parse(opp.ghana_payment_compat || '{}');
   const payNote = pay.channels ? pay.channels[0] : 'check payment route';
   return `- ${opp.title} (${opp.company || '—'})
     Fit: ${opp.match_score}/100 · Ghana eligible: ${opp.ghana_eligible ? 'YES' : 'no'}
-    Compensation: ${usdDisplay(opp.estimated_usd)} · Deadline: ${opp.deadline || 'n/a'}
+    Compensation: ${await usdDisplay(opp.estimated_usd)} · Deadline: ${opp.deadline || 'n/a'}
     Payment: ${esc(payNote)}
     ${opp.url || ''}`;
 }
 
-export function generateDailyReport() {
+export async function generateDailyReport() {
   const date = todayStr();
-  const total = row('SELECT COUNT(*) c FROM opportunities');
-  const ghana = row('SELECT COUNT(*) c FROM opportunities WHERE ghana_eligible=1');
-  const highFit = row('SELECT COUNT(*) c FROM opportunities WHERE match_score >= 70');
-  const highValue = row('SELECT COUNT(*) c FROM opportunities WHERE estimated_usd >= 2000');
-  const ai = row("SELECT COUNT(*) c FROM opportunities WHERE opp_type='ai'");
-  const aec = row("SELECT COUNT(*) c FROM opportunities WHERE category LIKE '%AEC%' OR category LIKE '%architecture%' OR skills LIKE '%AEC%'");
-  const research = row("SELECT COUNT(*) c FROM opportunities WHERE opp_type='consulting' OR category LIKE '%Research%'");
-  const grants = row("SELECT COUNT(*) c FROM opportunities WHERE opp_type IN ('building') ");
+  const total = await row('SELECT COUNT(*) c FROM opportunities');
+  const ghana = await row('SELECT COUNT(*) c FROM opportunities WHERE ghana_eligible=1');
+  const highFit = await row('SELECT COUNT(*) c FROM opportunities WHERE match_score >= 70');
+  const highValue = await row('SELECT COUNT(*) c FROM opportunities WHERE estimated_usd >= 2000');
+  const ai = await row("SELECT COUNT(*) c FROM opportunities WHERE opp_type='ai'");
+  const aec = await row("SELECT COUNT(*) c FROM opportunities WHERE category LIKE '%AEC%' OR category LIKE '%architecture%' OR skills LIKE '%AEC%'");
+  const research = await row("SELECT COUNT(*) c FROM opportunities WHERE opp_type='consulting' OR category LIKE '%Research%'");
+  const grants = await row("SELECT COUNT(*) c FROM opportunities WHERE opp_type IN ('building') ");
 
-  const top = topOpportunities(10);
+  const top = await topOpportunities(10);
   let report = [];
 
   report.push('GLOBAL OPPORTUNITY REPORT');
@@ -66,28 +66,29 @@ export function generateDailyReport() {
   report.push(`${grants.c} grants & building-your-own programmes`);
   report.push('');
   report.push('TOP 10 RIGHT NOW:');
-  top.forEach((o, i) => report.push(`${i + 1}. ${fmtList(o)}`));
+  for (let i = 0; i < top.length; i++) report.push(`${i + 1}. ${await fmtList(top[i])}`);
 
   const body = report.join('\n');
-  const id = run('INSERT INTO reports(kind,period,generated_at,content,summary) VALUES(?,?,?,?,?)',
-    ['daily', date, new Date().toISOString(), body, JSON.stringify({ total: total.c, ghana: ghana.c, highFit: highFit.c })]).lastInsertRowid;
+  const idRes = await run('INSERT INTO reports(kind,period,generated_at,content,summary) VALUES(?,?,?,?,?)',
+    ['daily', date, new Date().toISOString(), body, JSON.stringify({ total: total.c, ghana: ghana.c, highFit: highFit.c })]);
+  const id = idRes.lastInsertRowid;
 
   // Deadline alerts
-  createAlert('deadlines', 'Deadlines closing soon', top.length ? 'see report' : '', null, 'info');
+  await createAlert('deadlines', 'Deadlines closing soon', top.length ? 'see report' : '', null, 'info');
 
   return { id, body, date };
 }
 
-export function generateWeeklyReport() {
+export async function generateWeeklyReport() {
   const date = todayStr();
   const since = new Date(Date.now() - 7 * 86400000).toISOString();
-  const discovered = row('SELECT COUNT(*) c FROM opportunities WHERE discovered_at >= ?', [since]);
-  const apps = row('SELECT COUNT(*) c FROM applications WHERE applied_at >= ?', [since]);
-  const won = row("SELECT COUNT(*) c FROM applications WHERE stage IN ('won','paid')");
-  const lost = all('SELECT o.title, a.stage FROM applications a JOIN opportunities o ON o.id=a.opportunity_id WHERE a.stage IN (?,?)',
+  const discovered = await row('SELECT COUNT(*) c FROM opportunities WHERE discovered_at >= ?', [since]);
+  const apps = await row('SELECT COUNT(*) c FROM applications WHERE applied_at >= ?', [since]);
+  const won = await row("SELECT COUNT(*) c FROM applications WHERE stage IN ('won','paid')");
+  const lost = await all('SELECT o.title, a.stage FROM applications a JOIN opportunities o ON o.id=a.opportunity_id WHERE a.stage IN (?,?)',
     ['lost', 'rejected']);
-  const newSources = all('SELECT count(*) c FROM sources WHERE last_success >= ?', [since]);
-  const skills = all('SELECT * FROM skills ORDER BY market_demand DESC');
+  const newSources = await all('SELECT count(*) c FROM sources WHERE last_success >= ?', [since]);
+  const skills = await all('SELECT * FROM skills ORDER BY market_demand DESC');
 
   const gaps = gapAnalysis();
   const trends = patterns();
@@ -118,14 +119,15 @@ export function generateWeeklyReport() {
   lines.push('Recurring income candidates: expert networks (GLG/Guidepoint), Retainer-style AI automation services, digital products (templates/AI workflows), online course content.');
 
   const body = lines.join('\n');
-  const id = run('INSERT INTO reports(kind,period,generated_at,content,summary) VALUES(?,?,?,?,?)',
-    ['weekly', date, new Date().toISOString(), body, JSON.stringify({ discovered: discovered.c, apps: apps.c, wins: won.c })]).lastInsertRowid;
-  createAlert('weekly', 'Weekly strategic report ready', `${discovered.c} opportunities, ${apps.c} applications, ${won.c} wins`, null, 'info');
+  const idRes = await run('INSERT INTO reports(kind,period,generated_at,content,summary) VALUES(?,?,?,?,?)',
+    ['weekly', date, new Date().toISOString(), body, JSON.stringify({ discovered: discovered.c, apps: apps.c, wins: won.c })]);
+  const id = idRes.lastInsertRowid;
+  await createAlert('weekly', 'Weekly strategic report ready', `${discovered.c} opportunities, ${apps.c} applications, ${won.c} wins`, null, 'info');
   return { id, body, date, gaps };
 }
 
-export function gapAnalysis() {
-  const skills = all('SELECT * FROM skills ORDER BY market_demand DESC');
+export async function gapAnalysis() {
+  const skills = await all('SELECT * FROM skills ORDER BY market_demand DESC');
   const results = skills.map((s) => {
     const strength = (s.level || 0) * 20;
     const gap = (s.market_demand || 50) - strength;
@@ -142,9 +144,9 @@ export function gapAnalysis() {
   return { results, learningPriority };
 }
 
-export function patterns() {
+export async function patterns() {
   // Opportunity → Business engine (§32): cluster recurring phrases in discovered titles/descriptions.
-  const allText = all('SELECT title, description FROM opportunities');
+  const allText = await all('SELECT title, description FROM opportunities');
   const wordCount = new Map();
   const patterns = [];
   for (const t of allText) {
@@ -162,6 +164,6 @@ export function patterns() {
   return patterns.slice(0, 12);
 }
 
-export function latestReport(kind = 'daily') {
+export async function latestReport(kind = 'daily') {
   return row('SELECT * FROM reports WHERE kind=? ORDER BY id DESC LIMIT 1', [kind]);
 }

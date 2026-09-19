@@ -1,7 +1,7 @@
 // Seed the database with researched registries (§52 STEP 6). Safe to re-run.
 
-import { randomUUID } from 'node:crypto';
 import { db, run, all, row, setMeta, setSetting } from './db.js';
+import { randomUUID } from './uuid.js';
 import { log } from './logger.js';
 import { defaultSkills, defaultPortfolio } from './data/skills.js';
 import { defaultPaymentProviders } from './data/seed_payments.js';
@@ -20,59 +20,59 @@ const now = () => new Date().toISOString();
 export const SEED_DATE = '2026-09-19';
 
 export async function seedAll({ refreshFx = true } = {}) {
-  db();
-  db().exec('BEGIN');
+  const driver = await db();
+  await driver.exec('BEGIN');
   try {
-    seedSkills();
-    seedPortfolio();
-    seedSources();
-    seedPayments();
-    seedQueries();
-    seedSettings();
-    db().exec('COMMIT');
+    await seedSkills();
+    await seedPortfolio();
+    await seedSources();
+    await seedPayments();
+    await seedQueries();
+    await seedSettings();
+    await driver.exec('COMMIT');
   } catch (e) {
-    db().exec('ROLLBACK');
+    await driver.exec('ROLLBACK');
     throw e;
   }
 
   const fx = refreshFx ? await refreshRates() : { ok: false, error: 'skipped' };
   if (!fx.ok) log.warn('Exchange-rate refresh failed (offline?):', fx.error);
 
-  const seeded = seedOpportunities();
-  setMeta('last_seed', now());
-  setMeta('seed_date', SEED_DATE);
+  const seeded = await seedOpportunities();
+  await setMeta('last_seed', now());
+  await setMeta('seed_date', SEED_DATE);
   log.info(`Seed complete. Opportunities: ${seeded}. FX: ${fx.ok ? 'refreshed' : fx.error}`);
   return { seeded, fx };
 }
 
-function upsert(table, rows, key) {
-  const existing = new Set(all(`SELECT ${key} FROM ${table}`).map((r) => r[key]));
+async function upsert(table, rows, key) {
+  const existing = new Set((await all(`SELECT ${key} FROM ${table}`)).map((r) => r[key]));
   let inserted = 0, updated = 0;
   const cols = rows.length ? Object.keys(rows[0]).filter((k) => k !== key) : [];
   for (const r of rows) {
     const vals = cols.map((c) => r[c]);
     if (existing.has(r[key])) {
       const sets = cols.map((c) => `${c}=?`).join(',');
-      run(`UPDATE ${table} SET ${sets} WHERE ${key}=?`, [...vals, r[key]]);
+      await run(`UPDATE ${table} SET ${sets} WHERE ${key}=?`, [...vals, r[key]]);
       updated++;
       continue;
     }
-    run(`INSERT INTO ${table} (${key},${cols.join(',')}) VALUES (${['?', ...cols.map(() => '?')].join(',')})`, [r[key], ...vals]);
+    await run(`INSERT INTO ${table} (${key},${cols.join(',')}) VALUES (${['?', ...cols.map(() => '?')].join(',')})`, [r[key], ...vals]);
     inserted++;
   }
   return { inserted, updated };
 }
 
-function seedSkills() {
-  upsert('skills', defaultSkills.map((s) => ({ id: s.id, name: s.name, category: s.category || '', level: s.level, market_demand: s.market_demand ?? 50, learning_priority: s.level <= 2 ? 3 : 2, keywords: JSON.stringify(s.keywords || []), updated_at: now() })), 'id');
+async function seedSkills() {
+  await upsert('skills', defaultSkills.map((s) => ({ id: s.id, name: s.name, category: s.category || '', level: s.level, market_demand: s.market_demand ?? 50, learning_priority: s.level <= 2 ? 3 : 2, keywords: JSON.stringify(s.keywords || []), updated_at: now() })), 'id');
 }
 
-function seedPortfolio() {
-  upsert('portfolio', defaultPortfolio.map((p) => ({ id: p.id, title: p.title, skills: JSON.stringify(p.skills || []), industry: p.industry || '', tools: JSON.stringify([]), problem: p.problem || '', outcome: p.outcome || '', url: '', case_study: '', categories: JSON.stringify(p.categories || []) })), 'id');
+async function seedPortfolio() {
+  await upsert('portfolio', defaultPortfolio.map((p) => ({ id: p.id, title: p.title, skills: JSON.stringify(p.skills || []), industry: p.industry || '', tools: JSON.stringify([]), problem: p.problem || '', outcome: p.outcome || '', url: '', case_study: '', categories: JSON.stringify(p.categories || []) })), 'id');
 }
 
-function seedSources() {
-  upsert('sources', defaultSources.map((s) => ({
+async function seedSources() {
+  await upsert('sources', defaultSources.map((s) => ({
     id: s.id, name: s.name, url: s.url || '', type: s.type || 'manual', country: s.country || 'Global',
     categories: JSON.stringify(s.categories || []), access_method: s.access_method || 'manual',
     feed_url: s.feed_url || '', update_freq: s.update_freq || 'weekly', reliability: s.reliability || 'needs verification',
@@ -80,8 +80,8 @@ function seedSources() {
   })), 'id');
 }
 
-function seedPayments() {
-  upsert('payment_providers', defaultPaymentProviders.map((p) => ({
+async function seedPayments() {
+  await upsert('payment_providers', defaultPaymentProviders.map((p) => ({
     id: p.id, name: p.name, url: p.url || '', ghana_signup: p.ghana_signup || 'unknown',
     can_receive: p.can_receive || 'unknown', withdraw_bank: p.withdraw_bank || 'unknown', mobile_money: p.mobile_money || 'unknown',
     supported_currencies: p.supported_currencies || '', fees: p.fees || '', min_withdraw: p.min_withdraw || '',
@@ -91,14 +91,14 @@ function seedPayments() {
   })), 'id');
 }
 
-function seedQueries() {
-  upsert('search_queries', defaultQueries.map((q, i) => ({ id: 'q' + i, query: q, status: 'active', runs: 0 })), 'id');
+async function seedQueries() {
+  await upsert('search_queries', defaultQueries.map((q, i) => ({ id: 'q' + i, query: q, status: 'active', runs: 0 })), 'id');
 }
 
-function seedSettings() {
-  setSetting('weights', defaultWeights());
-  setSetting('any_task_mode', false);
-  setSetting('profile', {
+async function seedSettings() {
+  await setSetting('weights', defaultWeights());
+  await setSetting('any_task_mode', false);
+  await setSetting('profile', {
     name: 'User',
     country: 'Ghana',
     timezone: 'Africa/Accra',
@@ -113,7 +113,7 @@ function seedSettings() {
 // Application URLs point at the platform/company page (NOT a fabricated job URL).
 // verification_status: "Needs verification via platform page" where we have not personally confirmed an open role.
 
-function seedOpportunities() {
+async function seedOpportunities() {
   const listings = [
     {
       title: 'Freelance Full-Stack Web App Developer (Africa-remote)',
@@ -398,17 +398,17 @@ function seedOpportunities() {
   ];
 
   let inserted = 0;
-  const weights = loadWeights();
+  const weights = await loadWeights();
   for (const l of listings) {
     const nowIso = now();
-    const existing = row('SELECT id FROM opportunities WHERE source=? AND title=?', [l.source, l.title]);
+    const existing = await row('SELECT id FROM opportunities WHERE source=? AND title=?', [l.source, l.title]);
     if (existing) continue;
     const det = detectGeoEligibility(l.title + ' ' + l.description);
     const ghScore = ghanaAccessibilityScore(l);
     const risk = assessRisk(l.title, l.description, l.source, l.company);
     const match = matchSkills(l.title, l.description + ' ' + (l.skills_hint || []).join(' '));
     const payment = scoreOpportunityPayment({ source: l.source, title: l.title, company: l.company });
-    const econ = estimateEconomics(l.compensation_raw, 'USD', { rateUsdGhs: usdToGhs() });
+    const econ = estimateEconomics(l.compensation_raw, 'USD', { rateUsdGhs: await usdToGhs() });
     const estUsd = l.estimated_usd_override ?? econ.valid ? econ.grossUsd : null;
 
     const c = {
@@ -472,7 +472,7 @@ function seedOpportunities() {
       ['notes', c.notes], ['discovered_at', c.discovered_at], ['last_verified', c.last_verified],
       ['status', 'new'],
     ];
-    run(
+    await run(
       `INSERT INTO opportunities (${cols.map((c) => c[0]).join(',')}) VALUES (${cols.map(() => '?').join(',')})`,
       cols.map((c) => c[1]),
     );

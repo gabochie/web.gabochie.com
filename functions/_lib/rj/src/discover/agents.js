@@ -1,6 +1,6 @@
 // Agent pipeline (§42, §26): Scout → Normalize → Dedupe → Eligibility → Risk → Match → Payment → Economics → Store.
 
-import { randomUUID } from 'node:crypto';
+import { randomUUID } from '../uuid.js';
 import { all, row, run } from '../db.js';
 import { log } from '../logger.js';
 import { config } from '../config.js';
@@ -19,9 +19,11 @@ function sleep(ms) {
 }
 
 export async function runDiscovery({ maxPerSource } = {}) {
+  const weightsPromise = loadWeights();
   maxPerSource = maxPerSource || config.discovery.maxPerSource;
-  const runId = run('INSERT INTO discovery_runs(started_at, mode) VALUES(?,?)', [new Date().toISOString(), config.discovery.mode]).lastInsertRowid;
-  const sources = all(`SELECT * FROM sources WHERE enabled=1 AND feed_url != '' AND access_method IN (?,?,?) ORDER BY last_success ASC`, ['rss', 'json', 'html']);
+  const runRes = await run('INSERT INTO discovery_runs(started_at, mode) VALUES(?,?)', [new Date().toISOString(), config.discovery.mode]);
+  const runId = runRes.lastInsertRowid;
+  const sources = await all(`SELECT * FROM sources WHERE enabled=1 AND feed_url != '' AND access_method IN (?,?,?) ORDER BY last_success ASC`, ['rss', 'json', 'html']);
 
   let newCount = 0;
   let dupCount = 0;
@@ -39,33 +41,33 @@ export async function runDiscovery({ maxPerSource } = {}) {
       log.info(`[scout] ${src.name}: ${capped.length} items`);
       let srcNew = 0;
       for (const item of capped) {
-        const result = ingestListing(item, src);
+        const result = await ingestListing(item, src, weightsPromise);
         if (result.status === 'new') { newCount++; srcNew++; }
         else if (result.status === 'dup') dupCount++;
         else if (result.status === 'rejected') rejCount++;
       }
-      run('UPDATE sources SET last_scanned=?, last_success=?, last_count=? WHERE id=?',
+      await run('UPDATE sources SET last_scanned=?, last_success=?, last_count=? WHERE id=?',
         [new Date().toISOString(), new Date().toISOString(), srcNew, src.id]);
       okSources++;
       await sleep(config.discovery.politeDelayMs);
     } catch (e) {
       errors.push({ source: src.name, error: e.message });
-      run('UPDATE sources SET last_scanned=? WHERE id=?', [new Date().toISOString(), src.id]);
+      await run('UPDATE sources SET last_scanned=? WHERE id=?', [new Date().toISOString(), src.id]);
       log.warn(`[scout] ${src.name} failed: ${e.message}`);
     }
   }
 
-  run('UPDATE discovery_runs SET finished_at=?, sources_attempted=?, sources_succeeded=?, items_fetched=?, items_new=?, items_duplicate=?, items_rejected=?, errors=?',
+  await run('UPDATE discovery_runs SET finished_at=?, sources_attempted=?, sources_succeeded=?, items_fetched=?, items_new=?, items_duplicate=?, items_rejected=?, errors=?',
     [new Date().toISOString(), sources.length, okSources, fetchCount, newCount, dupCount, rejCount, JSON.stringify(errors)]);
 
   return { runId, sourcesAttempted: sources.length, sourcesSucceeded: okSources, fetched: fetchCount, added: newCount, dupes: dupCount, rejected: rejCount, errors };
 }
 
-export function ingestListing(item, src) {
+export async function ingestListing(item, src, weightsPromise = null) {
   const title = String(item.title || '').trim();
   if (!title || title.length < 5) return { status: 'rejected', reason: 'empty title' };
-  const h = hashListing(item);
-  const existing = row('SELECT id, duplicate_of FROM opportunities WHERE normalized_hash=?', [h]);
+  const h = await hashListing(item);
+  const existing = await row('SELECT id, duplicate_of FROM opportunities WHERE normalized_hash=?', [h]);
   if (existing) return { status: 'dup', existing: existing.duplicate_of || existing.id };
 
   // Eligibility
@@ -85,7 +87,7 @@ export function ingestListing(item, src) {
   const payment = scoreOpportunityPayment({ source: src.name, title, company: item.company });
 
   const estimatedUsd = parseEstimatedUsd(item.compensation_raw);
-  const economics = estimateEconomics(item.compensation_raw, 'USD', { rateUsdGhs: usdToGhs() });
+  const economics = estimateEconomics(item.compensation_raw, 'USD', { rateUsdGhs: await usdToGhs() });
 
   const now = new Date().toISOString();
   const id = randomUUID();
@@ -122,12 +124,13 @@ export function ingestListing(item, src) {
     discovered_at: now,
     last_verified: now,
   };
-  const fit = computeFit({ ...base, skillMatch: match.skillMatch, ghanaScore: ghana, paymentCompat: payment, applicationEffort: 3, recurring: base.recurring, strategic: base.strategic_value, freshness: 90, ghanaEligible: ghana === 100 }, loadWeights());
+  const weights = weightsPromise ? await weightsPromise : await loadWeights();
+  const fit = computeFit({ ...base, skillMatch: match.skillMatch, ghanaScore: ghana, paymentCompat: payment, applicationEffort: 3, recurring: base.recurring, strategic: base.strategic_value, freshness: 90, ghanaEligible: ghana === 100 }, weights);
   const stock = { ...base, match_score: fit.fit, score_breakdown: JSON.stringify(fit) };
 
   const keys = Object.keys(stock);
   const sql = `INSERT INTO opportunities (id, normalized_hash, ${keys.join(',')}) VALUES (?, ?, ${keys.map(() => '?').join(',')})`;
-  run(sql, [id, h, ...keys.map((k) => stock[k])]);
+  await run(sql, [id, h, ...keys.map((k) => stock[k])]);
   return { status: 'new', id };
 }
 

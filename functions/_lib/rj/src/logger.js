@@ -1,5 +1,6 @@
 const LEVELS = { debug: 10, info: 20, warn: 30, error: 40 };
-const level = LEVELS[(process.env.LOG_LEVEL || 'info').toLowerCase()] || LEVELS.info;
+const envLevel = typeof process !== 'undefined' && process.env ? process.env.LOG_LEVEL : '';
+const level = LEVELS[(envLevel || 'info').toLowerCase()] || LEVELS.info;
 
 function ts() {
   return new Date().toISOString();

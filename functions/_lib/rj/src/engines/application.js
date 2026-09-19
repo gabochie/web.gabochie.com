@@ -34,7 +34,7 @@ function paymentChannels(opp) {
   try { return JSON.parse(opp.ghana_payment_compat || '{}'); } catch { return {}; }
 }
 
-export function buildApplicationPlan(opp) {
+export async function buildApplicationPlan(opp) {
   const sk = skillsFrom(opp);
   const pay = paymentChannels(opp);
   const skillsText = sk.length ? sk.map((s) => `${s.name} (${s.category})`).join(', ') : 'general professional skills';
@@ -51,7 +51,7 @@ export function buildApplicationPlan(opp) {
     `Submit before ${opp.deadline || 'the deadline'}; set a reminder.`,
   ];
 
-  const portfolio = all('SELECT * FROM portfolio');
+  const portfolio = await all('SELECT * FROM portfolio');
   const recommendedPortfolio = portfolio
     .filter((p) => sk.some((s) => (JSON.parse(p.skills || '[]') || []).includes(s.id)))
     .slice(0, 3)
@@ -97,11 +97,11 @@ export function buildApplicationPlan(opp) {
   };
 }
 
-export function pipelineCounts() {
+export async function pipelineCounts() {
   return all('SELECT stage, COUNT(*) c FROM applications GROUP BY stage');
 }
 
-export function applicationsWithOpportunities() {
+export async function applicationsWithOpportunities() {
   return all(
     `SELECT a.*, o.title, o.company, o.estimated_usd, o.match_score, o.source, o.url
      FROM applications a JOIN opportunities o ON o.id = a.opportunity_id

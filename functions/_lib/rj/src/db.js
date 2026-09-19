@@ -1,19 +1,6 @@
-import { DatabaseSync } from 'node:sqlite';
-import { resolveDbPath, ensureDataDir } from './config.js';
+// Async database adapter: D1 (Cloudflare) primary; node:sqlite fallback for local CLI/tests.
+
 import { log } from './logger.js';
-
-let _db = null;
-
-export function db() {
-  if (_db) return _db;
-  ensureDataDir();
-  log.debug('Initialising SQLite database', resolveDbPath());
-  _db = new DatabaseSync(resolveDbPath());
-  _db.exec('PRAGMA journal_mode = WAL;');
-  _db.exec('PRAGMA foreign_keys = ON;');
-  migrate(_db);
-  return _db;
-}
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS meta (
@@ -238,51 +225,123 @@ CREATE INDEX IF NOT EXISTS idx_opp_match ON opportunities(match_score);
 CREATE INDEX IF NOT EXISTS idx_opp_deadline ON opportunities(deadline);
 `;
 
-let migrated = false;
-function migrate(database) {
-  if (migrated) return;
-  database.exec(SCHEMA);
-  migrated = true;
+class D1Driver {
+  constructor(d1) {
+    this.d1 = d1;
+  }
+
+  async exec(sql) {
+    await this.d1.exec(sql);
+  }
+
+  async run(sql, params = []) {
+    const r = await this.d1.prepare(sql).bind(...params).run();
+    return { changes: r.meta?.changes ?? 0, lastInsertRowid: r.meta?.last_row_id ?? 0 };
+  }
+
+  async all(sql, params = []) {
+    const r = await this.d1.prepare(sql).bind(...params).all();
+    return r.results ?? [];
+  }
+
+  async row(sql, params = []) {
+    return this.d1.prepare(sql).bind(...params).first();
+  }
 }
 
-export function run(sql, params = []) {
-  const stmt = db().prepare(sql);
-  const out = Array.isArray(params) ? stmt.run(...params) : stmt.run(params);
-  stmt.finalize?.();
-  return out;
+class SqliteDriver {
+  constructor(handle) {
+    this.handle = handle;
+  }
+
+  async exec(sql) {
+    this.handle.exec(sql);
+  }
+
+  async run(sql, params = []) {
+    const stmt = this.handle.prepare(sql);
+    const out = stmt.run(...params);
+    stmt.finalize();
+    return { changes: out.changes, lastInsertRowid: Number(out.lastInsertRowid) };
+  }
+
+  async all(sql, params = []) {
+    const stmt = this.handle.prepare(sql);
+    const rows = stmt.all(...params);
+    stmt.finalize();
+    return rows;
+  }
+
+  async row(sql, params = []) {
+    const stmt = this.handle.prepare(sql);
+    const out = stmt.get(...params);
+    stmt.finalize();
+    return out;
+  }
 }
 
-export function all(sql, params = []) {
-  const stmt = db().prepare(sql);
-  const rows = Array.isArray(params) ? stmt.all(...params) : stmt.all(params);
-  stmt.finalize?.();
-  return rows;
+let _driverPromise = null;
+
+export function bindD1(d1) {
+  if (d1) _driverPromise = Promise.resolve(new D1Driver(d1));
 }
 
-export function row(sql, params = []) {
-  const stmt = db().prepare(sql);
-  const out = Array.isArray(params) ? stmt.get(...params) : stmt.get(params);
-  stmt.finalize?.();
-  return out;
+async function createSqliteDriver() {
+  const { DatabaseSync } = await import('node:sqlite');
+  const { resolveDbPath } = await import('./config.js');
+  log.debug('Initialising SQLite database', resolveDbPath());
+  const handle = new DatabaseSync(resolveDbPath());
+  handle.exec('PRAGMA journal_mode = WAL;');
+  handle.exec('PRAGMA foreign_keys = ON;');
+  return new SqliteDriver(handle);
 }
 
-export function setMeta(key, value) {
-  run('INSERT INTO meta(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', [key, value]);
+export async function db() {
+  if (!_driverPromise) {
+    _driverPromise = (async () => {
+      const driver = await createSqliteDriver();
+      await driver.exec(SCHEMA);
+      return driver;
+    })();
+  }
+  const driver = await _driverPromise;
+  return driver;
 }
 
-export function getMeta(key) {
-  const r = row('SELECT value FROM meta WHERE key=?', [key]);
+export async function run(sql, params = []) {
+  const driver = await db();
+  return driver.run(sql, params);
+}
+
+export async function all(sql, params = []) {
+  const driver = await db();
+  return driver.all(sql, params);
+}
+
+export async function row(sql, params = []) {
+  const driver = await db();
+  return driver.row(sql, params);
+}
+
+export async function setMeta(key, value) {
+  await run('INSERT INTO meta(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', [key, value]);
+}
+
+export async function getMeta(key) {
+  const r = await row('SELECT value FROM meta WHERE key=?', [key]);
   return r ? r.value : null;
 }
 
-export function getSetting(key, fallback = null) {
-  const r = row('SELECT value FROM settings WHERE key=?', [key]);
+export async function getSetting(key, fallback = null) {
+  const r = await row('SELECT value FROM settings WHERE key=?', [key]);
   if (!r) return fallback;
   try { return JSON.parse(r.value); } catch { return r.value; }
 }
 
-export function setSetting(key, value) {
-  run('INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', [key, JSON.stringify(value)]);
+export async function setSetting(key, value) {
+  await run('INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', [key, JSON.stringify(value)]);
 }
 
-export { migrate };
+export async function migrate(driver) {
+  await driver.exec(SCHEMA);
+}

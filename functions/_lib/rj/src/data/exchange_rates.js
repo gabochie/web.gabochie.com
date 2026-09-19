@@ -2,19 +2,19 @@ import { row, run, all } from '../db.js';
 
 const SOURCE = 'open.er-api.com';
 
-function safeRate(cur) {
-  const r = row('SELECT rate, source, fetched_at FROM exchange_rates WHERE base=? AND quote=?', ['USD', cur]);
+async function safeRate(cur) {
+  const r = await row('SELECT rate, source, fetched_at FROM exchange_rates WHERE base=? AND quote=?', ['USD', cur]);
   return r;
 }
 
-export function usdToGhs() {
-  const r = safeRate('GHS');
+export async function usdToGhs() {
+  const r = await safeRate('GHS');
   return r ? r.rate : 11.55;
 }
 
-export function convert(amountUsd, target = 'GHS') {
+export async function convert(amountUsd, target = 'GHS') {
   if (amountUsd == null) return null;
-  const r = safeRate(target);
+  const r = await safeRate(target);
   if (!r) return { amount: amountUsd, currency: target, note: 'no cached rate' };
   return {
     amount: Number((amountUsd * r.rate).toFixed(2)),
@@ -35,7 +35,7 @@ export async function refreshRates() {
     const want = ['GHS', 'NGN', 'EUR', 'GBP', 'AUD', 'CAD', 'CHF', 'AED', 'KES'];
     for (const cur of want) {
       if (data.rates[cur] == null) continue;
-      run(
+      await run(
         `INSERT INTO exchange_rates(base,quote,rate,source,fetched_at) VALUES(?,?,?,?,?)
          ON CONFLICT(base,quote) DO UPDATE SET rate=excluded.rate, source=excluded.source, fetched_at=excluded.fetched_at`,
         ['USD', cur, data.rates[cur], SOURCE, ts],
@@ -47,7 +47,7 @@ export async function refreshRates() {
   }
 }
 
-export function rateTable() {
+export async function rateTable() {
   return all('SELECT base, quote, rate, source, fetched_at FROM exchange_rates ORDER BY quote');
 }
 

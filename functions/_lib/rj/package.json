@@ -1,0 +1,10 @@
+{
+  "name": "rj-runtime",
+  "version": "1.0.0",
+  "description": "Remote Jobs runtime (port of Global Opportunity Radar) - Cloudflare-side private modules.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests"
+  }
+}

@@ -5,30 +5,30 @@ import { convert } from '../data/exchange_rates.js';
 
 export const todayStr = () => new Date().toISOString().slice(0, 10);
 
-export function commandCenter() {
-  const applyToday = all(
+export async function commandCenter() {
+  const applyToday = await all(
     `SELECT * FROM opportunities
      WHERE status='new' AND scam_risk != 'high risk' AND ghana_eligible=1
        AND match_score >= 60
      ORDER BY match_score DESC LIMIT 8`,
   );
-  const fastest = all(
+  const fastest = await all(
     `SELECT * FROM opportunities
      WHERE status='new' AND scam_risk != 'high risk' AND ghana_eligible=1
        AND (opp_type IN ('micro','service','any') OR application_effort <= 2)
      ORDER BY match_score DESC LIMIT 6`,
   );
-  const most = all(
+  const most = await all(
     `SELECT * FROM opportunities
      WHERE status='new' AND estimated_usd > 0
      ORDER BY estimated_usd DESC LIMIT 6`,
   );
-  const skillBest = all(
+  const skillBest = await all(
     `SELECT * FROM opportunities
      WHERE status='new' AND match_score >= 70
      ORDER BY match_score DESC LIMIT 6`,
   );
-  const recurring = all(
+  const recurring = await all(
     `SELECT * FROM opportunities
      WHERE status='new' AND recurring >= 60
      ORDER BY recurring DESC LIMIT 6`,
@@ -36,19 +36,19 @@ export function commandCenter() {
   return { applyToday, fastest, most, skillBest, recurring };
 }
 
-export function analytics() {
-  const total = row('SELECT COUNT(*) c FROM opportunities');
-  const ghana = row('SELECT COUNT(*) c FROM opportunities WHERE ghana_eligible=1');
-  const byType = all('SELECT opp_type, COUNT(*) c FROM opportunities GROUP BY opp_type ORDER BY c DESC');
-  const bySource = all('SELECT source, COUNT(*) c FROM opportunities GROUP BY source ORDER BY c DESC LIMIT 8');
-  const highFit = row('SELECT COUNT(*) c FROM opportunities WHERE match_score >= 70');
-  const risky = row('SELECT COUNT(*) c FROM opportunities WHERE scam_risk = ?', ['high risk']);
-  const apps = all('SELECT stage, COUNT(*) c FROM applications GROUP BY stage');
-  const won = row("SELECT COUNT(*) c FROM applications WHERE stage IN ('won','paid')");
-  const interviews = row("SELECT COUNT(*) c FROM applications WHERE stage IN ('interview','offer')");
-  const applicationsTotal = row('SELECT COUNT(*) c FROM applications');
+export async function analytics() {
+  const total = await row('SELECT COUNT(*) c FROM opportunities');
+  const ghana = await row('SELECT COUNT(*) c FROM opportunities WHERE ghana_eligible=1');
+  const byType = await all('SELECT opp_type, COUNT(*) c FROM opportunities GROUP BY opp_type ORDER BY c DESC');
+  const bySource = await all('SELECT source, COUNT(*) c FROM opportunities GROUP BY source ORDER BY c DESC LIMIT 8');
+  const highFit = await row('SELECT COUNT(*) c FROM opportunities WHERE match_score >= 70');
+  const risky = await row('SELECT COUNT(*) c FROM opportunities WHERE scam_risk = ?', ['high risk']);
+  const apps = await all('SELECT stage, COUNT(*) c FROM applications GROUP BY stage');
+  const won = await row("SELECT COUNT(*) c FROM applications WHERE stage IN ('won','paid')");
+  const interviews = await row("SELECT COUNT(*) c FROM applications WHERE stage IN ('interview','offer')");
+  const applicationsTotal = await row('SELECT COUNT(*) c FROM applications');
 
-  const ghs = convert(1, 'GHS');
+  const ghs = await convert(1, 'GHS');
   return {
     totals: {
       opportunities: total.c,
@@ -70,7 +70,7 @@ export function analytics() {
   };
 }
 
-export function discoverTrends(days = 30) {
+export async function discoverTrends(days = 30) {
   const since = new Date(Date.now() - days * 86400000).toISOString();
   return all('SELECT date(discovered_at) d, COUNT(*) c FROM opportunities WHERE discovered_at >= ? GROUP BY d ORDER BY d DESC LIMIT 14', [since]);
 }

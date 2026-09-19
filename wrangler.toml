@@ -1,0 +1,12 @@
+# Cloudflare Pages project config (local dev + D1 binding for Remote Jobs).
+# The site deploys via Cloudflare Pages git integration; stage is ./.
+# The RJ_DB binding must also be added in the Pages dashboard (Settings > Functions > D1).
+compatibility_date = "2026-09-19"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "RJ_DB"
+database_name = "remote-jobs-db"
+# Replace after creating the D1 database:
+#   wrangler d1 create remote-jobs-db
+database_id = "REPLACE_WITH_D1_DATABASE_ID"

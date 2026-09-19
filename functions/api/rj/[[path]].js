@@ -1,8 +1,8 @@
 /* Remote Jobs API — D1-backed GOR port.
    Routes: /api/rj/*  (static dashboard at /remote-jobs/ calls this).
    Binding: RJ_DB (D1). */
-import { bindD1, db } from '../_lib/rj/src/db.js';
-import { handleApi } from '../_lib/rj/src/api.js';
+import { bindD1, db } from '../../_lib/rj/src/db.js';
+import { handleApi } from '../../_lib/rj/src/api.js';
 
 function json(data, status) {
   return new Response(JSON.stringify(data), {
@@ -28,6 +28,9 @@ export async function onRequest(context) {
       });
     }
 
+    if (!context.env.RJ_DB) {
+      return json({ error: 'RJ_DB (D1) binding not configured' }, 500);
+    }
     bindD1(context.env.RJ_DB);
     await db();
 

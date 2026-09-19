@@ -45,14 +45,18 @@
     "Pipeline": "readonly",
     "Orchestrator": "readonly",
     "OutreachEngine": "readonly",
-    "CommandCenter": "readonly",
-    "searchRemoteJobs": "writable"
+    "CommandCenter": "readonly"
   },
   "overrides": [
     {
       "files": ["functions/**/*.js"],
       "parserOptions": { "sourceType": "module" },
       "env": { "worker": true }
+    },
+    {
+      "files": ["functions/_lib/rj/**/*.js"],
+      "parserOptions": { "sourceType": "module" },
+      "env": { "node": true, "worker": true, "es2022": true }
     },
     {
       "files": ["test/**/*.mjs", "**/*.mjs"],

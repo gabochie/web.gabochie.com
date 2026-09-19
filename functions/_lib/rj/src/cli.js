@@ -1,14 +1,12 @@
-// Command-line interface: seed / discover / report / export / analytics / serve / reset.
+// Command-line interface: seed / discover / report / export / analytics / reset.
 
-import { db, all, row, run } from './db.js';
+import { db, all, row } from './db.js';
 import { log } from './logger.js';
-import { seedAll, SEED_DATE } from './seed.js';
+import { seedAll } from './seed.js';
 import { runDiscovery } from './discover/agents.js';
-import { generateDailyReport, generateWeeklyReport, latestReport } from './engines/report.js';
+import { generateDailyReport, generateWeeklyReport, createAlert } from './engines/report.js';
 import { analytics } from './engines/analytics.js';
 import { loadWeights, saveWeights } from './engine_utils.js';
-import { startServer } from './server.js';
-import { config } from './config.js';
 import { refreshRates } from './data/exchange_rates.js';
 
 const cmd = process.argv[2];
@@ -31,7 +29,7 @@ async function main() {
     case 'report': {
       await ensureSeed();
       const kind = arg2 || 'daily';
-      const out = kind === 'weekly' ? generateWeeklyReport() : generateDailyReport();
+      const out = kind === 'weekly' ? await generateWeeklyReport() : await generateDailyReport();
       console.log(out.body);
       break;
     }
@@ -39,71 +37,64 @@ async function main() {
       await ensureSeed();
       const format = arg2 || 'csv';
       const { serialize } = await import('./export.js');
-      const file = serialize(format);
-      console.log('Wrote', file);
+      const content = await serialize(format);
+      console.log(`Exported ${content.length} bytes (${format}).`);
       break;
     }
     case 'analytics': {
       await ensureSeed();
-      console.log(JSON.stringify(analytics(), null, 2));
+      console.log(JSON.stringify(await analytics(), null, 2));
       break;
     }
     case 'gap': {
       await ensureSeed();
       const { gapAnalysis, patterns } = await import('./engines/report.js');
-      const g = gapAnalysis();
+      const g = await gapAnalysis();
       console.log('SKILL GAPS');
       for (const r of g.learningPriority) console.log(` - ${r.skill} [${r.category}] demand ${r.market_demand}/100 vs level ${r.level}/5 => gap ${r.gap}`);
       console.log('\nMARKET PATTERNS');
-      for (const p of patterns().slice(0, 8)) console.log(` - "${p.pattern}": ${p.count} mentions`);
+      for (const p of (await patterns()).slice(0, 8)) console.log(` - "${p.pattern}": ${p.count} mentions`);
       break;
     }
     case 'payments': {
       await ensureSeed();
-      console.table(all('SELECT name, ghana_signup, can_receive, withdraw_bank, mobile_money, status, confidence, verified_date FROM payment_providers'));
+      console.table(await all('SELECT name, ghana_signup, can_receive, withdraw_bank, mobile_money, status, confidence, verified_date FROM payment_providers'));
       break;
     }
     case 'sources': {
       await ensureSeed();
-      console.table(all('SELECT name, type, access_method, reliability, enabled, last_count FROM sources'));
+      console.table(await all('SELECT name, type, access_method, reliability, enabled, last_count FROM sources'));
       break;
     }
     case 'weights': {
       await ensureSeed();
       if (arg2 === 'reset') {
-        saveWeights(loadWeights());
+        await saveWeights(await loadWeights());
         console.log('Weights reset to defaults');
       } else {
-        console.log(loadWeights());
+        console.log(await loadWeights());
       }
       break;
     }
-    case 'serve': {
-      await ensureSeed();
-      console.log(`Starting ${config.appName} on http://${config.host}:${config.port}`);
-      startServer(config.port, config.host);
-      break;
-    }
     case 'reset': {
-      db().exec('DELETE FROM applications; DELETE FROM reports; DELETE FROM alerts; DELETE FROM discovery_runs; DELETE FROM opportunities; DELETE FROM settings; DELETE FROM meta;');
+      const driver = await db();
+      await driver.exec('DELETE FROM applications; DELETE FROM reports; DELETE FROM alerts; DELETE FROM discovery_runs; DELETE FROM opportunities; DELETE FROM settings; DELETE FROM meta;');
       const r = await seedAll();
       console.log('Reset + reseeded. Opportunities:', r.seeded);
       break;
     }
     case 'inspect': {
       await ensureSeed();
-      const n = row('SELECT COUNT(*) c FROM opportunities');
-      console.log('opportunities:', n.c);
-      console.log('sources:', row('SELECT COUNT(*) c FROM sources').c);
-      console.log('payments:', row('SELECT COUNT(*) c FROM payment_providers').c);
-      console.log('skills:', row('SELECT COUNT(*) c FROM skills').c);
-      console.log('applications:', row('SELECT COUNT(*) c FROM applications').c);
+      console.log('opportunities:', (await row('SELECT COUNT(*) c FROM opportunities')).c);
+      console.log('sources:', (await row('SELECT COUNT(*) c FROM sources')).c);
+      console.log('payments:', (await row('SELECT COUNT(*) c FROM payment_providers')).c);
+      console.log('skills:', (await row('SELECT COUNT(*) c FROM skills')).c);
+      console.log('applications:', (await row('SELECT COUNT(*) c FROM applications')).c);
       break;
     }
     case 'alert-test': {
-      const { createAlert } = await import('./engines/report.js');
-      createAlert('test', 'Alert system OK', 'Config check', null, 'info');
-      console.log('skipped');
+      await createAlert('test', 'Alert system OK', 'Config check', null, 'info');
+      console.log('alert created');
       break;
     }
     case 'fx': {
@@ -122,7 +113,6 @@ async function main() {
   payments      Show payment compatibility matrix
   sources       Show source registry
   weights [reset]   Show or reset scoring weights
-  serve         Start the dashboard server
   reset         Wipe opportunities/applications/reports and reseed
   inspect       Show data counts
   fx            Refresh exchange rates`);
@@ -130,7 +120,7 @@ async function main() {
 }
 
 async function ensureSeed() {
-  const n = row('SELECT COUNT(*) c FROM opportunities');
+  const n = await row('SELECT COUNT(*) c FROM opportunities');
   if (n.c === 0) {
     log.info('Empty DB - seeding');
     await seedAll({ refreshFx: false });

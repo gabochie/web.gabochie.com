@@ -1,5 +1,5 @@
 /* ========================================
-   GA ADMIN DASHBOARD — APP CONTROLLER
+   GA ADMIN DASHBOARD â€” APP CONTROLLER
    ======================================== */
 (function () {
   'use strict';
@@ -24,15 +24,15 @@
     FirebaseService.init();
     AuthService.init();
 
-    // Auth check — redirect to login if not authenticated
+    // Auth check â€” redirect to login if not authenticated
     AuthService.onAuthStateChanged(function (user) {
       if (!user) {
         window.location.href = 'login.html';
         return;
       }
-      // User is logged in — show admin
-      document.getElementById('settings-email').textContent = user.email || '—';
-      document.getElementById('settings-uid').textContent = user.uid || '—';
+      // User is logged in â€” show admin
+      document.getElementById('settings-email').textContent = user.email || 'â€”';
+      document.getElementById('settings-uid').textContent = user.uid || 'â€”';
       populateDropdowns();
       wireNav();
       wireModeToggle();
@@ -61,7 +61,7 @@
   }
 
   /* ----------------------------------------
-     LEAD PERSISTENCE — REAL-TIME
+     LEAD PERSISTENCE â€” REAL-TIME
      ---------------------------------------- */
   var unsubLeads = null;
 
@@ -306,7 +306,7 @@
         '<div class="lead-card-header">' +
           '<div>' +
             '<div class="lead-card-name">' + esc(lead.name) + '</div>' +
-            '<div class="lead-card-meta">' + esc(lead.city || '') + ', ' + esc(lead.state) + ' · ' + esc(lead.industry) + '</div>' +
+            '<div class="lead-card-meta">' + esc(lead.city || '') + ', ' + esc(lead.state) + ' Â· ' + esc(lead.industry) + '</div>' +
           '</div>' +
           '<div style="font-size:20px;font-weight:900;color:' + colorVar + '">' + qualScore + '</div>' +
         '</div>' +
@@ -319,8 +319,8 @@
           (flags.length ? '<span class="issue-tag" style="background:rgba(245,158,11,0.12);color:var(--yellow)">' + flags.length + ' flags</span>' : '') +
         '</div>' +
         '<div class="lead-card-actions">' +
-          '<button class="btn btn-accent btn-sm" data-action="proposal" data-id="' + lead.id + '">📄 Generate Proposal</button>' +
-          (lead.handcrafted ? '<button class="btn btn-outline btn-sm" data-action="preview" data-id="' + lead.id + '">🎨 View Redesign</button>' : '') +
+          '<button class="btn btn-accent btn-sm" data-action="proposal" data-id="' + lead.id + '">ðŸ“„ Generate Proposal</button>' +
+          (lead.handcrafted ? '<button class="btn btn-outline btn-sm" data-action="preview" data-id="' + lead.id + '">ðŸŽ¨ View Redesign</button>' : '') +
         '</div>';
 
       grid.appendChild(card);
@@ -462,8 +462,8 @@
     container.innerHTML =
       '<div class="stat-card accent"><div class="stat-label">Total Leads</div><div class="stat-value">' + totalLeads + '</div></div>' +
       '<div class="stat-card green"><div class="stat-label">Pipeline Value</div><div class="stat-value">$' + pipelineValue.toFixed(1) + 'M</div></div>' +
-      '<div class="stat-card red"><div class="stat-label">🔥 Hot</div><div class="stat-value">' + hotCount + '</div></div>' +
-      '<div class="stat-card yellow"><div class="stat-label">🟡 Warm</div><div class="stat-value">' + warmCount + '</div></div>' +
+      '<div class="stat-card red"><div class="stat-label">ðŸ”¥ Hot</div><div class="stat-value">' + hotCount + '</div></div>' +
+      '<div class="stat-card yellow"><div class="stat-label">ðŸŸ¡ Warm</div><div class="stat-value">' + warmCount + '</div></div>' +
       '<div class="stat-card purple"><div class="stat-label">Avg Score</div><div class="stat-value">' + avgScore + '</div></div>';
   }
 
@@ -479,22 +479,22 @@
       var stageLabel = stage ? stage.label : 'Prospect';
       var stageColor = stage ? stage.color : '#64748b';
       var segmentClass = lead.segment === 'hot' ? 'badge-hot' : lead.segment === 'warm' ? 'badge-warm' : lead.segment === 'cold' ? 'badge-cold' : '';
-      var segmentLabel = lead.segment === 'hot' ? '🔥 Hot' : lead.segment === 'warm' ? '🟡 Warm' : lead.segment === 'cold' ? '🔵 Cold' : '—';
+      var segmentLabel = lead.segment === 'hot' ? 'ðŸ”¥ Hot' : lead.segment === 'warm' ? 'ðŸŸ¡ Warm' : lead.segment === 'cold' ? 'ðŸ”µ Cold' : 'â€”';
 
       tr.innerHTML =
         '<td><strong>' + esc(lead.name) + '</strong></td>' +
-        '<td>' + esc(lead.contactName || '—') + '</td>' +
+        '<td>' + esc(lead.contactName || 'â€”') + '</td>' +
         '<td><span class="pipeline-badge" style="background:' + stageColor + '20;color:' + stageColor + ';border:1px solid ' + stageColor + '40">' + stageLabel + '</span></td>' +
         '<td><span class="' + segmentClass + '">' + segmentLabel + '</span></td>' +
         '<td>' + esc(lead.industry) + '</td>' +
         '<td>$' + (lead.value || 0).toFixed(1) + 'M</td>' +
-        '<td style="font-weight:600;color:' + ((lead.qualScore || 0) >= 70 ? 'var(--green)' : (lead.qualScore || 0) >= 50 ? 'var(--yellow)' : 'var(--text2)') + '">' + (lead.qualScore || '—') + '</td>' +
+        '<td style="font-weight:600;color:' + ((lead.qualScore || 0) >= 70 ? 'var(--green)' : (lead.qualScore || 0) >= 50 ? 'var(--yellow)' : 'var(--text2)') + '">' + (lead.qualScore || 'â€”') + '</td>' +
         '<td><select class="status-select stage-select" data-id="' + lead.id + '" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:11px;padding:3px 6px;border-radius:4px;font-family:inherit">' +
           stageList.map(function (s) {
             return '<option value="' + s.id + '"' + ((lead.pipelineStage || 'prospect') === s.id ? ' selected' : '') + '>' + s.icon + ' ' + s.label + '</option>';
           }).join('') +
         '</select></td>' +
-        '<td><button class="btn btn-accent btn-xs" data-action="proposal" data-id="' + lead.id + '">📄</button></td>';
+        '<td><button class="btn btn-accent btn-xs" data-action="proposal" data-id="' + lead.id + '">ðŸ“„</button></td>';
       tbody.appendChild(tr);
     });
 
@@ -701,11 +701,11 @@
     var list = document.getElementById('finder-results-list');
     list.innerHTML = results.map(function (r, i) {
       var segClass = r.segment === 'hot' ? 'badge-hot' : r.segment === 'warm' ? 'badge-warm' : r.segment === 'cold' ? 'badge-cold' : '';
-      var segLabel = r.segment === 'hot' ? '🔥 Hot' : r.segment === 'warm' ? '🟡 Warm' : r.segment === 'cold' ? '🔵 Cold' : '—';
+      var segLabel = r.segment === 'hot' ? 'ðŸ”¥ Hot' : r.segment === 'warm' ? 'ðŸŸ¡ Warm' : r.segment === 'cold' ? 'ðŸ”µ Cold' : 'â€”';
       return '<div class="finder-result-item" data-idx="' + i + '">' +
         '<div class="fri-main"><div class="fri-name">' + esc(r.name) + '</div><div class="fri-url">' + esc(r.website || '') + '</div></div>' +
-        '<div class="fri-meta"><span class="' + segClass + '">' + segLabel + '</span> <span class="fri-score">Score: ' + (r.qualScore || '—') + '</span></div>' +
-        '<div class="fri-contact">' + (r.contactName ? '👤 ' + esc(r.contactName) + ' (' + esc(r.contactTitle || '') + ')' : '') + '</div>' +
+        '<div class="fri-meta"><span class="' + segClass + '">' + segLabel + '</span> <span class="fri-score">Score: ' + (r.qualScore || 'â€”') + '</span></div>' +
+        '<div class="fri-contact">' + (r.contactName ? 'ðŸ‘¤ ' + esc(r.contactName) + ' (' + esc(r.contactTitle || '') + ')' : '') + '</div>' +
         '<div class="fri-actions"><button class="btn btn-xs btn-accent" onclick="window._finderSelect(' + i + ')">Select</button></div>' +
         '</div>';
     }).join('');
@@ -728,11 +728,11 @@
       '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0">' +
         '<span>Industry: ' + esc(r.industry) + '</span>' +
         '<span>State: ' + esc(r.state) + '</span>' +
-        '<span>Score: ' + (r.qualScore || '—') + '/100</span>' +
-        '<span class="' + (r.segment === 'hot' ? 'badge-hot' : r.segment === 'warm' ? 'badge-warm' : 'badge-cold') + '">' + (r.segment || '—') + '</span>' +
+        '<span>Score: ' + (r.qualScore || 'â€”') + '/100</span>' +
+        '<span class="' + (r.segment === 'hot' ? 'badge-hot' : r.segment === 'warm' ? 'badge-warm' : 'badge-cold') + '">' + (r.segment || 'â€”') + '</span>' +
       '</div>' +
-      (r.contactName ? '<div style="margin:8px 0">👤 <strong>' + esc(r.contactName) + '</strong> — ' + esc(r.contactTitle || '') + '</div>' : '') +
-      (r.contactEmail ? '<div style="color:var(--text2)">✉️ ' + esc(r.contactEmail) + '</div>' : '');
+      (r.contactName ? '<div style="margin:8px 0">ðŸ‘¤ <strong>' + esc(r.contactName) + '</strong> â€” ' + esc(r.contactTitle || '') + '</div>' : '') +
+      (r.contactEmail ? '<div style="color:var(--text2)">âœ‰ï¸ ' + esc(r.contactEmail) + '</div>' : '');
 
     // Generate outreach
     if (r.qualScore) {
@@ -854,7 +854,7 @@
     });
     barHtml += '</div>';
     container.innerHTML = '<div class="card" style="padding:10px 16px">' +
-      '<div class="card-title" style="font-size:12px;margin-bottom:2px">📈 Scan Activity <span style="font-weight:400;color:var(--text3)">' + FINDER_SCAN_HISTORY.length + ' scans • ' + totalScanned + ' leads found</span></div>' +
+      '<div class="card-title" style="font-size:12px;margin-bottom:2px">ðŸ“ˆ Scan Activity <span style="font-weight:400;color:var(--text3)">' + FINDER_SCAN_HISTORY.length + ' scans â€¢ ' + totalScanned + ' leads found</span></div>' +
       barHtml +
       '</div>';
   }
@@ -875,7 +875,7 @@
       return;
     }
 
-    var categories = { 'lead-management': '🎯 Lead Management', 'email': '📧 Email', 'ai': '🤖 AI', 'analytics': '📊 Analytics' };
+    var categories = { 'lead-management': 'ðŸŽ¯ Lead Management', 'email': 'ðŸ“§ Email', 'ai': 'ðŸ¤– AI', 'analytics': 'ðŸ“Š Analytics' };
     var html = '';
 
     Object.keys(categories).forEach(function (cat) {
@@ -884,7 +884,7 @@
       html += '<div style="margin-bottom:20px">';
       html += '<div style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">' + categories[cat] + '</div>';
       catWorkflows.forEach(function (wf) {
-        var steps = (wf.steps || []).map(function (s) { return s.label || s.action; }).join(' → ');
+        var steps = (wf.steps || []).map(function (s) { return s.label || s.action; }).join(' â†’ ');
         html += '<div class="automation-wf ' + (wf.enabled ? 'enabled' : 'disabled') + '" data-wf-id="' + wf.id + '">';
         html += '<div class="awf-header">';
         html += '<span class="awf-name">' + esc(wf.name) + '</span>';
@@ -892,7 +892,7 @@
         html += '</div>';
         html += '<div class="awf-desc">' + esc(wf.description) + '</div>';
         html += '<div class="awf-steps">' + esc(steps) + '</div>';
-        html += '<div class="awf-meta">Runs: ' + (wf.runs || 0) + (wf.lastRun ? ' • Last: ' + new Date(wf.lastRun).toLocaleDateString() : '') + '</div>';
+        html += '<div class="awf-meta">Runs: ' + (wf.runs || 0) + (wf.lastRun ? ' â€¢ Last: ' + new Date(wf.lastRun).toLocaleDateString() : '') + '</div>';
         html += '</div>';
       });
       html += '</div>';
@@ -937,7 +937,7 @@
   }
 
   /* ----------------------------------------
-     OUTREACH TAB — Bulk Outreach
+     OUTREACH TAB â€” Bulk Outreach
      ---------------------------------------- */
   function renderOutreach() {
     renderOutreachLimits();
@@ -968,8 +968,8 @@
     var emailPct = Math.round((d.email / d.emailLimit) * 100);
     var whatsappPct = Math.round((d.whatsapp / d.whatsappLimit) * 100);
     el.innerHTML =
-      '<div class="outreach-limit"><span class="ol-label">📧 Emails Today</span><div class="ol-bar"><div class="ol-fill" style="width:' + emailPct + '%;background:' + (emailPct > 80 ? 'var(--red)' : 'var(--green)') + '"></div></div><span class="ol-count">' + d.email + '/' + d.emailLimit + '</span></div>' +
-      '<div class="outreach-limit"><span class="ol-label">💬 WhatsApp Today</span><div class="ol-bar"><div class="ol-fill" style="width:' + whatsappPct + '%;background:' + (whatsappPct > 80 ? 'var(--red)' : 'var(--green)') + '"></div></div><span class="ol-count">' + d.whatsapp + '/' + d.whatsappLimit + '</span></div>';
+      '<div class="outreach-limit"><span class="ol-label">ðŸ“§ Emails Today</span><div class="ol-bar"><div class="ol-fill" style="width:' + emailPct + '%;background:' + (emailPct > 80 ? 'var(--red)' : 'var(--green)') + '"></div></div><span class="ol-count">' + d.email + '/' + d.emailLimit + '</span></div>' +
+      '<div class="outreach-limit"><span class="ol-label">ðŸ’¬ WhatsApp Today</span><div class="ol-bar"><div class="ol-fill" style="width:' + whatsappPct + '%;background:' + (whatsappPct > 80 ? 'var(--red)' : 'var(--green)') + '"></div></div><span class="ol-count">' + d.whatsapp + '/' + d.whatsappLimit + '</span></div>';
   }
 
   function renderOutreachStats() {
@@ -1092,7 +1092,7 @@
         ? '<div style="font-weight:600">' + esc(window.OutreachEngine.fillTemplate(subject, l)) + '</div>'
         : '<div style="white-space:pre-wrap">' + esc(window.OutreachEngine.fillTemplate(msg, l)) + '</div>';
       return '<div class="outreach-preview-item">' +
-        '<div class="opi-name"><strong>' + esc(l.name) + '</strong> — ' + esc(l.contactName || 'No contact') + '</div>' +
+        '<div class="opi-name"><strong>' + esc(l.name) + '</strong> â€” ' + esc(l.contactName || 'No contact') + '</div>' +
         '<div class="opi-email">' + esc(l.contactEmail || '') + '</div>' +
         '<div class="opi-content">' + content + '</div>' +
         '</div>';
@@ -1114,7 +1114,7 @@
 
     el.innerHTML = queue.slice(0, 20).map(function (q) {
       return '<div class="outreach-queue-item">' +
-        '<span class="oqi-channel">' + (q.channel === 'email' ? '📧' : '💬') + '</span>' +
+        '<span class="oqi-channel">' + (q.channel === 'email' ? 'ðŸ“§' : 'ðŸ’¬') + '</span>' +
         '<span class="oqi-name">' + esc(q.leadName || q.name || '') + '</span>' +
         '<span class="oqi-campaign">' + esc(q.campaign || '') + '</span>' +
         '<span class="oqi-time">' + new Date(q.scheduledFor).toLocaleString() + '</span>' +
@@ -1143,7 +1143,7 @@
         return '<tr>' +
           '<td style="padding:8px;border-bottom:1px solid var(--border)">' + new Date(s.ts).toLocaleString() + '</td>' +
           '<td style="padding:8px;border-bottom:1px solid var(--border)">' + esc(s.leadName || '') + '</td>' +
-          '<td style="padding:8px;border-bottom:1px solid var(--border)">' + (s.channel === 'email' ? '📧' : '💬') + '</td>' +
+          '<td style="padding:8px;border-bottom:1px solid var(--border)">' + (s.channel === 'email' ? 'ðŸ“§' : 'ðŸ’¬') + '</td>' +
           '<td style="padding:8px;border-bottom:1px solid var(--border)"><span class="status-badge ' + s.status + '">' + s.status + '</span></td>' +
           '<td style="padding:8px;border-bottom:1px solid var(--border)">' + esc(s.campaign || '') + '</td>' +
           '</tr>';
@@ -1163,8 +1163,8 @@
 
     el.innerHTML = campaigns.map(function (c) {
       return '<div class="outreach-campaign">' +
-        '<div class="oc-header"><span class="oc-name">' + esc(c.name) + '</span><span class="oc-channel">' + (c.channel === 'email' ? '📧' : '💬') + '</span></div>' +
-        '<div class="oc-stats">Sent: ' + (c.emailSent || c.whatsappSent || 0) + ' • Opens: ' + (c.opens || 0) + ' • Clicks: ' + (c.clicks || 0) + '</div>' +
+        '<div class="oc-header"><span class="oc-name">' + esc(c.name) + '</span><span class="oc-channel">' + (c.channel === 'email' ? 'ðŸ“§' : 'ðŸ’¬') + '</span></div>' +
+        '<div class="oc-stats">Sent: ' + (c.emailSent || c.whatsappSent || 0) + ' â€¢ Opens: ' + (c.opens || 0) + ' â€¢ Clicks: ' + (c.clicks || 0) + '</div>' +
         '<div class="oc-meta">Created: ' + new Date(c.created).toLocaleDateString() + '</div>' +
         '</div>';
     }).join('');
@@ -1175,10 +1175,10 @@
     if (!container) return;
 
     var templates = [
-      { name: 'Initial — Hot Lead', subject: '{company} — quick question about your website', body: 'Hi {contactName},\n\nI ran a quick analysis of {company}\'s website and spotted some conversion opportunities.\n\nKey findings:\n• Current score: {score}/100 (industry avg: 45)\n\nOur {industry} clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call?\n\nBest,\nWeb Gabochie' },
-      { name: 'Value-Add Follow-Up', subject: 'Re: {company} — thought you\'d find this useful', body: 'Hi {contactName},\n\nFollowing up — I put together a quick breakdown of what a 1% conversion lift would mean for {company}.\n\nThat\'s real revenue walking out the door.\n\nWant me to send the full breakdown?\n\nBest,\nWeb Gabochie' },
-      { name: 'Case Study', subject: 'How a {industry} company got 47% more leads', body: 'Hi {contactName},\n\nThought you\'d find this relevant — we recently helped a {industry} company similar to {company}:\n\n• Before: 2.1% conversion rate\n• After: 3.4% conversion rate\n• Result: 47% more qualified leads in 90 days\n\nHappy to walk you through what we did. 15 minutes, no obligation.\n\nBest,\nWeb Gabochie' },
-      { name: 'Breakup', subject: 'Closing the loop on {company}', body: 'Hi {contactName},\n\nI\'ve reached out a few times about {company}\'s website — I assume the timing isn\'t right.\n\nI\'ll close this thread for now. If things change, you know where to find me.\n\nBest,\nWeb Gabochie' }
+      { name: 'Initial â€” Hot Lead', subject: '{company} â€” quick question about your website', body: 'Hi {contactName},\n\nI ran a quick analysis of {company}\'s website and spotted some conversion opportunities.\n\nKey findings:\nâ€¢ Current score: {score}/100 (industry avg: 45)\n\nOur {industry} clients typically see 40-60% more leads after a redesign.\n\nWould you be open to a 15-minute call?\n\nBest,\nWeb Gabochie' },
+      { name: 'Value-Add Follow-Up', subject: 'Re: {company} â€” thought you\'d find this useful', body: 'Hi {contactName},\n\nFollowing up â€” I put together a quick breakdown of what a 1% conversion lift would mean for {company}.\n\nThat\'s real revenue walking out the door.\n\nWant me to send the full breakdown?\n\nBest,\nWeb Gabochie' },
+      { name: 'Case Study', subject: 'How a {industry} company got 47% more leads', body: 'Hi {contactName},\n\nThought you\'d find this relevant â€” we recently helped a {industry} company similar to {company}:\n\nâ€¢ Before: 2.1% conversion rate\nâ€¢ After: 3.4% conversion rate\nâ€¢ Result: 47% more qualified leads in 90 days\n\nHappy to walk you through what we did. 15 minutes, no obligation.\n\nBest,\nWeb Gabochie' },
+      { name: 'Breakup', subject: 'Closing the loop on {company}', body: 'Hi {contactName},\n\nI\'ve reached out a few times about {company}\'s website â€” I assume the timing isn\'t right.\n\nI\'ll close this thread for now. If things change, you know where to find me.\n\nBest,\nWeb Gabochie' }
     ];
 
     container.innerHTML = templates.map(function (t) {
@@ -1231,7 +1231,7 @@
     ];
 
     container.innerHTML =
-      '<div class="card"><div class="card-title">🎯 Target Industries</div>' +
+      '<div class="card"><div class="card-title">ðŸŽ¯ Target Industries</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px">' +
           targetIndustries.map(function (ind) {
             return '<span style="background:var(--surface2);border:1px solid var(--border);padding:6px 12px;border-radius:100px;font-size:13px;color:var(--text)">' + esc(ind) + '</span>';
@@ -1239,7 +1239,7 @@
         '</div>' +
       '</div>' +
 
-      '<div class="card"><div class="card-title">⚠️ Red Flags to Watch For</div>' +
+      '<div class="card"><div class="card-title">âš ï¸ Red Flags to Watch For</div>' +
         '<div class="checklist">' +
           redFlags.map(function (flag) {
             return '<div class="checklist-item"><span class="check-icon fail">!</span>' + esc(flag) + '</div>';
@@ -1247,15 +1247,15 @@
         '</div>' +
       '</div>' +
 
-      '<div class="card"><div class="card-title">✅ Pre-Qualification Checklist</div>' +
+      '<div class="card"><div class="card-title">âœ… Pre-Qualification Checklist</div>' +
         '<div class="checklist">' +
           preQual.map(function (item) {
-            return '<div class="checklist-item"><span class="check-icon pass">✓</span>' + esc(item) + '</div>';
+            return '<div class="checklist-item"><span class="check-icon pass">âœ“</span>' + esc(item) + '</div>';
           }).join('') +
         '</div>' +
       '</div>' +
 
-      '<div class="card"><div class="card-title">📧 Cold Email Template</div>' +
+      '<div class="card"><div class="card-title">ðŸ“§ Cold Email Template</div>' +
         '<div class="email-template" id="strategy-email-template">' +
           'Subject: Your website might be costing you customers\n\n' +
           'Hi [Name],\n\n' +
@@ -1266,11 +1266,11 @@
           'Would you be open to a quick 10-minute call this week? I\'d love to share some ' +
           'ideas specific to your business.\n\n' +
           'Best regards,\nWeb Gabochie\nGA Web Design' +
-          '<button class="btn btn-outline btn-xs copy-btn" style="position:absolute;top:8px;right:8px" onclick="navigator.clipboard && navigator.clipboard.writeText(this.parentElement.textContent.replace(\'Copy\',\'\').trim()).then(function(){showToast(\'Copied!\',\'success\')})">📋 Copy</button>' +
+          '<button class="btn btn-outline btn-xs copy-btn" style="position:absolute;top:8px;right:8px" onclick="navigator.clipboard && navigator.clipboard.writeText(this.parentElement.textContent.replace(\'Copy\',\'\').trim()).then(function(){showToast(\'Copied!\',\'success\')})">ðŸ“‹ Copy</button>' +
         '</div>' +
       '</div>' +
 
-      '<div class="card"><div class="card-title">💰 Pricing Table</div>' +
+      '<div class="card"><div class="card-title">ðŸ’° Pricing Table</div>' +
         '<table class="pricing-table">' +
           '<thead><tr><th>Tier</th><th>Price</th><th>Features</th></tr></thead>' +
           '<tbody>' +
@@ -1278,7 +1278,7 @@
               return '<tr>' +
                 '<td><strong>' + esc(tier.name) + '</strong></td>' +
                 '<td class="price">' + esc(tier.price) + '</td>' +
-                '<td>' + tier.features.join(' · ') + '</td>' +
+                '<td>' + tier.features.join(' Â· ') + '</td>' +
               '</tr>';
             }).join('') +
           '</tbody>' +
@@ -1342,13 +1342,13 @@
       barHtml += '</div>';
     }
     container.innerHTML = '<div class="card" style="padding:10px 16px">' +
-      '<div class="card-title" style="font-size:12px;margin-bottom:4px">📊 Strategy Impact <span style="font-weight:400;color:var(--text3)">' + total + ' total leads</span></div>' +
+      '<div class="card-title" style="font-size:12px;margin-bottom:4px">ðŸ“Š Strategy Impact <span style="font-weight:400;color:var(--text3)">' + total + ' total leads</span></div>' +
       '<div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap;margin-bottom:4px">' +
-      '<span>🔥 Hot: <strong>' + hot + '</strong></span>' +
-      '<span>🟡 Warm: <strong>' + warm + '</strong></span>' +
-      '<span>❄️ Cold: <strong>' + cold + '</strong></span>' +
-      '<span>📨 Contacted: <strong>' + contacted + '</strong></span>' +
-      '<span>📈 Pipeline: <strong>' + Math.round((hot / Math.max(total, 1)) * 100) + '%</strong> hot rate</span>' +
+      '<span>ðŸ”¥ Hot: <strong>' + hot + '</strong></span>' +
+      '<span>ðŸŸ¡ Warm: <strong>' + warm + '</strong></span>' +
+      '<span>â„ï¸ Cold: <strong>' + cold + '</strong></span>' +
+      '<span>ðŸ“¨ Contacted: <strong>' + contacted + '</strong></span>' +
+      '<span>ðŸ“ˆ Pipeline: <strong>' + Math.round((hot / Math.max(total, 1)) * 100) + '%</strong> hot rate</span>' +
       '</div>' +
       barHtml +
       '</div>';
@@ -1401,7 +1401,7 @@
           '<ul class="tier-features"><li>5-page responsive site</li><li>Mobile-first build</li><li>Contact form</li><li>Basic SEO</li></ul>' +
         '</div>' +
         '<div class="tier-card recommended">' +
-          '<div class="tier-name">Growth ★</div>' +
+          '<div class="tier-name">Growth â˜…</div>' +
           '<div class="tier-price">$5,999</div>' +
           '<ul class="tier-features"><li>Everything in Starter</li><li>CRO + A/B testing</li><li>Exit-intent capture</li><li>Heatmaps</li><li>60-day support</li></ul>' +
         '</div>' +
@@ -1412,7 +1412,7 @@
         '</div>' +
       '</div>' +
       '<h2>Timeline</h2>' +
-      '<p>Starter: 6-7 weeks · Growth: 7-8 weeks · Scale: 8-12 weeks</p>' +
+      '<p>Starter: 6-7 weeks Â· Growth: 7-8 weeks Â· Scale: 8-12 weeks</p>' +
       '<h2>Next Steps</h2>' +
       '<p>1. Schedule a discovery call<br>2. Review and select a tier<br>3. Begin design phase</p>';
   }
@@ -1465,7 +1465,7 @@
       var timeStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       html += '<div class="note-item" style="padding:10px 0;border-bottom:1px solid var(--border)">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
-        '<span style="font-size:.75rem;color:var(--text3)">' + (note.author || 'Admin') + ' · ' + timeStr + '</span>' +
+        '<span style="font-size:.75rem;color:var(--text3)">' + (note.author || 'Admin') + ' Â· ' + timeStr + '</span>' +
         '<button onclick="GAAdmin.deleteNote(\'' + editingNotesId + '\',\'' + note.id + '\')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:.75rem">Delete</button>' +
         '</div>' +
         '<p style="font-size:.88rem;color:var(--text);margin:0;white-space:pre-wrap">' + (note.text || '') + '</p>' +
@@ -1572,7 +1572,7 @@
     { id: 'rm_5', phase: 'discovery', name: 'Website analyzer + score tool', desc: 'Client-side via allorigins + server-side via CF Function', status: 'Done', priority: 'critical', due: '2026-07-06' },
 
     // Phase 2: CF Pages Migration (Done)
-    { id: 'rm_6', phase: 'design', name: 'Migrate Netlify → Cloudflare Pages', desc: 'Convert 6 functions, update URLs, _headers, CI/CD', status: 'Done', priority: 'critical', due: '2026-07-06' },
+    { id: 'rm_6', phase: 'design', name: 'Migrate Netlify â†’ Cloudflare Pages', desc: 'Convert 6 functions, update URLs, _headers, CI/CD', status: 'Done', priority: 'critical', due: '2026-07-06' },
     { id: 'rm_7', phase: 'design', name: 'Login page + auth flow', desc: 'Firebase Auth login, password toggle, CSP fix', status: 'Done', priority: 'critical', due: '2026-07-06' },
     { id: 'rm_8', phase: 'design', name: 'Portfolio Manager + Site Audit', desc: '6 sites, audit engine (10 categories), detail view', status: 'Done', priority: 'critical', due: '2026-07-06' },
     { id: 'rm_9', phase: 'design', name: 'Sentry + ESLint + CI/CD', desc: 'Error tracking, linting, GitHub Actions deploy', status: 'Done', priority: 'high', due: '2026-07-06' },
@@ -1582,7 +1582,7 @@
     { id: 'rm_11', phase: 'development', name: 'Wire Bulk Outreach Engine', desc: 'Connect outreach-engine.js to /api/send-email + /api/track, add Brevo env var', status: 'Todo', priority: 'critical', due: '2026-07-08' },
     { id: 'rm_12', phase: 'development', name: 'Wire Automation Workflows', desc: 'Connect automation.js triggers to real actions (email, status updates, notifications)', status: 'Todo', priority: 'high', due: '2026-07-09' },
     { id: 'rm_13', phase: 'development', name: 'Wire Command Center', desc: 'Replace mock agent data with real pipeline stats from Firestore', status: 'Todo', priority: 'high', due: '2026-07-10' },
-    { id: 'rm_14', phase: 'development', name: 'Wire Autonomous Agents', desc: 'Make agents.js actually execute — Scout discovers, Qualifier scores, Sales outreach', status: 'Todo', priority: 'high', due: '2026-07-11' },
+    { id: 'rm_14', phase: 'development', name: 'Wire Autonomous Agents', desc: 'Make agents.js actually execute â€” Scout discovers, Qualifier scores, Sales outreach', status: 'Todo', priority: 'high', due: '2026-07-11' },
     { id: 'rm_15', phase: 'development', name: 'Wire Portfolio Auto-Audit', desc: 'Schedule periodic audits, persist history in Firestore, trend charts', status: 'Todo', priority: 'medium', due: '2026-07-12' },
     { id: 'rm_16', phase: 'development', name: 'Wire Client Portal Roadmap', desc: 'Load roadmap data from Firestore, show milestones per company', status: 'Todo', priority: 'medium', due: '2026-07-13' },
     { id: 'rm_17', phase: 'development', name: 'Wire Settings Persistence', desc: 'Save/load settings from Firestore instead of localStorage only', status: 'Todo', priority: 'low', due: '2026-07-14' },
@@ -1593,7 +1593,7 @@
     { id: 'rm_20', phase: 'content', name: 'Clean up Netlify references', desc: 'Remove netlify/ directory, old netlify.toml, update PRD.md', status: 'Todo', priority: 'medium', due: '2026-07-09' },
 
     // Phase 5: Testing
-    { id: 'rm_21', phase: 'testing', name: 'Test login → admin → portfolio → audit', desc: 'Full flow test on production', status: 'Todo', priority: 'critical', due: '2026-07-08' },
+    { id: 'rm_21', phase: 'testing', name: 'Test login â†’ admin â†’ portfolio â†’ audit', desc: 'Full flow test on production', status: 'Todo', priority: 'critical', due: '2026-07-08' },
     { id: 'rm_22', phase: 'testing', name: 'Test outreach engine end-to-end', desc: 'Send test email via Brevo, verify tracking pixel + click redirect', status: 'Todo', priority: 'high', due: '2026-07-09' },
     { id: 'rm_23', phase: 'testing', name: 'Test all CF Pages Functions', desc: 'Verify /api/analyze, /api/site-audit, /api/bulk-analyze, /api/send-email, /api/track', status: 'Todo', priority: 'high', due: '2026-07-09' },
     { id: 'rm_24', phase: 'testing', name: 'Run ESLint + fix errors', desc: 'Fix the 22 errors found in initial lint run', status: 'Todo', priority: 'medium', due: '2026-07-10' },
@@ -1604,7 +1604,7 @@
     { id: 'rm_27', phase: 'launch', name: 'DNS final verification', desc: 'Verify web.gabochie.com + www both resolve to CF Pages', status: 'Todo', priority: 'critical', due: '2026-07-10' },
     { id: 'rm_28', phase: 'launch', name: 'Performance audit', desc: 'Lighthouse 90+ on all pages, Core Web Vitals pass', status: 'Todo', priority: 'high', due: '2026-07-11' },
     { id: 'rm_29', phase: 'launch', name: 'Security audit', desc: 'Verify CSP, HSTS, X-Frame-Options, no mixed content', status: 'Todo', priority: 'high', due: '2026-07-11' },
-    { id: 'rm_30', phase: 'launch', name: 'Ship it 🚀', desc: 'Everything wired, tested, and live on Cloudflare Pages', status: 'Todo', priority: 'critical', due: '2026-07-12' }
+    { id: 'rm_30', phase: 'launch', name: 'Ship it ðŸš€', desc: 'Everything wired, tested, and live on Cloudflare Pages', status: 'Todo', priority: 'critical', due: '2026-07-12' }
   ];
 
   var unsubRoadmap = null;
@@ -1652,11 +1652,11 @@
     var pct = total ? Math.round((done / total) * 100) : 0;
 
     el.innerHTML =
-      '<div class="rm-stat"><div class="rm-stat-icon total">📋</div><div><div class="rm-stat-val">' + total + '</div><div class="rm-stat-label">Total Tasks</div></div></div>' +
-      '<div class="rm-stat"><div class="rm-stat-icon done">✅</div><div><div class="rm-stat-val">' + done + '</div><div class="rm-stat-label">Completed</div></div></div>' +
-      '<div class="rm-stat"><div class="rm-stat-icon progress">🔄</div><div><div class="rm-stat-val">' + inProgress + '</div><div class="rm-stat-label">In Progress</div></div></div>' +
-      '<div class="rm-stat"><div class="rm-stat-icon blocked">🚫</div><div><div class="rm-stat-val">' + blocked + '</div><div class="rm-stat-label">Blocked</div></div></div>' +
-      '<div class="rm-stat"><div class="rm-stat-icon pct">📈</div><div><div class="rm-stat-val">' + pct + '%</div><div class="rm-stat-label">Complete</div></div></div>';
+      '<div class="rm-stat"><div class="rm-stat-icon total">ðŸ“‹</div><div><div class="rm-stat-val">' + total + '</div><div class="rm-stat-label">Total Tasks</div></div></div>' +
+      '<div class="rm-stat"><div class="rm-stat-icon done">âœ…</div><div><div class="rm-stat-val">' + done + '</div><div class="rm-stat-label">Completed</div></div></div>' +
+      '<div class="rm-stat"><div class="rm-stat-icon progress">ðŸ”„</div><div><div class="rm-stat-val">' + inProgress + '</div><div class="rm-stat-label">In Progress</div></div></div>' +
+      '<div class="rm-stat"><div class="rm-stat-icon blocked">ðŸš«</div><div><div class="rm-stat-val">' + blocked + '</div><div class="rm-stat-label">Blocked</div></div></div>' +
+      '<div class="rm-stat"><div class="rm-stat-icon pct">ðŸ“ˆ</div><div><div class="rm-stat-val">' + pct + '%</div><div class="rm-stat-label">Complete</div></div></div>';
   }
 
   function renderRoadmapBoard(tasks) {
@@ -1699,9 +1699,9 @@
                 (t.due ? '<span class="rm-task-date">' + t.due + '</span>' : '') +
               '</div>' +
               '<div class="rm-task-actions">' +
-                (t.status !== 'Done' ? '<button class="rm-task-btn done-btn" data-action="advance" data-id="' + t.id + '">▶ Advance</button>' : '') +
-                (t.status !== 'Todo' ? '<button class="rm-task-btn" data-action="back" data-id="' + t.id + '">◀ Back</button>' : '') +
-                '<button class="rm-task-btn" data-action="block" data-id="' + t.id + '">' + (t.status === 'Blocked' ? ' Unblock' : ' 🚫 Block') + '</button>' +
+                (t.status !== 'Done' ? '<button class="rm-task-btn done-btn" data-action="advance" data-id="' + t.id + '">â–¶ Advance</button>' : '') +
+                (t.status !== 'Todo' ? '<button class="rm-task-btn" data-action="back" data-id="' + t.id + '">â—€ Back</button>' : '') +
+                '<button class="rm-task-btn" data-action="block" data-id="' + t.id + '">' + (t.status === 'Blocked' ? ' Unblock' : ' ðŸš« Block') + '</button>' +
               '</div>' +
             '</div>';
           }).join('') +
@@ -1733,7 +1733,7 @@
 
         saveRoadmap(tasks);
         renderRoadmap();
-        showToast('Task "' + task.name + '" → ' + task.status, 'success');
+        showToast('Task "' + task.name + '" â†’ ' + task.status, 'success');
       });
     });
 
@@ -1742,7 +1742,7 @@
       task.addEventListener('click', function () {
         var tasks = getRoadmapTasks();
         var t = tasks.find(function (x) { return x.id === task.dataset.id; });
-        if (t) showToast(t.name + ' — ' + t.status + ' — Due: ' + (t.due || 'TBD'));
+        if (t) showToast(t.name + ' â€” ' + t.status + ' â€” Due: ' + (t.due || 'TBD'));
       });
     });
   }
@@ -1910,7 +1910,7 @@
     el.style.display = '';
     FirebaseService.settings.get().then(function (data) {
       if (!data) {
-        el.innerHTML = '<div class="card-title" style="font-size:13px">🔌 Connection Status</div>' +
+        el.innerHTML = '<div class="card-title" style="font-size:13px">ðŸ”Œ Connection Status</div>' +
           '<div style="font-size:12px;color:var(--text3);padding:8px 0">No configuration loaded yet.</div>';
         return;
       }
@@ -1919,15 +1919,15 @@
       var hasSender = !!(data.brevoSenderEmail || '').trim();
       var brevoOk = hasBrevo && hasSender;
       el.innerHTML =
-        '<div class="card-title" style="font-size:13px">🔌 Connection Status</div>' +
+        '<div class="card-title" style="font-size:13px">ðŸ”Œ Connection Status</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0;font-size:12px">' +
         '<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (brevoOk ? 'var(--green)' : 'var(--yellow)') + ';margin-right:6px"></span>Brevo Email: <strong>' + (brevoOk ? 'Configured' : hasBrevo ? 'Missing sender' : 'Not set') + '</strong></div>' +
         '<div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (hasOpenAI ? 'var(--green)' : 'var(--yellow)') + ';margin-right:6px"></span>OpenAI: <strong>' + (hasOpenAI ? 'Configured' : 'Not set') + '</strong></div>' +
         '</div>' +
         '<div style="font-size:11px;color:var(--text3);border-top:1px solid var(--border);padding-top:8px">Auto-reloads when this tab becomes visible</div>';
     }).catch(function () {
-      el.innerHTML = '<div class="card-title" style="font-size:13px">🔌 Connection Status</div>' +
-        '<div style="font-size:12px;color:var(--red);padding:8px 0">⚠️ Could not reach Firestore</div>';
+      el.innerHTML = '<div class="card-title" style="font-size:13px">ðŸ”Œ Connection Status</div>' +
+        '<div style="font-size:12px;color:var(--red);padding:8px 0">âš ï¸ Could not reach Firestore</div>';
     });
   }
 
@@ -1978,7 +1978,7 @@
   }
 
   /* ----------------------------------------
-     VISITORS TAB — Analytics Dashboard
+     VISITORS TAB â€” Analytics Dashboard
      ---------------------------------------- */
   function renderVisitors() {
     if (!window.Analytics) return;
@@ -2002,7 +2002,7 @@
         html += '</div>';
       });
       html += '</div>';
-      html += '<div style="margin-top:12px;font-size:12px;color:var(--text3)">Overall: ' + funnel.totalVisitors + ' visitors → ' + funnel.totalDeals + ' deals (' + funnel.overallConversion + '% conversion)</div>';
+      html += '<div style="margin-top:12px;font-size:12px;color:var(--text3)">Overall: ' + funnel.totalVisitors + ' visitors â†’ ' + funnel.totalDeals + ' deals (' + funnel.overallConversion + '% conversion)</div>';
       funnelEl.innerHTML = html;
     }
 
@@ -2070,9 +2070,9 @@
         var rHtml = '';
         recent.slice(0, 15).forEach(function (v) {
           var time = new Date(v.ts).toLocaleTimeString();
-          var type = v.type === 'pageview' ? '📄' : v.type === 'conversion' ? '🎯' : '📍';
+          var type = v.type === 'pageview' ? 'ðŸ“„' : v.type === 'conversion' ? 'ðŸŽ¯' : 'ðŸ“';
           var page = v.page || v.data?.page || '';
-          var device = v.device ? (v.device.type === 'mobile' ? '📱' : v.device.type === 'tablet' ? '📱' : '💻') : '';
+          var device = v.device ? (v.device.type === 'mobile' ? 'ðŸ“±' : v.device.type === 'tablet' ? 'ðŸ“±' : 'ðŸ’»') : '';
           rHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">';
           rHtml += '<span style="color:var(--text3);width:70px">' + time + '</span>';
           rHtml += '<span>' + type + '</span>';
@@ -2099,7 +2099,7 @@
   }
 
   /* ----------------------------------------
-     REPORTS TAB — Dynamic Charts & Comparisons
+     REPORTS TAB â€” Dynamic Charts & Comparisons
      ---------------------------------------- */
   function renderReports() {
     if (!window.Reporting) return;
@@ -2112,7 +2112,7 @@
     var compEl = document.getElementById('report-comparison');
     if (compEl) {
       function statCard(label, val, change, color) {
-        var arrow = parseInt(change) >= 0 ? '↑' : '↓';
+        var arrow = parseInt(change) >= 0 ? 'â†‘' : 'â†“';
         var chgColor = parseInt(change) >= 0 ? 'var(--green)' : 'var(--red)';
         return '<div class="stat-card" style="border-top:3px solid ' + color + '">' +
           '<div class="stat-label">' + label + '</div>' +
@@ -2206,7 +2206,7 @@
         insights.push({ type: 'info', text: 'No leads yet. Start the Scout agent to find businesses or share your score tool to generate inbound leads.' });
       } else {
         if (m.convRate < 5) insights.push({ type: 'warning', text: 'Conversion rate is below 5%. Consider improving follow-up sequences or tightening lead qualification.' });
-        if (m.bySegment.hot > m.total * 0.3) insights.push({ type: 'success', text: 'Strong pipeline — ' + Math.round((m.bySegment.hot / m.total) * 100) + '% of leads are hot. Focus on closing.' });
+        if (m.bySegment.hot > m.total * 0.3) insights.push({ type: 'success', text: 'Strong pipeline â€” ' + Math.round((m.bySegment.hot / m.total) * 100) + '% of leads are hot. Focus on closing.' });
         if (m.winRate > 30) insights.push({ type: 'success', text: 'Win rate of ' + m.winRate + '% is above industry average (20-25%). Great job.' });
         if (m.winRate < 15 && m.total > 10) insights.push({ type: 'warning', text: 'Win rate is low at ' + m.winRate + '%. Review lost deals for patterns.' });
 
@@ -2223,7 +2223,7 @@
 
       if (insights.length === 0) insights.push({ type: 'info', text: 'Run the Reporter agent to generate insights from your data.' });
 
-      var icons = { success: '✅', warning: '⚠️', info: '💡' };
+      var icons = { success: 'âœ…', warning: 'âš ï¸', info: 'ðŸ’¡' };
       var colors = { success: 'var(--green)', warning: 'var(--yellow)', info: 'var(--accent)' };
       insightsEl.innerHTML = insights.map(function (ins) {
         return '<div style="display:flex;gap:10px;padding:10px;margin-bottom:8px;background:var(--bg);border-left:3px solid ' + colors[ins.type] + ';border-radius:0 8px 8px 0;font-size:13px">' +
@@ -2248,11 +2248,11 @@
 
   function sendReportEmail() {
     var period = document.getElementById('report-period').value;
-    showToast('📧 Sending report...');
+    showToast('ðŸ“§ Sending report...');
     Reporting.sendScheduledReport(period).then(function () {
-      showToast('✅ Report sent to web@gabochie.com');
+      showToast('âœ… Report sent to web@gabochie.com');
     }).catch(function () {
-      showToast('❌ Failed — check Brevo API key in Settings');
+      showToast('âŒ Failed â€” check Brevo API key in Settings');
     });
   }
 
@@ -2266,11 +2266,11 @@
     a.download = 'ga-report-' + period + '-' + new Date().toISOString().split('T')[0] + '.json';
     a.click();
     URL.revokeObjectURL(url);
-    showToast('📥 Report exported');
+    showToast('ðŸ“¥ Report exported');
   }
 
   /* ----------------------------------------
-     AUDIT TAB — Pre-Deployment Health Check
+     AUDIT TAB â€” Pre-Deployment Health Check
      ---------------------------------------- */
   var AUDIT_RESULTS = null;
 
@@ -2281,7 +2281,7 @@
   function runAudit() {
     var statusEl = document.getElementById('audit-status');
     var resultsEl = document.getElementById('audit-results');
-    if (statusEl) statusEl.textContent = '⏳ Running audit...';
+    if (statusEl) statusEl.textContent = 'â³ Running audit...';
     if (resultsEl) resultsEl.innerHTML = '';
 
     var checks = [];
@@ -2354,7 +2354,7 @@
     // 9. Check Analytics
     if (window.Analytics) {
       var funnel = Analytics.getFunnelData();
-      addCheck('Analytics', 'Conversion Funnel', 'pass', funnel.totalVisitors + ' visitors → ' + funnel.totalDeals + ' deals');
+      addCheck('Analytics', 'Conversion Funnel', 'pass', funnel.totalVisitors + ' visitors â†’ ' + funnel.totalDeals + ' deals');
     } else {
       addCheck('Analytics', 'Conversion Funnel', 'fail', 'Not loaded');
     }
@@ -2364,8 +2364,8 @@
       FirebaseService.settings.get().then(function (settings) {
         var hasBrevo = settings && settings.brevoApiKey;
         var hasOpenAI = settings && settings.openaiApiKey;
-        addCheck('API Keys', 'Brevo (Email)', hasBrevo ? 'pass' : 'warn', hasBrevo ? 'Configured' : 'Not set — paste in Settings');
-        addCheck('API Keys', 'OpenAI (Copywriter)', hasOpenAI ? 'pass' : 'warn', hasOpenAI ? 'Configured' : 'Not set — paste in Settings');
+        addCheck('API Keys', 'Brevo (Email)', hasBrevo ? 'pass' : 'warn', hasBrevo ? 'Configured' : 'Not set â€” paste in Settings');
+        addCheck('API Keys', 'OpenAI (Copywriter)', hasOpenAI ? 'pass' : 'warn', hasOpenAI ? 'Configured' : 'Not set â€” paste in Settings');
 
         // 11. Check CSS variables
         var root = getComputedStyle(document.documentElement);
@@ -2413,7 +2413,7 @@
       var passed = audit.checks.filter(function (c) { return c.status === 'pass'; }).length;
       var failed = audit.checks.filter(function (c) { return c.status === 'fail'; }).length;
       var warned = audit.checks.filter(function (c) { return c.status === 'warn'; }).length;
-      statusEl.innerHTML = '<span style="color:var(--green)">' + passed + ' passed</span> • <span style="color:var(--yellow)">' + warned + ' warnings</span> • <span style="color:var(--red)">' + failed + ' failed</span>';
+      statusEl.innerHTML = '<span style="color:var(--green)">' + passed + ' passed</span> â€¢ <span style="color:var(--yellow)">' + warned + ' warnings</span> â€¢ <span style="color:var(--red)">' + failed + ' failed</span>';
     }
 
     if (scoreEl) {
@@ -2425,7 +2425,7 @@
       if (AUDIT_SCORE_HISTORY.length >= 2) {
         var prev = AUDIT_SCORE_HISTORY[AUDIT_SCORE_HISTORY.length - 2].score;
         var diff = audit.score - prev;
-        trendHtml = '<div style="font-size:14px;font-weight:700;color:' + (diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--text3)') + '">' + (diff > 0 ? '↑+' : diff < 0 ? '↓' : '→') + diff + '%</div>';
+        trendHtml = '<div style="font-size:14px;font-weight:700;color:' + (diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--text3)') + '">' + (diff > 0 ? 'â†‘+' : diff < 0 ? 'â†“' : 'â†’') + diff + '%</div>';
       }
 
       // History mini-chart
@@ -2459,7 +2459,7 @@
         categories[c.category].push(c);
       });
 
-      var statusIcons = { pass: '✅', warn: '⚠️', fail: '🔴' };
+      var statusIcons = { pass: 'âœ…', warn: 'âš ï¸', fail: 'ðŸ”´' };
       var statusColors = { pass: 'var(--green)', warn: 'var(--yellow)', fail: 'var(--red)' };
 
       var html = '';
@@ -2500,7 +2500,7 @@
   }
 
   /* ----------------------------------------
-     PIPELINE TAB — Automated Lead Pipeline
+     PIPELINE TAB â€” Automated Lead Pipeline
      ---------------------------------------- */
   var PIPELINE_INTERVAL = null;
   var PIPELINE_HISTORY = [];
@@ -2522,7 +2522,7 @@
     var queue = Pipeline.getPriorityQueue(leads);
     var now = Date.now();
 
-    // Track history — one entry per minute max
+    // Track history â€” one entry per minute max
     if (!PIPELINE_HISTORY.length || now - PIPELINE_HISTORY[PIPELINE_HISTORY.length - 1].time > 60000) {
       PIPELINE_HISTORY.push({
         time: now,
@@ -2554,11 +2554,11 @@
     var statusEl = document.getElementById('pipeline-status');
     if (statusEl) {
       statusEl.innerHTML =
-        '<div class="stat-card" style="border-top:3px solid #ef4444"><div class="stat-value" style="color:#ef4444">' + queue.hot.length + '</div><div class="stat-label">🔥 Hot — Ready to Contact</div></div>' +
-        '<div class="stat-card" style="border-top:3px solid #f59e0b"><div class="stat-value" style="color:#f59e0b">' + queue.warm.length + '</div><div class="stat-label">🟡 Warm — Nurture</div></div>' +
-        '<div class="stat-card" style="border-top:3px solid #3b82f6"><div class="stat-value" style="color:#3b82f6">' + queue.cold.length + '</div><div class="stat-label">❄️ Cold — Segment</div></div>' +
-        '<div class="stat-card" style="border-top:3px solid #8b5cf6"><div class="stat-value" style="color:#8b5cf6">' + queue.coldSegments.length + '</div><div class="stat-label">📦 Campaign Segments</div></div>' +
-        '<div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-value" style="color:var(--accent);font-size:18px">$' + queue.all.reduce(function (s, i) { return s + (i.estimatedDeal || 0); }, 0).toLocaleString() + '</div><div class="stat-label">💰 Pipeline Value</div></div>';
+        '<div class="stat-card" style="border-top:3px solid #ef4444"><div class="stat-value" style="color:#ef4444">' + queue.hot.length + '</div><div class="stat-label">ðŸ”¥ Hot â€” Ready to Contact</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid #f59e0b"><div class="stat-value" style="color:#f59e0b">' + queue.warm.length + '</div><div class="stat-label">ðŸŸ¡ Warm â€” Nurture</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid #3b82f6"><div class="stat-value" style="color:#3b82f6">' + queue.cold.length + '</div><div class="stat-label">â„ï¸ Cold â€” Segment</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid #8b5cf6"><div class="stat-value" style="color:#8b5cf6">' + queue.coldSegments.length + '</div><div class="stat-label">ðŸ“¦ Campaign Segments</div></div>' +
+        '<div class="stat-card" style="border-top:3px solid var(--accent)"><div class="stat-value" style="color:var(--accent);font-size:18px">$' + queue.all.reduce(function (s, i) { return s + (i.estimatedDeal || 0); }, 0).toLocaleString() + '</div><div class="stat-label">ðŸ’° Pipeline Value</div></div>';
     }
 
     // Trend report
@@ -2571,10 +2571,10 @@
     }
     if (reportContainer && PIPELINE_HISTORY.length > 1) {
       reportContainer.innerHTML = '<div class="card" style="padding:12px 16px">' +
-        '<div class="card-title" style="font-size:12px;margin-bottom:4px">📈 Lead Trend <span style="font-weight:400;color:var(--text3)">' + PIPELINE_HISTORY[0].total + ' → ' + PIPELINE_HISTORY[PIPELINE_HISTORY.length - 1].total + ' leads</span></div>' +
+        '<div class="card-title" style="font-size:12px;margin-bottom:4px">ðŸ“ˆ Lead Trend <span style="font-weight:400;color:var(--text3)">' + PIPELINE_HISTORY[0].total + ' â†’ ' + PIPELINE_HISTORY[PIPELINE_HISTORY.length - 1].total + ' leads</span></div>' +
         trendHtml +
         '<div style="display:flex;gap:16px;font-size:11px;color:var(--text3);flex-wrap:wrap">' +
-        '<span>🔥 ' + queue.hot.length + ' hot</span><span>🟡 ' + queue.warm.length + ' warm</span><span>❄️ ' + queue.cold.length + ' cold</span>' +
+        '<span>ðŸ”¥ ' + queue.hot.length + ' hot</span><span>ðŸŸ¡ ' + queue.warm.length + ' warm</span><span>â„ï¸ ' + queue.cold.length + ' cold</span>' +
         '</div></div>';
     }
 
@@ -2614,11 +2614,11 @@
           hHtml += '<div style="display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-left:3px solid #ef4444;border-radius:0 8px 8px 0">';
           hHtml += '<div style="flex:1">';
           hHtml += '<div style="font-size:13px;font-weight:600">' + (item.lead.company || item.lead.name || 'Unknown') + '</div>';
-          hHtml += '<div style="font-size:11px;color:var(--text3)">' + item.industryLabel + ' • Score: ' + item.score + '/100</div>';
+          hHtml += '<div style="font-size:11px;color:var(--text3)">' + item.industryLabel + ' â€¢ Score: ' + item.score + '/100</div>';
           hHtml += '</div>';
           hHtml += '<div style="text-align:right">';
           hHtml += '<div style="font-size:12px;color:var(--green)">$' + (item.estimatedDeal || 0).toLocaleString() + '</div>';
-          hHtml += '<div style="font-size:10px;color:var(--text3)">' + (item.lead.url ? '🌐 Has site' : '❌ No site') + '</div>';
+          hHtml += '<div style="font-size:10px;color:var(--text3)">' + (item.lead.url ? 'ðŸŒ Has site' : 'âŒ No site') + '</div>';
           hHtml += '</div>';
           hHtml += '</div>';
         });
@@ -2689,12 +2689,12 @@
   }
 
   function runFullPipeline(dryRun) {
-    showToast('▶ Running pipeline...');
+    showToast('â–¶ Running pipeline...');
     Pipeline.runPipeline({ dryRun: dryRun }).then(function (result) {
       if (result.error) {
-        showToast('❌ Pipeline error: ' + result.error);
+        showToast('âŒ Pipeline error: ' + result.error);
       } else {
-        showToast('✅ Pipeline: ' + result.hot + ' hot, ' + result.warm + ' warm, ' + result.cold + ' cold');
+        showToast('âœ… Pipeline: ' + result.hot + ' hot, ' + result.warm + ' warm, ' + result.cold + ' cold');
         renderPipeline();
       }
     });
@@ -2715,7 +2715,7 @@
   window.refreshPipeline = refreshPipeline;
 
   /* ----------------------------------------
-     ORCHESTRATOR — Approval Gates
+     ORCHESTRATOR â€” Approval Gates
      ---------------------------------------- */
   function renderOrchestrator() {
     if (!window.Orchestrator) return;
@@ -2740,7 +2740,7 @@
 
         html += '<div style="flex:1;padding:10px 8px;background:' + colors[status] + ';border-radius:8px;text-align:center">';
         html += '<div style="font-size:11px;font-weight:700;color:' + textColors[status] + '">' + s.label + '</div>';
-        if (status === 'waiting') html += '<div style="font-size:10px;color:#fff;margin-top:2px">⏳ Awaiting approval</div>';
+        if (status === 'waiting') html += '<div style="font-size:10px;color:#fff;margin-top:2px">â³ Awaiting approval</div>';
         html += '</div>';
       });
       stagesEl.innerHTML = html;
@@ -2749,11 +2749,11 @@
     // Status text
     if (statusEl) {
       if (orch.isRunning) {
-        statusEl.innerHTML = '<span style="color:var(--accent)">⏳ Running...</span>';
+        statusEl.innerHTML = '<span style="color:var(--accent)">â³ Running...</span>';
       } else if (orch.currentStage && orch.currentStage.endsWith('-done')) {
-        statusEl.innerHTML = '<span style="color:var(--yellow)">⏸ Paused — ' + orch.leadsCount + ' leads ready for review</span>';
+        statusEl.innerHTML = '<span style="color:var(--yellow)">â¸ Paused â€” ' + orch.leadsCount + ' leads ready for review</span>';
       } else if (orch.currentStage && orch.currentStage.endsWith('-approved')) {
-        statusEl.innerHTML = '<span style="color:var(--green)">✅ Stage approved — moving to next</span>';
+        statusEl.innerHTML = '<span style="color:var(--green)">âœ… Stage approved â€” moving to next</span>';
       } else {
         statusEl.innerHTML = 'Ready to start';
       }
@@ -2763,19 +2763,19 @@
     if (actionsEl) {
       var btns = '';
       if (!orch.currentStage) {
-        btns = '<button class="btn btn-sm btn-accent" onclick="orchStartScout()">▶ Start Scout</button>';
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchStartScout()">â–¶ Start Scout</button>';
       } else if (orch.currentStage === 'scout-done') {
-        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'scout\')">📋 Review ' + orch.leadsCount + ' leads</button>';
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'scout\')">ðŸ“‹ Review ' + orch.leadsCount + ' leads</button>';
       } else if (orch.currentStage === 'audit-done') {
-        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'audit\')">📋 Review ' + orch.leadsCount + ' audited leads</button>';
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'audit\')">ðŸ“‹ Review ' + orch.leadsCount + ' audited leads</button>';
       } else if (orch.currentStage === 'score-done') {
-        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'score\')">📋 Review ' + orch.leadsCount + ' scored leads</button>';
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchShowApproval(\'score\')">ðŸ“‹ Review ' + orch.leadsCount + ' scored leads</button>';
       } else if (orch.currentStage === 'score-approved') {
-        btns = '<button class="btn btn-sm btn-accent" onclick="orchStartOutreach()">📧 Send Outreach (' + orch.approvedCount + ' leads)</button>';
+        btns = '<button class="btn btn-sm btn-accent" onclick="orchStartOutreach()">ðŸ“§ Send Outreach (' + orch.approvedCount + ' leads)</button>';
       } else if (orch.currentStage === 'outreach-done') {
-        btns = '<div style="color:var(--green);font-size:13px">✅ Pipeline complete — ' + (orch.results.sentCount || 0) + ' emails sent</div>';
+        btns = '<div style="color:var(--green);font-size:13px">âœ… Pipeline complete â€” ' + (orch.results.sentCount || 0) + ' emails sent</div>';
       }
-      btns += ' <button class="btn btn-sm btn-outline" onclick="orchReset()">🔄 Reset</button>';
+      btns += ' <button class="btn btn-sm btn-outline" onclick="orchReset()">ðŸ”„ Reset</button>';
       actionsEl.innerHTML = btns;
     }
 
@@ -2799,10 +2799,10 @@
         var hHtml = '';
         orch.history.slice().reverse().forEach(function (h) {
           var time = new Date(h.ts).toLocaleTimeString();
-          var icons = { 'started': '▶', 'progress': '⏳', 'completed': '✅', 'error': '❌', 'sent': '📧', 'reset': '🔄' };
+          var icons = { 'started': 'â–¶', 'progress': 'â³', 'completed': 'âœ…', 'error': 'âŒ', 'sent': 'ðŸ“§', 'reset': 'ðŸ”„' };
           hHtml += '<div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)">';
           hHtml += '<span style="color:var(--text3);min-width:60px">' + time + '</span>';
-          hHtml += '<span>' + (icons[h.action] || '•') + '</span>';
+          hHtml += '<span>' + (icons[h.action] || 'â€¢') + '</span>';
           hHtml += '<span style="flex:1">' + h.detail + '</span>';
           hHtml += '</div>';
         });
@@ -2837,7 +2837,7 @@
       html += '<input type="checkbox" class="approval-check" data-id="' + lead.id + '" checked style="width:16px;height:16px">';
       html += '<div style="flex:1">';
       html += '<div style="font-size:13px;font-weight:600">' + (lead.company || lead.name || 'Unknown') + '</div>';
-      html += '<div style="font-size:11px;color:var(--text3)">' + (lead.industry || 'Unknown') + ' • ' + (lead.url || 'No URL') + '</div>';
+      html += '<div style="font-size:11px;color:var(--text3)">' + (lead.industry || 'Unknown') + ' â€¢ ' + (lead.url || 'No URL') + '</div>';
       html += '</div>';
       if (stage === 'audit' || stage === 'score') {
         html += '<div style="text-align:center">';
@@ -2855,7 +2855,7 @@
   }
 
   function orchStartScout() {
-    showToast('🔍 Starting Scout...');
+    showToast('ðŸ” Starting Scout...');
     Orchestrator.runScout();
     // Poll for completion
     var poll = setInterval(function () {
@@ -2863,7 +2863,7 @@
       renderOrchestrator();
       if (orch.currentStage === 'scout-done') {
         clearInterval(poll);
-        showToast('🔍 Scout found ' + orch.leadsCount + ' businesses — review and approve');
+        showToast('ðŸ” Scout found ' + orch.leadsCount + ' businesses â€” review and approve');
       }
     }, 1000);
   }
@@ -2889,7 +2889,7 @@
     else if (orch.currentStage === 'score-done') Orchestrator.approveScore(approved, rejected);
 
     document.getElementById('orchestrator-approval').style.display = 'none';
-    showToast('✅ ' + approved.length + ' approved, ' + rejected.length + ' rejected');
+    showToast('âœ… ' + approved.length + ' approved, ' + rejected.length + ' rejected');
 
     // Poll for next stage completion
     var poll = setInterval(function () {
@@ -2897,7 +2897,7 @@
       renderOrchestrator();
       if (orch2.currentStage && orch2.currentStage.endsWith('-done')) {
         clearInterval(poll);
-        showToast('⏸ ' + orch2.leadsCount + ' leads ready for next review');
+        showToast('â¸ ' + orch2.leadsCount + ' leads ready for next review');
       }
     }, 1000);
   }
@@ -2916,7 +2916,7 @@
     else if (orch.currentStage === 'score-done') Orchestrator.approveScore(approved, rejected);
 
     document.getElementById('orchestrator-approval').style.display = 'none';
-    showToast('❌ ' + rejected.length + ' rejected');
+    showToast('âŒ ' + rejected.length + ' rejected');
     renderOrchestrator();
   }
 
@@ -2931,14 +2931,14 @@
   }
 
   function orchStartOutreach() {
-    showToast('📧 Sending outreach emails...');
+    showToast('ðŸ“§ Sending outreach emails...');
     Orchestrator.runOutreach();
     var poll = setInterval(function () {
       var orch = Orchestrator.getState();
       renderOrchestrator();
       if (orch.currentStage === 'outreach-done') {
         clearInterval(poll);
-        showToast('✅ Outreach complete — ' + (orch.results.sentCount || 0) + ' emails sent');
+        showToast('âœ… Outreach complete â€” ' + (orch.results.sentCount || 0) + ' emails sent');
       }
     }, 1000);
   }
@@ -2947,7 +2947,7 @@
     Orchestrator.reset();
     renderOrchestrator();
     document.getElementById('orchestrator-approval').style.display = 'none';
-    showToast('🔄 Pipeline reset');
+    showToast('ðŸ”„ Pipeline reset');
   }
 
   window.orchStartScout = orchStartScout;
@@ -2960,7 +2960,7 @@
   window.orchReset = orchReset;
 
   /* ----------------------------------------
-     SMOKE TEST — Full App Health Check
+     SMOKE TEST â€” Full App Health Check
      ---------------------------------------- */
   var SMOKE_RESULTS = null;
   var SMOKE_PREV = null;
@@ -2973,7 +2973,7 @@
     if (btn && !btn._bound) {
       btn._bound = true;
       btn.addEventListener('click', function () {
-        try { runSmokeTest(); } catch (e) { console.error('Smoke test error:', e); showToast('❌ Error: ' + e.message); }
+        try { runSmokeTest(); } catch (e) { console.error('Smoke test error:', e); showToast('âŒ Error: ' + e.message); }
       });
     }
 
@@ -3063,7 +3063,7 @@
 
   function runSmokeTest() {
     var statusEl = document.getElementById('smoke-status');
-    if (statusEl) statusEl.textContent = '⏳ Running smoke test...';
+    if (statusEl) statusEl.textContent = 'â³ Running smoke test...';
 
     var checks = [];
     var pass = 0, warn = 0, fail = 0;
@@ -3239,22 +3239,22 @@
     if (SMOKE_HISTORY.length >= 2) {
       var prevScore = SMOKE_HISTORY[SMOKE_HISTORY.length - 2].score;
       var diff = results.score - prevScore;
-      if (diff > 0) { trend = '↑' + diff + '%'; trendColor = 'var(--green)'; }
-      else if (diff < 0) { trend = '↓' + Math.abs(diff) + '%'; trendColor = 'var(--red)'; }
-      else { trend = '—'; trendColor = 'var(--text3)'; }
+      if (diff > 0) { trend = 'â†‘' + diff + '%'; trendColor = 'var(--green)'; }
+      else if (diff < 0) { trend = 'â†“' + Math.abs(diff) + '%'; trendColor = 'var(--red)'; }
+      else { trend = 'â€”'; trendColor = 'var(--text3)'; }
     }
 
     if (statusEl) {
       var now = new Date();
       var time = now.toLocaleTimeString();
       var changeCount = changes.length;
-      var changeBadge = changeCount > 0 ? ' • <span style="color:var(--yellow);font-size:11px">' + changeCount + ' change' + (changeCount > 1 ? 's' : '') + '</span>' : '';
-      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> • <span style="color:var(--yellow)">' + results.warn + ' warnings</span> • <span style="color:var(--red)">' + results.fail + ' failed</span> • <span style="color:var(--text3);font-size:11px">🔄 Live • ' + time + '</span>' + changeBadge;
+      var changeBadge = changeCount > 0 ? ' â€¢ <span style="color:var(--yellow);font-size:11px">' + changeCount + ' change' + (changeCount > 1 ? 's' : '') + '</span>' : '';
+      statusEl.innerHTML = '<span style="color:var(--green)">' + results.pass + ' passed</span> â€¢ <span style="color:var(--yellow)">' + results.warn + ' warnings</span> â€¢ <span style="color:var(--red)">' + results.fail + ' failed</span> â€¢ <span style="color:var(--text3);font-size:11px">ðŸ”„ Live â€¢ ' + time + '</span>' + changeBadge;
     }
 
     if (scoreEl) {
       var color = results.score >= 90 ? 'var(--green)' : results.score >= 70 ? 'var(--yellow)' : 'var(--red)';
-      var label = results.score >= 90 ? '✅ Ready to Deploy' : results.score >= 70 ? '⚠️ Fix Warnings' : '🔴 Fix Failures';
+      var label = results.score >= 90 ? 'âœ… Ready to Deploy' : results.score >= 70 ? 'âš ï¸ Fix Warnings' : 'ðŸ”´ Fix Failures';
       var historyHtml = '';
       if (SMOKE_HISTORY.length > 1) {
         historyHtml = '<div style="display:flex;gap:6px;justify-content:center;margin-top:8px">';
@@ -3284,7 +3284,7 @@
         categories[c.category].push(c);
       });
 
-      var icons = { pass: '✅', warn: '⚠️', fail: '🔴' };
+      var icons = { pass: 'âœ…', warn: 'âš ï¸', fail: 'ðŸ”´' };
       var colors = { pass: 'var(--green)', warn: 'var(--yellow)', fail: 'var(--red)' };
 
       var html = '';
@@ -3310,9 +3310,9 @@
           html += '<span>' + icons[c.status] + '</span>';
           html += '<span style="flex:1;font-weight:600">' + c.name + '</span>';
           html += '<span style="color:' + colors[c.status] + ';display:flex;align-items:center;gap:4px">';
-          if (isFixed) html += '<span style="font-size:10px;color:var(--green)">↑ fixed</span>';
-          else if (isNew && c.status === 'fail') html += '<span style="font-size:10px;color:var(--red)">↓ new</span>';
-          else if (isNew && c.status === 'warn') html += '<span style="font-size:10px;color:var(--yellow)">⚠ changed</span>';
+          if (isFixed) html += '<span style="font-size:10px;color:var(--green)">â†‘ fixed</span>';
+          else if (isNew && c.status === 'fail') html += '<span style="font-size:10px;color:var(--red)">â†“ new</span>';
+          else if (isNew && c.status === 'warn') html += '<span style="font-size:10px;color:var(--yellow)">âš  changed</span>';
           html += c.detail;
           html += '</span>';
           html += '</div>';
@@ -3326,10 +3326,10 @@
     // Changelog
     if (clEl && changes.length > 0) {
       var clHtml = '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--yellow)">';
-      clHtml += '<div class="card-title" style="font-size:13px">📋 Recent Changes</div>';
+      clHtml += '<div class="card-title" style="font-size:13px">ðŸ“‹ Recent Changes</div>';
       changes.slice(-5).forEach(function (ch) {
-        var chIcon = ch.to === 'pass' ? '✅' : ch.to === 'warn' ? '⚠️' : '🔴';
-        clHtml += '<div style="font-size:12px;padding:3px 0;color:var(--text2)">' + chIcon + ' <strong>' + ch.name + '</strong>: ' + ch.from + ' → ' + ch.to + '</div>';
+        var chIcon = ch.to === 'pass' ? 'âœ…' : ch.to === 'warn' ? 'âš ï¸' : 'ðŸ”´';
+        clHtml += '<div style="font-size:12px;padding:3px 0;color:var(--text2)">' + chIcon + ' <strong>' + ch.name + '</strong>: ' + ch.from + ' â†’ ' + ch.to + '</div>';
       });
       clHtml += '</div>';
       clEl.innerHTML = clHtml;
@@ -3349,7 +3349,7 @@
   window.runSmokeTest = runSmokeTest;
 
   /* ----------------------------------------
-     MANUAL URL IMPORT — Audit & Score
+     MANUAL URL IMPORT â€” Audit & Score
      ---------------------------------------- */
   window.importManualUrls = function () {
     var textarea = document.getElementById('manual-urls');
@@ -3363,7 +3363,7 @@
     var urls = textarea.value.split('\n').map(function (u) { return u.trim(); }).filter(function (u) { return u.length > 5; });
     if (urls.length === 0) { showToast('No valid URLs found'); return; }
 
-    statusEl.innerHTML = '⏳ Auditing ' + urls.length + ' URLs...';
+    statusEl.innerHTML = 'â³ Auditing ' + urls.length + ' URLs...';
     var audited = 0;
     var leads = [];
 
@@ -3399,7 +3399,7 @@
           lead.audit = data;
         }
         audited++;
-        statusEl.innerHTML = '⏳ Audited ' + audited + '/' + urls.length + ' — ' + url;
+        statusEl.innerHTML = 'â³ Audited ' + audited + '/' + urls.length + ' â€” ' + url;
         if (audited >= urls.length) finishImport(leads, statusEl);
       }).catch(function () {
         audited++;
@@ -3440,8 +3440,8 @@
     var warm = leads.filter(function (l) { return l.segment === 'warm'; }).length;
     var cold = leads.filter(function (l) { return l.segment === 'cold'; }).length;
 
-    statusEl.innerHTML = '✅ Imported ' + leads.length + ' leads — 🔥 ' + hot + ' hot, 🟡 ' + warm + ' warm, ❄️ ' + cold + ' cold';
-    showToast('✅ ' + leads.length + ' leads imported & scored');
+    statusEl.innerHTML = 'âœ… Imported ' + leads.length + ' leads â€” ðŸ”¥ ' + hot + ' hot, ðŸŸ¡ ' + warm + ' warm, â„ï¸ ' + cold + ' cold';
+    showToast('âœ… ' + leads.length + ' leads imported & scored');
     renderPipeline();
   }
 
@@ -3499,7 +3499,7 @@
         });
       }
 
-      statusEl.innerHTML = '⏳ Importing ' + leads.length + ' leads from CSV...';
+      statusEl.innerHTML = 'â³ Importing ' + leads.length + ' leads from CSV...';
 
       // Audit each URL
       var audited = 0;
@@ -3522,7 +3522,7 @@
   };
 
   /* ----------------------------------------
-     OFFERS TAB — Irresistible Offer Creator
+     OFFERS TAB â€” Irresistible Offer Creator
      ---------------------------------------- */
   function renderOffers() {
     if (!window.Offers) return;
@@ -3534,7 +3534,7 @@
       leads.forEach(function (l) {
         var opt = document.createElement('option');
         opt.value = l.id;
-        opt.textContent = (l.company || l.name || 'Unknown') + ' — ' + (l.industry || 'N/A') + ' [' + (l.segment || 'unknown') + ']';
+        opt.textContent = (l.company || l.name || 'Unknown') + ' â€” ' + (l.industry || 'N/A') + ' [' + (l.segment || 'unknown') + ']';
         select.appendChild(opt);
       });
     }
@@ -3583,27 +3583,27 @@
     }
 
     var html = '<div class="card" style="border-top:3px solid var(--accent)">';
-    html += '<div class="card-title">🎁 ' + offers[0].icon + ' ' + lead.company || lead.name || 'Lead' + ' — Best Offer</div>';
+    html += '<div class="card-title">ðŸŽ ' + offers[0].icon + ' ' + lead.company || lead.name || 'Lead' + ' â€” Best Offer</div>';
     html += '<div style="padding:16px 0">';
     html += '<div style="display:grid;gap:12px">';
     offers.forEach(function (o, i) {
       var isBest = i === 0;
       var borderColor = isBest ? 'var(--green)' : 'var(--border)';
       html += '<div style="padding:16px;border:2px solid ' + borderColor + ';border-radius:12px;background:' + (isBest ? 'rgba(34,197,94,0.05)' : 'var(--bg)') + '">';
-      if (isBest) html += '<div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:4px">✅ Recommended Offer</div>';
+      if (isBest) html += '<div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:4px">âœ… Recommended Offer</div>';
       html += '<div style="display:flex;align-items:start;gap:16px;flex-wrap:wrap">';
       html += '<div style="flex:1">';
       html += '<div style="font-size:16px;font-weight:700;margin-bottom:4px">' + o.headline + '</div>';
       html += '<div style="font-size:13px;color:var(--text2);margin-bottom:8px">' + o.description + '</div>';
       html += '<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px">';
-      html += '<span style="color:var(--green);font-weight:700">💰 Value: ' + o.displayValue + '</span>';
-      html += '<span style="color:var(--yellow)">⏰ ' + o.scarcity.text + '</span>';
+      html += '<span style="color:var(--green);font-weight:700">ðŸ’° Value: ' + o.displayValue + '</span>';
+      html += '<span style="color:var(--yellow)">â° ' + o.scarcity.text + '</span>';
       html += '<span style="color:var(--text3)">Priority: ' + o.priority + '/100</span>';
       html += '</div>';
       // Action buttons
       html += '<div style="margin-top:10px;display:flex;gap:8px">';
       html += '<button class="btn btn-xs btn-accent" onclick="window.useOfferForLead(\'' + o.offer.id + '\',\'' + (lead.id || '') + '\')">' + o.cta + '</button>';
-      html += '<button class="btn btn-xs btn-outline" onclick="navigator.clipboard.writeText(\'' + o.fullText.replace(/'/g, "\\'") + '\').then(function(){showToast(\'Offer copied to clipboard\',\'success\')})">📋 Copy</button>';
+      html += '<button class="btn btn-xs btn-outline" onclick="navigator.clipboard.writeText(\'' + o.fullText.replace(/'/g, "\\'") + '\').then(function(){showToast(\'Offer copied to clipboard\',\'success\')})">ðŸ“‹ Copy</button>';
       html += '</div>';
       html += '</div>';
       html += '</div></div>';
@@ -3618,12 +3618,12 @@
     var withOffer = window.Offers.injectOfferIntoMessage(msg.body, offer);
     var subject = msg.subject + ' [Includes ' + offer.headline + ']';
     return '<div class="card" style="margin-top:12px">' +
-      '<div class="card-title">📧 Email Preview with Offer</div>' +
+      '<div class="card-title">ðŸ“§ Email Preview with Offer</div>' +
       '<div style="font-size:12px;color:var(--text3);margin-bottom:4px"><strong>Subject:</strong> ' + subject + '</div>' +
       '<pre style="background:var(--surface2);padding:16px;border-radius:8px;font-size:13px;line-height:1.6;white-space:pre-wrap;max-height:400px;overflow-y:auto">' + esc(withOffer) + '</pre>' +
       '<div style="margin-top:8px;display:flex;gap:8px">' +
-      '<button class="btn btn-xs btn-accent" onclick="window.copyOfferEmail(\'' + subject.replace(/'/g, "\\'") + '\',\'' + withOffer.replace(/'/g, "\\'") + '\')">📋 Copy Full Email</button>' +
-      '<button class="btn btn-xs btn-outline" onclick="window.sendOfferEmail(\'' + (lead.id || '') + '\',\'' + offer.offer.id + '\')">📤 Send to Lead</button>' +
+      '<button class="btn btn-xs btn-accent" onclick="window.copyOfferEmail(\'' + subject.replace(/'/g, "\\'") + '\',\'' + withOffer.replace(/'/g, "\\'") + '\')">ðŸ“‹ Copy Full Email</button>' +
+      '<button class="btn btn-xs btn-outline" onclick="window.sendOfferEmail(\'' + (lead.id || '') + '\',\'' + offer.offer.id + '\')">ðŸ“¤ Send to Lead</button>' +
       '</div></div>';
   }
 
@@ -3631,7 +3631,7 @@
     var container = document.getElementById('offers-all-industries');
     if (!container || !window.Offers) return;
     var industries = window.Offers.getAllIndustries();
-    var html = '<div class="card"><div class="card-title">📋 All Industry Offers</div>';
+    var html = '<div class="card"><div class="card-title">ðŸ“‹ All Industry Offers</div>';
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:8px 0">';
     industries.forEach(function (ind) {
       var indOffers = window.Offers.OFFERS[ind.id];
@@ -3661,17 +3661,17 @@
       totalConverted += analytics[key].converted || 0;
     }
     el.innerHTML =
-      '<div class="stat-card accent"><div class="stat-label">📤 Offers Sent</div><div class="stat-value">' + totalSent + '</div></div>' +
-      '<div class="stat-card green"><div class="stat-label">✅ Converted</div><div class="stat-value">' + totalConverted + '</div></div>' +
-      '<div class="stat-card blue"><div class="stat-label">🎁 Industry Offers</div><div class="stat-value">' + Object.keys(window.Offers.OFFERS).length + '</div></div>' +
-      '<div class="stat-card yellow"><div class="stat-label">🔀 Scarcity Hooks</div><div class="stat-value">' + Object.keys(window.Offers.SCARCITY).reduce(function (s, k) { return s + window.Offers.SCARCITY[k].length; }, 0) + '</div></div>';
+      '<div class="stat-card accent"><div class="stat-label">ðŸ“¤ Offers Sent</div><div class="stat-value">' + totalSent + '</div></div>' +
+      '<div class="stat-card green"><div class="stat-label">âœ… Converted</div><div class="stat-value">' + totalConverted + '</div></div>' +
+      '<div class="stat-card blue"><div class="stat-label">ðŸŽ Industry Offers</div><div class="stat-value">' + Object.keys(window.Offers.OFFERS).length + '</div></div>' +
+      '<div class="stat-card yellow"><div class="stat-label">ðŸ”€ Scarcity Hooks</div><div class="stat-value">' + Object.keys(window.Offers.SCARCITY).reduce(function (s, k) { return s + window.Offers.SCARCITY[k].length; }, 0) + '</div></div>';
   }
 
   window.useOfferForLead = function (offerId, leadId) {
     var lead = getLeads().find(function (l) { return l.id === leadId; });
     if (!lead) { showToast('Lead not found', 'error'); return; }
     if (window.Offers) window.Offers.trackOfferAction(offerId, leadId, 'sent');
-    showToast('✅ Offer applied to ' + (lead.company || lead.name || 'lead'), 'success');
+    showToast('âœ… Offer applied to ' + (lead.company || lead.name || 'lead'), 'success');
     // Generate outreach message with offer
     if (window.Agents && window.Agents.generateMessage) {
       var msg = window.Agents.generateMessage(lead);
@@ -3679,7 +3679,7 @@
       if (offer) {
         var finalMsg = window.Offers.injectOfferIntoMessage(msg.body, offer);
         navigator.clipboard.writeText(finalMsg).then(function () {
-          showToast('📋 Message with offer copied to clipboard', 'success');
+          showToast('ðŸ“‹ Message with offer copied to clipboard', 'success');
         });
       }
     }
@@ -3688,7 +3688,7 @@
   window.copyOfferEmail = function (subject, body) {
     var full = 'Subject: ' + subject + '\n\n' + body;
     navigator.clipboard.writeText(full).then(function () {
-      showToast('📋 Full email copied to clipboard', 'success');
+      showToast('ðŸ“‹ Full email copied to clipboard', 'success');
     });
   };
 
@@ -3704,223 +3704,10 @@
     if (!email) { showToast('No email for this lead', 'error'); return; }
     OutreachEngine.queueEmail([{ email: email, name: lead.contactName || lead.name }], subject, body.replace(/\n/g, '<br>'), body, 'offer-' + offerId);
     if (window.Offers) window.Offers.trackOfferAction(offerId, leadId, 'sent');
-    showToast('📤 Offer email queued for ' + (lead.company || lead.name), 'success');
+    showToast('ðŸ“¤ Offer email queued for ' + (lead.company || lead.name), 'success');
     renderOffersStatus();
   };
 
-  /* ----------------------------------------
-     REMOTE JOBS TAB
-     ---------------------------------------- */
-  function renderRemoteJobs() {
-    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
-    renderRJStats(saved);
-    renderRJSaved(saved);
-    var container = document.getElementById('rj-results');
-    if (container && container.querySelector('.card p') && !container.querySelector('.card .btn')) {
-      searchRemoteJobs();
-    }
-  }
-
-  window.searchRemoteJobs = function () {
-    var kw = document.getElementById('rj-search').value.trim() || 'software developer';
-    var country = document.getElementById('rj-country').value;
-    var remote = document.getElementById('rj-remote').checked;
-    var container = document.getElementById('rj-results');
-    if (!container) return;
-    container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:12px"><div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite"></div><p>Searching global job boards...</p></div>';
-
-    fetch('/api/remote-jobs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ keywords: kw, country: country, remote: remote, page: 1 })
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      var jobs = data.jobs || [];
-      renderRJResults(jobs);
-    })
-    .catch(function () {
-      container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2)"><p>Could not load jobs. <button class="btn btn-sm btn-accent" onclick="searchRemoteJobs()" style="margin-top:8px">Retry</button></p></div>';
-    });
-  };
-
-  function renderRJResults(jobs) {
-    var container = document.getElementById('rj-results');
-    if (!container) return;
-    if (!jobs || jobs.length === 0) {
-      container.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--text2)"><p>No jobs found. Try different keywords or filters.</p></div>';
-      return;
-    }
-    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
-    var countryFlags = { CA: '🇨🇦', US: '🇺🇸', UK: '🇬🇧', DE: '🇩🇪', AU: '🇦🇺', AE: '🇦🇪' };
-
-    container.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-size:.85rem;color:var(--text2)">' + jobs.length + ' jobs found</span></div>' +
-      jobs.map(function (job) {
-        var key = job.url || job.title + job.company;
-        var isSaved = saved.some(function (s) { return (s.url || s.title + s.company) === key; });
-        var daysAgo = Math.floor((Date.now() - new Date(job.postedDate || Date.now()).getTime()) / 86400000);
-        var dateStr = daysAgo < 1 ? 'Today' : daysAgo === 1 ? 'Yesterday' : daysAgo + 'd ago';
-        var tags = (job.tags || guessRJTags(job.title)).map(function (t) { return '<span class="tag" style="font-size:.7rem;padding:2px 10px">' + escHtml(t) + '</span>'; }).join('');
-        var salaryHtml = job.salary ? '<span style="font-size:.82rem;color:var(--green)">💰 ' + escHtml(job.salary) + '</span>' : '';
-        var remoteBadge = job.remote ? '<span style="font-size:.75rem;padding:3px 10px;border-radius:100px;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)">🌐 Remote</span>' : '<span style="font-size:.75rem;padding:3px 10px;border-radius:100px;background:var(--surface2);color:var(--text-muted)">🏢 On-site</span>';
-        var flag = countryFlags[job.country] || '🌍';
-
-        return '<div class="card" style="padding:18px 20px;margin-bottom:10px;cursor:pointer" onclick="window.open(\'' + escAttr(job.url || '#') + '\',\'_blank\',\'noopener\')">' +
-          '<div style="display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:8px">' +
-            '<div style="font-weight:700;font-size:.95rem;flex:1">' + flag + ' ' + escHtml(job.title) + '</div>' +
-            '<div style="display:flex;gap:6px;flex-shrink:0">' +
-              remoteBadge +
-              '<span style="font-size:.7rem;padding:3px 10px;border-radius:100px;background:var(--surface2);color:var(--text-muted)">' + escHtml(job.source || '') + '</span>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;color:var(--text2);margin-bottom:6px">' +
-            '<span>🏢 ' + escHtml(job.company) + '</span>' +
-            '<span>📍 ' + escHtml(job.location) + '</span>' +
-            salaryHtml +
-          '</div>' +
-          '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">' + tags + '</div>' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">' +
-            '<span style="font-size:.78rem;color:var(--text-muted)">📅 ' + dateStr + '</span>' +
-            '<div style="display:flex;gap:6px">' +
-              '<button class="btn btn-sm ' + (isSaved ? 'btn-accent' : 'btn-secondary') + '" style="font-size:.75rem;padding:4px 14px" onclick="event.stopPropagation();toggleRJSave(' + JSON.stringify(job).replace(/"/g, '&quot;') + ')">' + (isSaved ? '✓ Saved' : '☆ Save') + '</button>' +
-              '<a href="' + escAttr(job.url || '#') + '" target="_blank" rel="noopener" class="btn btn-sm btn-primary" style="font-size:.75rem;padding:4px 14px" onclick="event.stopPropagation()">Apply →</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-  }
-
-  window.toggleRJSave = function (job) {
-    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
-    var key = job.url || job.title + job.company;
-    var idx = saved.findIndex(function (s) { return (s.url || s.title + s.company) === key; });
-    if (idx >= 0) {
-      saved.splice(idx, 1);
-      showToast('Removed from saved jobs', 'info');
-    } else {
-      saved.push(Object.assign({}, job, { savedAt: new Date().toISOString(), status: 'Saved' }));
-      showToast('✓ Job saved!', 'success');
-    }
-    localStorage.setItem('rj_adminSavedJobs', JSON.stringify(saved));
-    renderRJStats(saved);
-    renderRJSaved(saved);
-    var container = document.getElementById('rj-results');
-    if (container) {
-      var cards = container.querySelectorAll('.card');
-      if (cards.length > 0) {
-        searchRemoteJobs();
-      }
-    }
-  };
-
-  function renderRJStats(saved) {
-    var el = document.getElementById('rj-stats');
-    if (!el) return;
-    var applied = saved.filter(function (s) { return s.status === 'Applied'; }).length;
-    var interview = saved.filter(function (s) { return s.status === 'Interview'; }).length;
-    var offer = saved.filter(function (s) { return s.status === 'Offer'; }).length;
-    el.innerHTML = '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">' +
-      '<div class="stat-card"><div class="stat-value">' + saved.length + '</div><div class="stat-label">Saved</div></div>' +
-      '<div class="stat-card"><div class="stat-value" style="color:var(--yellow)">' + applied + '</div><div class="stat-label">Applied</div></div>' +
-      '<div class="stat-card"><div class="stat-value" style="color:var(--green)">' + interview + '</div><div class="stat-label">Interviews</div></div>' +
-      '<div class="stat-card"><div class="stat-value" style="color:var(--accent)">' + offer + '</div><div class="stat-label">Offers</div></div>' +
-    '</div>';
-  }
-
-  function renderRJSaved(saved) {
-    var countEl = document.getElementById('rj-saved-count');
-    var listEl = document.getElementById('rj-saved-list');
-    if (!listEl) return;
-    if (countEl) countEl.textContent = saved.length;
-
-    if (saved.length === 0) {
-      listEl.innerHTML = '<p style="color:var(--text2);font-size:.85rem">Save jobs from search results to track them here</p>';
-      return;
-    }
-
-    listEl.innerHTML = saved.slice().reverse().map(function (job, i) {
-      var idx = saved.length - 1 - i;
-      var daysAgo = Math.floor((Date.now() - new Date(job.savedAt || Date.now()).getTime()) / 86400000);
-      var dateStr = daysAgo < 1 ? 'Today' : daysAgo + 'd ago';
-      var countryFlags = { CA: '🇨🇦', US: '🇺🇸', UK: '🇬🇧', DE: '🇩🇪', AU: '🇦🇺', AE: '🇦🇪' };
-      var flag = countryFlags[job.country] || '🌍';
-
-      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">' +
-        '<div style="flex:1;min-width:0">' +
-          '<div style="font-weight:600;font-size:.88rem">' + flag + ' ' + escHtml(job.title) + '</div>' +
-          '<div style="font-size:.8rem;color:var(--text2)">' + escHtml(job.company) + ' · ' + escHtml(job.location) + '</div>' +
-        '</div>' +
-        '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
-          '<select style="width:auto;font-size:.75rem;padding:4px 24px 4px 8px;height:30px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text);outline:none;appearance:none" onchange="updateRJStatus(' + idx + ',this.value)">' +
-            '<option value="Saved"' + (job.status === 'Saved' ? ' selected' : '') + '>📌 Saved</option>' +
-            '<option value="Applied"' + (job.status === 'Applied' ? ' selected' : '') + '>📤 Applied</option>' +
-            '<option value="Interview"' + (job.status === 'Interview' ? ' selected' : '') + '>🎯 Interview</option>' +
-            '<option value="Offer"' + (job.status === 'Offer' ? ' selected' : '') + '>🎉 Offer</option>' +
-            '<option value="Rejected"' + (job.status === 'Rejected' ? ' selected' : '') + '>❌ Rejected</option>' +
-          '</select>' +
-          '<span style="font-size:.85rem;color:var(--text2)">' + dateStr + '</span>' +
-          '<button class="btn btn-sm btn-secondary" style="font-size:.75rem;padding:4px 8px;color:var(--red);border-color:transparent" onclick="removeRJSaved(' + idx + ')" title="Remove">✕</button>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
-
-  window.updateRJStatus = function (idx, status) {
-    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
-    if (saved[idx]) {
-      saved[idx].status = status;
-      localStorage.setItem('rj_adminSavedJobs', JSON.stringify(saved));
-      renderRJStats(saved);
-      renderRJSaved(saved);
-      showToast('Status updated: ' + status, 'success');
-    }
-  };
-
-  window.removeRJSaved = function (idx) {
-    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
-    saved.splice(idx, 1);
-    localStorage.setItem('rj_adminSavedJobs', JSON.stringify(saved));
-    renderRJStats(saved);
-    renderRJSaved(saved);
-    showToast('Removed from saved', 'info');
-  };
-
-  window.exportSavedJobs = function () {
-    var saved = JSON.parse(localStorage.getItem('rj_adminSavedJobs') || '[]');
-    if (saved.length === 0) { showToast('No saved jobs to export', 'info'); return; }
-    var csv = 'Title,Company,Location,Country,URL,Salary,Status,Source,Date Saved\n';
-    saved.forEach(function (j) {
-      csv += '"' + (j.title || '') + '","' + (j.company || '') + '","' + (j.location || '') + '","' + (j.country || '') + '","' + (j.url || '') + '","' + (j.salary || '') + '","' + (j.status || 'Saved') + '","' + (j.source || '') + '","' + (j.savedAt || '') + '"\n';
-    });
-    var blob = new Blob([csv], { type: 'text/csv' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'remote-tech-jobs-saved.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    showToast('📥 Exported ' + saved.length + ' jobs to CSV', 'success');
-  };
-
-  function guessRJTags(title) {
-    var t = (title || '').toLowerCase();
-    var tags = [];
-    if (t.includes('react') || t.includes('frontend') || t.includes('ui') || t.includes('web dev')) tags.push('Frontend');
-    if (t.includes('node') || t.includes('backend') || t.includes('api')) tags.push('Backend');
-    if (t.includes('python') || t.includes('django') || t.includes('flask') || t.includes('data')) tags.push('Python');
-    if (t.includes('java') || t.includes('spring')) tags.push('Java');
-    if (t.includes('devops') || t.includes('sre') || t.includes('infra') || t.includes('platform')) tags.push('DevOps');
-    if (t.includes('full') || t.includes('stack')) tags.push('Full Stack');
-    if (t.includes('data') || t.includes('machine') || t.includes('ai') || t.includes('analyst')) tags.push('AI/ML');
-    if (t.includes('ios') || t.includes('android') || t.includes('mobile') || t.includes('swift') || t.includes('kotlin')) tags.push('Mobile');
-    if (t.includes('security') || t.includes('blockchain') || t.includes('cyber')) tags.push('Security');
-    if (t.includes('qa') || t.includes('test') || t.includes('automation') || t.includes('sdet')) tags.push('QA');
-    if (t.includes('product') || t.includes('manager') || t.includes('technical writer')) tags.push('Product');
-    if (t.includes('co-op') || t.includes('junior') || t.includes('intern') || t.includes('trainee') || t.includes('graduate')) tags.push('Junior');
-    if (t.includes('architect') || t.includes('principal') || t.includes('lead') || t.includes('senior') || t.includes('staff')) tags.push('Senior');
-    if (t.includes('freelance') || t.includes('contract') || t.includes('consultant') || t.includes('gig')) tags.push('Contract');
-    if (tags.length === 0) tags.push('Tech');
-    return tags;
-  }
 
   function escHtml(s) {
     if (!s) return '';

@@ -6,7 +6,7 @@ pages_build_output_dir = "."
 
 [[d1_databases]]
 binding = "RJ_DB"
-database_name = "remote-jobs-db"
-# Replace after creating the D1 database:
-#   wrangler d1 create remote-jobs-db
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_name = "gabochie-db"
+# Reused shared DB (D1 limit reached). Split to remote-jobs-db later after deleting unused D1:
+#   wrangler d1 delete <unused> then wrangler d1 create remote-jobs-db
+database_id = "f5c24c14-705f-4a38-84b4-19d6a6904e7f"
